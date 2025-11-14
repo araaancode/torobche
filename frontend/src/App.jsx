@@ -35,6 +35,11 @@ import AdminAnalytics from './pages/admin/AdminAnalytics';
 import AdminPayments from './pages/admin/AdminPayments';
 import AdminSettings from './pages/admin/AdminSettings';
 
+import RestaurantMenuPage from './pages/RestaurantMenuPage';
+import DoctorCardPage from './pages/DoctorCardPage';
+import DigitalResumePage from './pages/DigitalResumePage';
+import BusinessCardPage from './pages/BusinessCardPage';
+
 const App = () => {
   return (
     <Router>
@@ -53,6 +58,13 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+
+          {/* Template Pages */}
+          <Route path="/restaurant-menu" element={<RestaurantMenuPage />} />
+          <Route path="/doctor-card" element={<DoctorCardPage />} />
+          <Route path="/digital-resume" element={<DigitalResumePage />} />
+          <Route path="/business-card" element={<BusinessCardPage />} />
+
           <Route path="/pricing" element={<>
             <Header />
             <Pricing />

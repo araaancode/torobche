@@ -1,112 +1,526 @@
 import React, { useState, useEffect } from 'react';
-import { PiCards, PiUser, PiRocket, PiHouse, PiStar, PiBriefcase, PiTag, PiInfo, PiPhone, PiList, PiX } from 'react-icons/pi';
+import { 
+  PiCards, 
+  PiUser, 
+  PiRocket, 
+  PiHouse, 
+  PiBriefcase, 
+  PiTag, 
+  PiInfo, 
+  PiPhone, 
+  PiList, 
+  PiX,
+  PiCrown,
+  PiSparkle,
+  PiShieldCheck
+} from 'react-icons/pi';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeNav, setActiveNav] = useState('#home');
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
+
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    // Initial check
+    checkMobile();
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('resize', checkMobile);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', checkMobile);
+    };
   }, []);
 
   const navItems = [
-    { name: 'صفحه اصلی', href: '#home', icon: <PiHouse className="text-sm" /> },
-    { name: 'قالب‌ها', href: '#templates', icon: <PiCards className="text-sm" /> },
-    { name: 'نمونه کارها', href: '#portfolio', icon: <PiBriefcase className="text-sm" /> },
-    { name: 'قیمت‌گذاری', href: '#pricing', icon: <PiTag className="text-sm" /> },
-    { name: 'درباره ما', href: '#about', icon: <PiInfo className="text-sm" /> },
-    { name: 'تماس', href: '#contact', icon: <PiPhone className="text-sm" /> }
+    { name: 'صفحه اصلی', href: '#home', icon: <PiHouse style={{ fontSize: '0.875rem' }} /> },
+    { name: 'قالب‌ها', href: '#templates', icon: <PiCards style={{ fontSize: '0.875rem' }} /> },
+    { name: 'نمونه کارها', href: '#portfolio', icon: <PiBriefcase style={{ fontSize: '0.875rem' }} /> },
+    { name: 'قیمت‌گذاری', href: '#pricing', icon: <PiTag style={{ fontSize: '0.875rem' }} /> },
+    { name: 'درباره ما', href: '#about', icon: <PiInfo style={{ fontSize: '0.875rem' }} /> },
+    { name: 'تماس', href: '#contact', icon: <PiPhone style={{ fontSize: '0.875rem' }} /> }
   ];
 
+  // Inline styles
+  const styles = {
+    header: {
+      position: 'fixed',
+      top: 0,
+      width: '100%',
+      zIndex: 50,
+      transition: 'all 0.5s ease',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      background: isScrolled 
+        ? 'rgba(255, 255, 255, 0.25)' 
+        : 'transparent',
+      padding: isScrolled ? '0.5rem 0' : '1rem 0',
+      boxShadow: isScrolled ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : 'none',
+      borderBottom: isScrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+    },
+    container: {
+      maxWidth: '1280px',
+      margin: '0 auto',
+      padding: '0 1rem'
+    },
+    logoContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.75rem',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease'
+    },
+    logoIcon: {
+      width: '2.5rem',
+      height: '2.5rem',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      borderRadius: '1rem',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      position: 'relative',
+      overflow: 'hidden'
+    },
+    logoText: {
+      fontSize: '1.5rem',
+      fontWeight: 900,
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text'
+    },
+    logoSubtext: {
+      fontSize: '0.75rem',
+      color: '#6b7280',
+      marginTop: '-2px',
+      fontWeight: 500,
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.25rem'
+    },
+    desktopNav: {
+      display: isMobile ? 'none' : 'flex',
+      alignItems: 'center',
+      gap: '0.25rem',
+      background: 'rgba(255, 255, 255, 0.05)',
+      borderRadius: '1rem',
+      padding: '0.25rem'
+    },
+    navItem: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      padding: '0.5rem 1rem',
+      borderRadius: '0.75rem',
+      fontSize: '0.875rem',
+      fontWeight: 500,
+      transition: 'all 0.3s ease',
+      position: 'relative',
+      textDecoration: 'none'
+    },
+    ctaButton: {
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      color: 'white',
+      padding: '0.75rem 1.5rem',
+      borderRadius: '1rem',
+      fontWeight: 'bold',
+      border: 'none',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      position: 'relative',
+      overflow: 'hidden',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+    },
+    mobileMenuButton: {
+      display: isMobile ? 'flex' : 'none',
+      width: '3rem',
+      height: '3rem',
+      background: 'rgba(255, 255, 255, 0.25)',
+      backdropFilter: 'blur(10px)',
+      borderRadius: '1rem',
+      alignItems: 'center',
+      justifyContent: 'center',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease',
+      position: 'relative'
+    },
+    mobileMenu: {
+      display: isMobile ? 'block' : 'none',
+      background: 'rgba(255, 255, 255, 0.95)',
+      backdropFilter: 'blur(20px)',
+      borderRadius: '1.5rem',
+      padding: '1.5rem',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      marginTop: '1rem',
+      animation: 'floating 3s ease-in-out infinite'
+    },
+    mobileNavItem: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.75rem',
+      padding: '0.75rem 1rem',
+      borderRadius: '1rem',
+      fontSize: '0.875rem',
+      fontWeight: 500,
+      transition: 'all 0.3s ease',
+      textDecoration: 'none'
+    },
+    activeNavItem: {
+      background: 'rgba(59, 130, 246, 0.1)',
+      color: '#2563eb',
+      border: '1px solid rgba(59, 130, 246, 0.2)'
+    },
+    inactiveNavItem: {
+      color: '#4b5563'
+    },
+    shimmer: {
+      position: 'absolute',
+      top: 0,
+      left: '-100%',
+      width: '100%',
+      height: '100%',
+      background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
+      animation: 'shimmer 2s infinite'
+    },
+    statusDot: {
+      position: 'absolute',
+      top: '-0.25rem',
+      right: '-0.25rem',
+      width: '1rem',
+      height: '1rem',
+      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      borderRadius: '50%',
+      border: '2px solid white',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+    },
+    loginButton: {
+      display: isMobile ? 'none' : 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      color: '#4b5563',
+      padding: '0.5rem 1rem',
+      background: 'rgba(255, 255, 255, 0.25)',
+      backdropFilter: 'blur(10px)',
+      borderRadius: '1rem',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease',
+      fontSize: '0.875rem',
+      fontWeight: 500
+    }
+  };
+
+  // Adjust logo size for larger screens
+  if (!isMobile) {
+    styles.logoIcon.width = '3rem';
+    styles.logoIcon.height = '3rem';
+    styles.logoText.fontSize = '1.875rem';
+  }
+
   return (
-    <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-      isScrolled 
-        ? 'glass-effect shadow-2xl py-3' 
-        : 'bg-transparent py-6'
-    }`}>
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex justify-between items-center">
+    <header style={styles.header}>
+      <div style={styles.container}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {/* Logo */}
-          <div className="flex items-center space-x-3 rtl:space-x-reverse hover-lift">
-            <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl glass-card">
-                <PiCards className="text-white text-lg" />
+          <div 
+            style={styles.logoContainer}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            <div style={{ position: 'relative' }}>
+              <div style={styles.logoIcon}>
+                <PiCards style={{ color: 'white', fontSize: '1.125rem' }} />
+                <div style={styles.shimmer}></div>
               </div>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white shimmer"></div>
+              <div style={styles.statusDot}></div>
+              <PiSparkle style={{ 
+                position: 'absolute', 
+                top: '-0.5rem', 
+                left: '-0.5rem', 
+                color: '#fbbf24', 
+                fontSize: '0.75rem',
+                animation: 'pulse 2s infinite'
+              }} />
             </div>
-            <div className="flex flex-col">
-              <span className="text-2xl font-black gradient-text">
-                کارت‌ساز
-              </span>
-              <div className="text-xs text-gray-500 mt-[-2px] font-medium">پلتفرم چندمنظوره</div>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={styles.logoText}>کارت‌ساز</span>
+              <div style={styles.logoSubtext}>
+                <span>پلتفرم چندمنظوره</span>
+                <PiShieldCheck style={{ color: '#10b981', fontSize: '0.75rem' }} />
+              </div>
             </div>
           </div>
           
-          {/* Desktop Navigation */}
-          <nav className="hidden xl:flex items-center space-x-8 rtl:space-x-reverse">
+          {/* Desktop Navigation - Hidden on mobile */}
+          <nav style={styles.desktopNav}>
             {navItems.map((item, index) => (
               <a 
                 key={index}
                 href={item.href}
-                className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 font-medium transition-all duration-300 hover-lift relative group"
+                style={{
+                  ...styles.navItem,
+                  ...(activeNav === item.href 
+                    ? { ...styles.activeNavItem, color: '#2563eb' } 
+                    : { ...styles.inactiveNavItem, color: '#4b5563' }
+                  )
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  if (activeNav !== item.href) {
+                    e.currentTarget.style.color = '#2563eb';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  if (activeNav !== item.href) {
+                    e.currentTarget.style.color = '#4b5563';
+                  }
+                }}
+                onClick={() => setActiveNav(item.href)}
               >
-                {item.icon}
+                <div style={{
+                  transition: 'transform 0.3s ease',
+                  transform: activeNav === item.href ? 'scale(1.1)' : 'scale(1)'
+                }}>
+                  {item.icon}
+                </div>
                 <span>{item.name}</span>
-                <span className="absolute bottom-0 right-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full shimmer"></span>
+                {activeNav === item.href && (
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '0.25rem',
+                    height: '0.25rem',
+                    backgroundColor: '#3b82f6',
+                    borderRadius: '50%'
+                  }}></div>
+                )}
               </a>
             ))}
           </nav>
           
           {/* CTA Buttons */}
-          <div className="flex items-center space-x-4 rtl:space-x-reverse">
-            <button className="hidden md:flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-all duration-300 hover-lift glass-effect px-4 py-2 rounded-2xl shadow-lg">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {/* Login Button - Hidden on mobile */}
+            <button 
+              style={styles.loginButton}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.color = '#2563eb';
+                e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.color = '#4b5563';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+              }}
+            >
               <PiUser />
-              <span className="font-medium">ورود</span>
-            </button>
-            <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-2xl font-bold transition-all duration-300 hover-lift shadow-2xl flex items-center space-x-2 rtl:space-x-reverse">
-              <PiRocket />
-              <span>ساخت کارت رایگان</span>
+              <span>ورود</span>
             </button>
             
-            {/* Mobile Menu Button */}
+            {/* Main CTA Button */}
             <button 
-              className="xl:hidden w-12 h-12 glass-effect rounded-2xl flex items-center justify-center shadow-xl hover-lift transition-transform duration-300"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              style={styles.ctaButton}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+              }}
             >
-              {isMenuOpen ? <PiX className="text-gray-700 text-lg" /> : <PiList className="text-gray-700 text-lg" />}
+              <div style={styles.shimmer}></div>
+              <PiRocket style={{ 
+                animation: 'bounce 1s infinite',
+                fontSize: '1.125rem'
+              }} />
+              <span>ساخت کارت رایگان</span>
+              <PiCrown style={{ 
+                position: 'absolute',
+                top: '-0.25rem',
+                right: '-0.25rem',
+                color: '#fbbf24',
+                fontSize: '0.75rem',
+                animation: 'pulse 2s infinite'
+              }} />
+            </button>
+            
+            {/* Mobile Menu Button - Only shown on small devices */}
+            <button 
+              style={styles.mobileMenuButton}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+              }}
+            >
+              {isMenuOpen ? (
+                <PiX style={{ color: '#374151', fontSize: '1.125rem' }} />
+              ) : (
+                <PiList style={{ color: '#374151', fontSize: '1.125rem' }} />
+              )}
+              <div style={{
+                position: 'absolute',
+                top: '0.25rem',
+                right: '0.25rem',
+                width: '0.5rem',
+                height: '0.5rem',
+                backgroundColor: '#3b82f6',
+                borderRadius: '50%',
+                opacity: isMenuOpen ? 0 : 1,
+                animation: isMenuOpen ? 'none' : 'ping 1s infinite'
+              }}></div>
             </button>
           </div>
         </div>
         
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="xl:hidden mt-6 glass-card rounded-3xl p-6 border border-white/20 shadow-2xl floating">
-            <div className="flex flex-col space-y-4">
+        {/* Mobile Menu - Only shown on small devices when menu is open */}
+        {isMobile && isMenuOpen && (
+          <div style={styles.mobileMenu}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {navItems.map((item, index) => (
                 <a 
                   key={index}
                   href={item.href}
-                  className="flex items-center space-x-3 rtl:space-x-reverse text-gray-700 hover:text-blue-600 font-medium py-3 px-4 rounded-2xl glass-effect transition-all duration-300 hover-lift"
-                  onClick={() => setIsMenuOpen(false)}
+                  style={{
+                    ...styles.mobileNavItem,
+                    ...(activeNav === item.href ? styles.activeNavItem : styles.inactiveNavItem)
+                  }}
+                  onClick={() => {
+                    setActiveNav(item.href);
+                    setIsMenuOpen(false);
+                  }}
+                  onMouseEnter={(e) => {
+                    if (activeNav !== item.href) {
+                      e.currentTarget.style.background = 'rgba(59, 130, 246, 0.05)';
+                      e.currentTarget.style.color = '#2563eb';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeNav !== item.href) {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = '#4b5563';
+                    }
+                  }}
                 >
-                  <div className="text-blue-500 w-5 text-center">{item.icon}</div>
-                  <span>{item.name}</span>
+                  <div style={{
+                    padding: '0.5rem',
+                    borderRadius: '0.5rem',
+                    background: activeNav === item.href ? 'rgba(59, 130, 246, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                    color: activeNav === item.href ? '#2563eb' : '#6b7280',
+                    transition: 'all 0.3s ease'
+                  }}>
+                    {item.icon}
+                  </div>
+                  <span style={{ flex: 1 }}>{item.name}</span>
+                  <div style={{
+                    width: '0.5rem',
+                    height: '0.5rem',
+                    borderRadius: '50%',
+                    backgroundColor: activeNav === item.href ? '#3b82f6' : '#d1d5db',
+                    transition: 'all 0.3s ease'
+                  }}></div>
                 </a>
               ))}
-              <div className="pt-4 border-t border-gray-200/50">
-                <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 rounded-2xl font-bold transition-all duration-300 shadow-lg flex items-center justify-center space-x-2 rtl:space-x-reverse hover-lift">
-                  <PiRocket />
+              
+              <div style={{ 
+                paddingTop: '1rem', 
+                marginTop: '0.5rem', 
+                borderTop: '1px solid rgba(209, 213, 219, 0.5)' 
+              }}>
+                <button style={{
+                  ...styles.ctaButton,
+                  width: '100%',
+                  justifyContent: 'center',
+                  marginBottom: '0.5rem'
+                }}>
+                  <div style={styles.shimmer}></div>
+                  <PiRocket style={{ animation: 'bounce 1s infinite' }} />
                   <span>ساخت کارت رایگان</span>
+                </button>
+                
+                <button style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  color: '#4b5563',
+                  padding: '0.75rem',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  fontSize: '0.875rem',
+                  fontWeight: 500
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#2563eb';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#4b5563';
+                }}
+                >
+                  <PiUser />
+                  <span>ورود به حساب کاربری</span>
                 </button>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Inline CSS for animations */}
+      <style jsx>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        @keyframes floating {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-5px); }
+        }
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        @keyframes ping {
+          0% { transform: scale(1); opacity: 1; }
+          75%, 100% { transform: scale(2); opacity: 0; }
+        }
+      `}</style>
     </header>
   );
 };
