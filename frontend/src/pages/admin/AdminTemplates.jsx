@@ -1,5 +1,5 @@
 // pages/AdminTemplates.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   PiShield, 
   PiBell,
@@ -11,388 +11,457 @@ import {
   PiPencil,
   PiTrash,
   PiExport,
-  PiStar,
-  PiHeart,
   PiDownload,
+  PiStorefront,
   PiTrendUp,
+  PiTrendDown,
   PiChartLine,
+  PiChartPieSlice,
   PiUsers,
-  PiCrown,
-  PiMagicWand,
-  PiShootingStar,
-  PiCheckCircle,
-  PiLightning,
-  PiMedal,
-  PiConfetti,
-  PiCaretUp,
-  PiCaretDown,
   PiUserCircle,
-  PiQrCode
+  PiQrCode,
+  PiMoney,
+  PiGear,
+  PiList,
+  PiX,
+  PiCrown,
+  PiShootingStar,
+  PiConfetti,
+  PiCheckCircle,
+  PiClock,
+  PiStar,
+  PiShoppingCart,
+  PiHeart,
+  PiWarning,
+  PiInfo,
+  PiMagicWand,
+  PiPaintBrush,
+  PiRocket,
+  PiMedal,
+  PiLightning,
+  PiShieldCheck
 } from 'react-icons/pi';
 
 const AdminTemplates = ({ onNavigate }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [selectedTemplates, setSelectedTemplates] = useState([]);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   const templates = [
     {
       id: 1,
-      name: 'مینیمال رستوران',
+      name: 'رستوران لوکس',
       category: 'رستوران',
-      type: 'رایگان',
-      price: '۰',
-      downloads: 1245,
-      rating: 4.8,
-      likes: 289,
+      status: 'فعال',
+      price: '۱,۲۰۰,۰۰۰',
+      oldPrice: '۱,۵۰۰,۰۰۰',
+      sales: 89,
+      rating: 4.9,
+      reviews: 127,
+      downloads: 234,
       created: '۱۴۰۲/۱۰/۱۵',
-      preview: '/api/placeholder/300/200',
-      featured: true,
-      color: 'from-blue-600 to-cyan-500',
-      gradient: 'bg-gradient-to-br from-blue-600 to-cyan-500',
-      bgGradient: 'bg-gradient-to-br from-blue-50/80 via-cyan-50/60 to-white',
-      growth: '+۱۵٪',
-      revenue: '۲,۴۵۰,۰۰۰',
-      priority: 'high'
+      lastUpdate: '۳ روز پیش',
+      features: ['سفارش آنلاین', 'مدیریت موجودی', 'گزارش‌گیری'],
+      gradient: 'from-orange-500 to-red-500',
+      bgGradient: 'bg-gradient-to-br from-orange-50/80 via-red-50/60 to-white',
+      popular: true,
+      badge: 'پرطرفدار',
+      growth: '+۲۳٪'
     },
     {
       id: 2,
-      name: 'مدرن پزشکی',
+      name: 'کارت پزشکی',
       category: 'پزشکی',
-      type: 'پرمیوم',
-      price: '۱۲۹,۰۰۰',
-      downloads: 876,
-      rating: 4.9,
-      likes: 345,
+      status: 'فعال',
+      price: '۹۰۰,۰۰۰',
+      oldPrice: '۱,۲۰۰,۰۰۰',
+      sales: 64,
+      rating: 4.7,
+      reviews: 89,
+      downloads: 187,
       created: '۱۴۰۲/۱۰/۱۴',
-      preview: '/api/placeholder/300/200',
-      featured: true,
-      color: 'from-emerald-600 to-green-500',
-      gradient: 'bg-gradient-to-br from-emerald-600 to-green-500',
-      bgGradient: 'bg-gradient-to-br from-emerald-50/80 via-green-50/60 to-white',
-      growth: '+۲۳٪',
-      revenue: '۸,۷۶۰,۰۰۰',
-      priority: 'high'
+      lastUpdate: '۱ هفته پیش',
+      features: ['نوبت‌گیری', 'نمایش تخصص', 'مسیریابی'],
+      gradient: 'from-green-500 to-teal-500',
+      bgGradient: 'bg-gradient-to-br from-green-50/80 via-teal-50/60 to-white',
+      popular: false,
+      badge: 'جدید',
+      growth: '+۱۸٪'
     },
     {
       id: 3,
-      name: 'خلاقانه کسب و کار',
-      category: 'کسب و کار',
-      type: 'پرمیوم',
-      price: '۹۹,۰۰۰',
-      downloads: 654,
-      rating: 4.7,
-      likes: 198,
+      name: 'رزومه حرفه‌ای',
+      category: 'شخصی',
+      status: 'فعال',
+      price: '۷۵۰,۰۰۰',
+      oldPrice: '۹۰۰,۰۰۰',
+      sales: 112,
+      rating: 4.8,
+      reviews: 156,
+      downloads: 298,
       created: '۱۴۰۲/۱۰/۱۳',
-      preview: '/api/placeholder/300/200',
-      featured: false,
-      color: 'from-violet-600 to-purple-500',
-      gradient: 'bg-gradient-to-br from-violet-600 to-purple-500',
-      bgGradient: 'bg-gradient-to-br from-violet-50/80 via-purple-50/60 to-white',
-      growth: '+۱۲٪',
-      revenue: '۵,۲۳۲,۰۰۰',
-      priority: 'medium'
+      lastUpdate: '۲ روز پیش',
+      features: ['اشتراک آسان', 'نمایش مهارت', 'پورتفولیو'],
+      gradient: 'from-blue-500 to-cyan-500',
+      bgGradient: 'bg-gradient-to-br from-blue-50/80 via-cyan-50/60 to-white',
+      popular: true,
+      badge: 'پرطرفدار',
+      growth: '+۳۲٪'
     },
     {
       id: 4,
-      name: 'کلاسیک شرکتی',
-      category: 'شرکتی',
-      type: 'رایگان',
-      price: '۰',
-      downloads: 987,
+      name: 'کسب‌وکار پیشرفته',
+      category: 'کسب‌وکار',
+      status: 'غیرفعال',
+      price: '۶۰۰,۰۰۰',
+      oldPrice: '۸۰۰,۰۰۰',
+      sales: 45,
       rating: 4.6,
-      likes: 234,
+      reviews: 78,
+      downloads: 123,
       created: '۱۴۰۲/۱۰/۱۲',
-      preview: '/api/placeholder/300/200',
-      featured: false,
-      color: 'from-amber-600 to-orange-500',
-      gradient: 'bg-gradient-to-br from-amber-600 to-orange-500',
-      bgGradient: 'bg-gradient-to-br from-amber-50/80 via-orange-50/60 to-white',
-      growth: '+۸٪',
-      revenue: '۱,۲۳۴,۰۰۰',
-      priority: 'medium'
+      lastUpdate: '۲ هفته پیش',
+      features: ['ذخیره مخاطب', 'شبکه اجتماعی', 'آنالیز'],
+      gradient: 'from-purple-500 to-pink-500',
+      bgGradient: 'bg-gradient-to-br from-purple-50/80 via-pink-50/60 to-white',
+      popular: false,
+      badge: 'اقتصادی',
+      growth: '+۸٪'
     },
     {
       id: 5,
-      name: 'شیک کافی شاپ',
+      name: 'کافی شاپ مدرن',
       category: 'کافه',
-      type: 'پرمیوم',
-      price: '۷۹,۰۰۰',
-      downloads: 543,
-      rating: 4.8,
-      likes: 167,
+      status: 'فعال',
+      price: '۸۵۰,۰۰۰',
+      oldPrice: '۱,۱۰۰,۰۰۰',
+      sales: 76,
+      rating: 4.5,
+      reviews: 94,
+      downloads: 201,
       created: '۱۴۰۲/۱۰/۱۱',
-      preview: '/api/placeholder/300/200',
-      featured: true,
-      color: 'from-rose-600 to-pink-500',
-      gradient: 'bg-gradient-to-br from-rose-600 to-pink-500',
-      bgGradient: 'bg-gradient-to-br from-rose-50/80 via-pink-50/60 to-white',
-      growth: '+۱۸٪',
-      revenue: '۳,۲۵۸,۰۰۰',
-      priority: 'high'
+      lastUpdate: '۵ روز پیش',
+      features: ['منوی تعاملی', 'سیستم رزرو', 'نظرسنجی'],
+      gradient: 'from-amber-500 to-orange-500',
+      bgGradient: 'bg-gradient-to-br from-amber-50/80 via-orange-50/60 to-white',
+      popular: true,
+      badge: 'جدید',
+      growth: '+۲۷٪'
     },
     {
       id: 6,
-      name: 'ساده شخصی',
-      category: 'شخصی',
-      type: 'رایگان',
-      price: '۰',
-      downloads: 765,
-      rating: 4.5,
-      likes: 156,
+      name: 'فروشگاه آنلاین',
+      category: 'فروشگاهی',
+      status: 'فعال',
+      price: '۱,۵۰۰,۰۰۰',
+      oldPrice: '۲,۰۰۰,۰۰۰',
+      sales: 34,
+      rating: 4.4,
+      reviews: 67,
+      downloads: 145,
       created: '۱۴۰۲/۱۰/۱۰',
-      preview: '/api/placeholder/300/200',
-      featured: false,
-      color: 'from-teal-600 to-cyan-500',
-      gradient: 'bg-gradient-to-br from-teal-600 to-cyan-500',
-      bgGradient: 'bg-gradient-to-br from-teal-50/80 via-cyan-50/60 to-white',
-      growth: '+۵٪',
-      revenue: '۹۸۷,۰۰۰',
-      priority: 'low'
+      lastUpdate: '۴ روز پیش',
+      features: ['درگاه پرداخت', 'مدیریت محصول', 'پیگیری سفارش'],
+      gradient: 'from-indigo-500 to-purple-500',
+      bgGradient: 'bg-gradient-to-br from-indigo-50/80 via-purple-50/60 to-white',
+      popular: false,
+      badge: 'پیشرفته',
+      growth: '+۱۵٪'
     }
   ];
 
-  const categories = [
-    { id: 'all', name: 'همه قالب‌ها', count: templates.length, color: 'from-gray-600 to-gray-500' },
-    { id: 'restaurant', name: 'رستوران', count: 12, color: 'from-blue-600 to-cyan-500' },
-    { id: 'medical', name: 'پزشکی', count: 8, color: 'from-emerald-600 to-green-500' },
-    { id: 'business', name: 'کسب و کار', count: 15, color: 'from-violet-600 to-purple-500' },
-    { id: 'corporate', name: 'شرکتی', count: 9, color: 'from-amber-600 to-orange-500' },
-    { id: 'cafe', name: 'کافه', count: 6, color: 'from-rose-600 to-pink-500' },
-    { id: 'personal', name: 'شخصی', count: 11, color: 'from-teal-600 to-cyan-500' }
-  ];
-
-  const filters = [
-    { id: 'all', name: 'همه قالب‌ها', count: templates.length },
-    { id: 'featured', name: 'ویژه', count: templates.filter(t => t.featured).length },
-    { id: 'premium', name: 'پرمیوم', count: templates.filter(t => t.type === 'پرمیوم').length },
-    { id: 'free', name: 'رایگان', count: templates.filter(t => t.type === 'رایگان').length }
-  ];
-
   const navigationItems = [
-    { id: 'overview', name: 'داشبورد', icon: <PiChartLine className="text-xl" />, color: 'from-blue-600 to-cyan-500' },
-    { id: 'users', name: 'مدیریت کاربران', icon: <PiUsers className="text-xl" />, color: 'from-emerald-600 to-green-500' },
-    { id: 'menus', name: 'منوها', icon: <PiCrown className="text-xl" />, color: 'from-violet-600 to-purple-500' },
-    { id: 'business-cards', name: 'کارت ویزیت', icon: <PiUserCircle className="text-xl" />, color: 'from-amber-600 to-orange-500' },
-    { id: 'templates', name: 'قالب‌ها', icon: <PiMagicWand className="text-xl" />, color: 'from-indigo-600 to-blue-500' },
-    { id: 'qr-codes', name: 'QR کدها', icon: <PiQrCode className="text-xl" />, color: 'from-rose-600 to-pink-500' },
-    { id: 'analytics', name: 'آمار و گزارش', icon: <PiTrendUp className="text-xl" />, color: 'from-teal-600 to-cyan-500' },
-    { id: 'settings', name: 'تنظیمات', icon: <PiShield className="text-xl" />, color: 'from-gray-600 to-gray-500' }
+    { id: 'overview', name: 'داشبورد', icon: <PiChartPieSlice className="text-xl" />, badge: null },
+    { id: 'users', name: 'مدیریت کاربران', icon: <PiUsers className="text-xl" />, badge: '۵' },
+    { id: 'menus', name: 'منوها', icon: <PiStorefront className="text-xl" />, badge: '۶' },
+    { id: 'business-cards', name: 'کارت ویزیت', icon: <PiUserCircle className="text-xl" />, badge: '۶' },
+    { id: 'templates', name: 'قالب‌ها', icon: <PiSparkle className="text-xl" />, badge: '۶' },
+    { id: 'qr-codes', name: 'QR کدها', icon: <PiQrCode className="text-xl" />, badge: '۸۹' },
+    { id: 'analytics', name: 'آمار و گزارش', icon: <PiChartLine className="text-xl" />, badge: null },
+    { id: 'payments', name: 'پرداخت‌ها', icon: <PiMoney className="text-xl" />, badge: 'جدید' },
+    { id: 'settings', name: 'تنظیمات', icon: <PiGear className="text-xl" />, badge: null }
   ];
 
-  const stats = [
+  const templateStats = [
     { 
       label: 'قالب‌های کل', 
-      value: '۶۱', 
-      change: '+۱۲.۵٪', 
-      changeValue: '۷',
+      value: '۱۲۴', 
+      change: '+۱۸٪', 
+      changeValue: '۱۹',
       icon: <PiSparkle className="text-2xl" />, 
-      color: 'from-blue-600 to-cyan-500',
-      gradient: 'bg-gradient-to-br from-blue-600 to-cyan-500',
+      color: 'from-blue-500 to-cyan-500',
       bgGradient: 'bg-gradient-to-br from-blue-50/80 via-cyan-50/60 to-white',
       trend: 'up'
     },
     { 
-      label: 'قالب‌های رایگان', 
-      value: '۴۵', 
-      change: '+۸.۲٪', 
-      changeValue: '۳',
+      label: 'قالب‌های فعال', 
+      value: '۱۰۸', 
+      change: '+۱۲٪', 
+      changeValue: '۱۲',
       icon: <PiCheckCircle className="text-2xl" />, 
-      color: 'from-emerald-600 to-green-500',
-      gradient: 'bg-gradient-to-br from-emerald-600 to-green-500',
-      bgGradient: 'bg-gradient-to-br from-emerald-50/80 via-green-50/60 to-white',
+      color: 'from-green-500 to-emerald-500',
+      bgGradient: 'bg-gradient-to-br from-green-50/80 via-emerald-50/60 to-white',
       trend: 'up'
     },
     { 
-      label: 'قالب‌های پرمیوم', 
-      value: '۱۶', 
-      change: '+۲۳.۴٪', 
-      changeValue: '۳',
-      icon: <PiCrown className="text-2xl" />, 
-      color: 'from-violet-600 to-purple-500',
-      gradient: 'bg-gradient-to-br from-violet-600 to-purple-500',
-      bgGradient: 'bg-gradient-to-br from-violet-50/80 via-purple-50/60 to-white',
+      label: 'فروش کل', 
+      value: '۲,۸۹۰', 
+      change: '+۲۵٪', 
+      changeValue: '۵۷۸',
+      icon: <PiShoppingCart className="text-2xl" />, 
+      color: 'from-purple-500 to-pink-500',
+      bgGradient: 'bg-gradient-to-br from-purple-50/80 via-pink-50/60 to-white',
       trend: 'up'
     },
     { 
-      label: 'دانلود کل', 
-      value: '۵,۰۸۹', 
-      change: '+۱۵.۸٪', 
-      changeValue: '۶۹۴',
-      icon: <PiDownload className="text-2xl" />, 
-      color: 'from-amber-600 to-orange-500',
-      gradient: 'bg-gradient-to-br from-amber-600 to-orange-500',
-      bgGradient: 'bg-gradient-to-br from-amber-50/80 via-orange-50/60 to-white',
+      label: 'میانگین امتیاز', 
+      value: '۴.۸/۵', 
+      change: '+۰.۲', 
+      changeValue: '۰.۲',
+      icon: <PiStar className="text-2xl" />, 
+      color: 'from-orange-500 to-amber-500',
+      bgGradient: 'bg-gradient-to-br from-orange-50/80 via-amber-50/60 to-white',
       trend: 'up'
     }
   ];
 
-  const filteredTemplates = templates.filter(template =>
-    (template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    template.category.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (activeCategory === 'all' || template.category.includes(activeCategory)) &&
-    (activeFilter === 'all' || 
-     (activeFilter === 'featured' && template.featured) ||
-     (activeFilter === 'premium' && template.type === 'پرمیوم') ||
-     (activeFilter === 'free' && template.type === 'رایگان'))
-  );
+  const categories = ['همه', 'رستوران', 'پزشکی', 'شخصی', 'کسب‌وکار', 'کافه', 'فروشگاهی', 'سایر'];
+
+  const filteredTemplates = templates.filter(template => {
+    const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         template.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = filterCategory === 'all' || template.category === filterCategory;
+    const matchesStatus = filterStatus === 'all' || template.status === filterStatus;
+    
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+
+  const toggleTemplateSelection = (templateId) => {
+    setSelectedTemplates(prev =>
+      prev.includes(templateId)
+        ? prev.filter(id => id !== templateId)
+        : [...prev, templateId]
+    );
+  };
+
+  const selectAllTemplates = () => {
+    setSelectedTemplates(selectedTemplates.length === templates.length ? [] : templates.map(template => template.id));
+  };
 
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, index) => (
-      <PiStar
-        key={index}
-        className={`text-sm ${index < Math.floor(rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-      />
+      <span key={index} className={index < Math.floor(rating) ? "text-amber-400" : "text-gray-300"}>
+        <PiStar className="text-sm" />
+      </span>
     ));
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-purple-50/20 relative overflow-hidden">
       
-      {/* Advanced Background Effects */}
+      {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-200/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float-slow"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-200/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float-slower"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-200/20 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse-slow"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float-slow"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float-slower"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-pulse"></div>
+        
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 opacity-[0.02]">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 25px 25px, #666 1px, transparent 0)`,
+            backgroundSize: '50px 50px'
+          }}></div>
+        </div>
       </div>
 
-      {/* Floating Icons */}
-      <div className="absolute top-24 left-24 opacity-10 animate-float">
-        <PiSparkle className="text-6xl text-blue-500" />
+      {/* Floating Elements */}
+      <div className="absolute top-20 left-20 opacity-10 animate-float">
+        <PiSparkle className="text-5xl text-blue-500" />
       </div>
-      <div className="absolute bottom-40 right-40 opacity-10 animate-float-delayed">
-        <PiShootingStar className="text-5xl text-purple-500" />
+      <div className="absolute bottom-32 right-32 opacity-10 animate-float-delayed">
+        <PiShootingStar className="text-4xl text-purple-500" />
       </div>
 
       <div className="flex relative z-10">
-        {/* Enhanced Sidebar */}
-        <div className={`bg-white/90 backdrop-blur-2xl border-l border-white/40 shadow-2xl transition-all duration-500 ease-in-out ${
-          sidebarOpen ? 'w-80' : 'w-20'
-        }`}>
-          <div className="p-8 border-b border-white/30">
-            <div className="flex items-center space-x-4 rtl:space-x-reverse">
-              <div className="w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl relative overflow-hidden">
-                <PiShield className="text-white text-2xl z-10" />
-                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
+        {/* Sidebar */}
+        <div className={`bg-white/95 backdrop-blur-xl border-l border-gray-200/50 shadow-2xl transition-all duration-300 ${sidebarOpen ? 'w-80' : 'w-20'}`}>
+          {/* Sidebar Header */}
+          <div className="p-6 border-b border-gray-200/50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <PiShield className="text-white text-xl" />
+                </div>
+                {sidebarOpen && (
+                  <div>
+                    <h1 className="text-xl font-black text-gray-800">پنل مدیریت</h1>
+                    <p className="text-gray-500 text-sm font-medium">تربچه</p>
+                  </div>
+                )}
               </div>
               {sidebarOpen && (
-                <div className="flex-1">
-                  <h1 className="text-2xl font-black text-gray-800 mb-1">پنل مدیریت</h1>
-                  <p className="text-gray-500 text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    تربچه - نسخه حرفه‌ای
-                  </p>
-                </div>
+                <button 
+                  onClick={() => setSidebarOpen(false)}
+                  className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200"
+                >
+                  <PiX className="text-gray-600 text-sm" />
+                </button>
               )}
             </div>
           </div>
 
-          <nav className="p-6">
+          {/* Navigation */}
+          <nav className="p-4">
             {navigationItems.map(item => (
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
-                className={`w-full flex items-center justify-between p-4 rounded-3xl mb-3 transition-all duration-300 group relative overflow-hidden ${
+                className={`w-full flex items-center justify-between space-x-3 rtl:space-x-reverse p-3 rounded-xl mb-2 transition-all duration-200 group ${
                   item.id === 'templates'
-                    ? `bg-gradient-to-r ${item.color} text-white shadow-2xl transform scale-105`
-                    : 'text-gray-600 hover:bg-white/80 hover:shadow-lg backdrop-blur-sm'
+                    ? 'bg-gradient-to-r from-blue-50 to-blue-100/50 border border-blue-200 text-blue-700 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-800 border border-transparent'
                 }`}
               >
                 <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                    item.id === 'templates'
-                      ? 'bg-white/20 text-white shadow-inner' 
-                      : `bg-gradient-to-r ${item.color} text-white shadow-lg group-hover:scale-110`
+                  <div className={`transition-colors duration-200 ${
+                    item.id === 'templates' ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'
                   }`}>
                     {item.icon}
                   </div>
                   {sidebarOpen && (
-                    <span className="font-bold text-lg">{item.name}</span>
+                    <span className={`font-medium text-sm transition-all duration-200 ${
+                      item.id === 'templates' ? 'text-blue-800' : 'text-gray-700'
+                    }`}>
+                      {item.name}
+                    </span>
                   )}
                 </div>
                 
-                {/* Hover Effect */}
-                <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-                  item.id === 'templates' ? 'opacity-100' : ''
-                }`}></div>
+                {sidebarOpen && item.badge && (
+                  <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                    item.id === 'templates' 
+                      ? 'bg-blue-100 text-blue-700' 
+                      : item.badge === 'جدید' 
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {item.badge}
+                  </span>
+                )}
               </button>
             ))}
           </nav>
+
+          {/* Sidebar Footer */}
+          {sidebarOpen && (
+            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200/50 bg-white/80">
+              <div className="flex items-center space-x-3 rtl:space-x-reverse p-3 bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-xl border border-gray-200/50">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center text-white font-bold shadow-lg">
+                  A
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-bold text-gray-800 text-sm">مدیر سیستم</h4>
+                  <p className="text-gray-500 text-xs">admin@torobche.ir</p>
+                </div>
+                <button className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-center transition-colors duration-200">
+                  <PiGear className="text-gray-600 text-sm" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1 overflow-auto">
-          {/* Enhanced Top Bar */}
-          <header className="bg-white/80 backdrop-blur-2xl border-b border-white/40 px-8 py-6 shadow-lg">
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto min-h-screen">
+          {/* Top Bar */}
+          <header className="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 px-6 py-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                <button
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="w-14 h-14 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center hover:bg-white hover:shadow-2xl transition-all duration-300 shadow-lg group"
-                >
-                  <PiMagicWand className="text-purple-600 text-xl group-hover:scale-110 transition-transform duration-300" />
-                </button>
+                {!sidebarOpen && (
+                  <button
+                    onClick={() => setSidebarOpen(true)}
+                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-colors duration-200 shadow-sm"
+                  >
+                    <PiList className="text-gray-600 text-lg" />
+                  </button>
+                )}
                 <div>
-                  <h1 className="text-3xl font-black text-gray-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    مدیریت قالب‌ها
-                  </h1>
-                  <p className="text-gray-500 text-sm font-medium">مدیریت و آنالیز قالب‌های دیجیتال</p>
+                  <h1 className="text-2xl font-black text-gray-800">مدیریت قالب‌ها</h1>
+                  <p className="text-gray-500 text-sm">مدیریت و نظارت بر قالب‌های دیجیتال</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                <button className="w-14 h-14 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center hover:bg-white hover:shadow-2xl transition-all duration-300 shadow-lg relative group">
-                  <PiBell className="text-gray-600 text-xl group-hover:scale-110 transition-transform duration-300" />
-                  <span className="absolute -top-1 -left-1 w-6 h-6 bg-red-500 rounded-full text-white text-xs flex items-center justify-center shadow-lg font-bold">
+              <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                <button className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-colors duration-200 shadow-sm relative">
+                  <PiBell className="text-gray-600 text-lg" />
+                  <span className="absolute -top-1 -left-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center shadow-lg animate-pulse">
                     ۳
                   </span>
                 </button>
-                
-                <div className="flex items-center space-x-3 rtl:space-x-reverse bg-white/80 backdrop-blur-sm rounded-2xl p-3 shadow-lg">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-2xl">
+                <div className="flex items-center space-x-3 rtl:space-x-reverse bg-gray-100/80 hover:bg-gray-200/80 rounded-xl px-3 py-2 transition-colors duration-200 cursor-pointer shadow-sm">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center text-white font-bold text-sm">
                     A
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-gray-800">مدیر سیستم</p>
-                    <p className="text-gray-500 text-sm">admin@torobche.ir</p>
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-gray-800">مدیر سیستم</p>
+                    <p className="text-xs text-gray-500">مدیر ارشد</p>
                   </div>
                 </div>
               </div>
             </div>
           </header>
 
-          {/* Main Content */}
-          <main className="p-8">
-            {/* Enhanced Stats Grid */}
+          {/* Main Content Area */}
+          <main className="p-6">
+            {/* Welcome Banner */}
+            <div className="bg-gradient-to-r from-cyan-600 to-blue-600 rounded-2xl p-6 text-white shadow-lg mb-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-black mb-2">گالری قالب‌ها 🎨</h2>
+                  <p className="text-cyan-100">شما در حال مدیریت {templates.length} قالب حرفه‌ای در سیستم هستید.</p>
+                </div>
+                <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                  <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-xl transition-colors duration-200 flex items-center space-x-2 rtl:space-x-reverse">
+                    <PiDownload className="text-lg" />
+                    <span>گزارش قالب‌ها</span>
+                  </button>
+                  <button className="bg-white text-cyan-600 hover:bg-cyan-50 px-4 py-2 rounded-xl transition-colors duration-200 font-medium">
+                    آمار کامل
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              {stats.map((stat, index) => (
-                <div 
-                  key={index} 
-                  className={`${stat.bgGradient} rounded-3xl p-6 border border-white/60 shadow-2xl hover:shadow-3xl transition-all duration-500 backdrop-blur-sm group overflow-hidden relative`}
-                >
-                  {/* Background Effect */}
-                  <div className={`absolute -inset-1 bg-gradient-to-r ${stat.color} rounded-3xl opacity-0 group-hover:opacity-5 transition-opacity duration-500 blur-sm`}></div>
-                  
-                  <div className="flex items-center justify-between mb-4 relative z-10">
-                    <div className={`w-16 h-16 ${stat.gradient} rounded-2xl flex items-center justify-center text-white shadow-2xl relative overflow-hidden`}>
+              {templateStats.map((stat, index) => (
+                <div key={index} className={`${stat.bgGradient} rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/60 backdrop-blur-sm`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-12 h-12 bg-gradient-to-r ${stat.color} rounded-2xl flex items-center justify-center shadow-lg`}>
                       {stat.icon}
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
                     </div>
-                    <div className={`flex items-center space-x-1 rtl:space-x-reverse text-sm font-black ${
-                      stat.trend === 'up' ? 'text-emerald-600' : 'text-rose-600'
+                    <div className={`flex items-center space-x-1 rtl:space-x-reverse text-sm font-bold ${
+                      stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
                     }`}>
-                      {stat.trend === 'up' ? <PiCaretUp className="text-lg" /> : <PiCaretDown className="text-lg" />}
+                      {stat.trend === 'up' ? <PiTrendUp /> : <PiTrendDown />}
                       <span>{stat.change}</span>
                     </div>
                   </div>
-                  
-                  <div className="text-right relative z-10">
-                    <div className="text-3xl font-black text-gray-800 mb-1">{stat.value}</div>
-                    <div className="text-gray-600 font-medium mb-2">{stat.label}</div>
-                    <div className={`text-xs font-medium mt-2 ${
-                      stat.trend === 'up' ? 'text-emerald-600' : 'text-rose-600'
-                    }`}>
-                      {stat.changeValue} مورد جدید
+                  <div className="text-right">
+                    <div className="text-2xl font-black text-gray-800 mb-1">{stat.value}</div>
+                    <div className="text-gray-600 text-sm font-medium mb-2">{stat.label}</div>
+                    <div className="text-xs text-gray-500">
+                      <span className={stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}>
+                        {stat.changeValue}
+                      </span>{' '}
+                      نسبت به ماه گذشته
                     </div>
                   </div>
                 </div>
@@ -402,187 +471,149 @@ const AdminTemplates = ({ onNavigate }) => {
             {/* Header Actions */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                {/* Search Box */}
                 <div className="relative">
-                  <PiMagnifyingGlass className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
+                  <PiMagnifyingGlass className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
                   <input
                     type="text"
                     placeholder="جستجوی قالب بر اساس نام یا دسته‌بندی..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-96 pr-12 pl-4 py-4 bg-white/80 backdrop-blur-sm border border-white/60 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg"
+                    className="w-96 pr-10 pl-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all duration-300"
                   />
                 </div>
-
-                {/* Filters */}
-                <div className="flex items-center space-x-2 rtl:space-x-reverse bg-white/80 backdrop-blur-sm rounded-2xl p-2 shadow-lg">
-                  {filters.map(filter => (
-                    <button
-                      key={filter.id}
-                      onClick={() => setActiveFilter(filter.id)}
-                      className={`px-4 py-2 rounded-2xl text-sm font-medium transition-all duration-300 ${
-                        activeFilter === filter.id
-                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                          : 'text-gray-600 hover:bg-white/60'
-                      }`}
-                    >
-                      {filter.name}
-                      <span className="mr-2 text-xs bg-white/20 px-1.5 py-0.5 rounded-full">
-                        {filter.count}
-                      </span>
-                    </button>
-                  ))}
+                
+                {/* Filter Dropdowns */}
+                <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                  <select 
+                    value={filterCategory}
+                    onChange={(e) => setFilterCategory(e.target.value)}
+                    className="px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm text-sm"
+                  >
+                    <option value="all">همه دسته‌بندی‌ها</option>
+                    {categories.filter(cat => cat !== 'همه').map(category => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
+                  </select>
+                  
+                  <select 
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm text-sm"
+                  >
+                    <option value="all">همه وضعیت‌ها</option>
+                    <option value="فعال">فعال</option>
+                    <option value="غیرفعال">غیرفعال</option>
+                  </select>
                 </div>
               </div>
 
               <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                <button className="flex items-center space-x-2 rtl:space-x-reverse px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl hover:shadow-2xl transition-all duration-300 shadow-lg group">
-                  <PiPlus className="text-xl group-hover:scale-110 transition-transform duration-300" />
-                  <span className="font-bold">قالب جدید</span>
+                <button className="flex items-center space-x-2 rtl:space-x-reverse px-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-2xl hover:shadow-lg transition-all duration-300 shadow-md hover:scale-105">
+                  <PiPlus className="text-lg" />
+                  <span className="font-medium">ایجاد قالب جدید</span>
                 </button>
-                <button className="flex items-center space-x-2 rtl:space-x-reverse px-6 py-4 bg-white/80 backdrop-blur-sm border border-white/60 text-gray-700 rounded-2xl hover:shadow-lg transition-all duration-300 shadow-lg group">
-                  <PiExport className="text-xl group-hover:scale-110 transition-transform duration-300" />
-                  <span className="font-bold">خروجی</span>
+                <button className="flex items-center space-x-2 rtl:space-x-reverse px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl hover:bg-white hover:shadow-md transition-all duration-300 shadow-sm">
+                  <PiExport className="text-lg" />
+                  <span className="font-medium">خروجی Excel</span>
                 </button>
               </div>
             </div>
 
-            {/* Categories */}
-            <div className="flex items-center space-x-3 rtl:space-x-reverse mb-6 overflow-x-auto pb-4">
-              {categories.map(category => (
-                <button
-                  key={category.id}
-                  onClick={() => setActiveCategory(category.id)}
-                  className={`flex items-center space-x-3 rtl:space-x-reverse px-5 py-3 rounded-2xl whitespace-nowrap transition-all duration-300 group ${
-                    activeCategory === category.id
-                      ? `bg-gradient-to-r ${category.color} text-white shadow-2xl transform scale-105`
-                      : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-white/60 hover:shadow-lg'
-                  }`}
-                >
-                  <div className={`w-8 h-8 rounded-2xl flex items-center justify-center ${
-                    activeCategory === category.id
-                      ? 'bg-white/20 text-white'
-                      : `bg-gradient-to-r ${category.color} text-white shadow-lg`
-                  }`}>
-                    <PiSparkle className="text-sm" />
-                  </div>
-                  <span className="font-bold">{category.name}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                    activeCategory === category.id
-                      ? 'bg-white/20 text-white'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {category.count}
-                  </span>
-                </button>
-              ))}
-            </div>
-
             {/* Templates Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
               {filteredTemplates.map(template => (
-                <div 
-                  key={template.id} 
-                  className={`${template.bgGradient} rounded-3xl border border-white/60 shadow-2xl hover:shadow-3xl transition-all duration-500 backdrop-blur-sm group overflow-hidden relative`}
-                >
-                  {/* Background Effect */}
-                  <div className={`absolute -inset-1 bg-gradient-to-r ${template.color} rounded-3xl opacity-0 group-hover:opacity-5 transition-opacity duration-500 blur-sm`}></div>
-                  
-                  {/* Template Preview */}
-                  <div className="relative h-48 overflow-hidden rounded-t-3xl">
-                    <div className={`w-full h-full ${template.gradient} flex items-center justify-center relative overflow-hidden`}>
-                      <div className="text-white text-center">
-                        <div className="text-2xl font-black mb-2">{template.name}</div>
-                        <div className="text-white/80 text-sm">{template.category}</div>
-                      </div>
-                      <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent"></div>
-                    </div>
-                    
-                    {/* Badges */}
-                    <div className="absolute top-4 left-4 flex flex-col gap-2">
-                      {template.featured && (
-                        <span className="bg-gradient-to-r from-yellow-400 to-amber-400 text-white px-3 py-1 rounded-2xl text-xs font-bold shadow-lg flex items-center gap-1">
-                          <PiCrown className="text-xs" />
-                          ویژه
-                        </span>
-                      )}
-                      <span className="bg-black/60 text-white px-2 py-1 rounded-xl text-xs font-bold backdrop-blur-sm">
-                        {template.category}
-                      </span>
-                    </div>
-
-                    {/* Priority Indicator */}
-                    <div className={`absolute top-4 right-4 w-3 h-3 rounded-full ${
-                      template.priority === 'high' ? 'bg-rose-500' :
-                      template.priority === 'medium' ? 'bg-amber-500' : 'bg-emerald-500'
-                    }`}></div>
-                  </div>
-
-                  {/* Template Content */}
-                  <div className="p-6 relative z-10">
+                <div key={template.id} className={`${template.bgGradient} rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/60 backdrop-blur-sm overflow-hidden group hover:scale-105`}>
+                  <div className="p-6">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-black text-gray-800 text-xl">{template.name}</h3>
-                      <span className={`px-3 py-1 rounded-2xl text-xs font-bold ${
-                        template.type === 'پرمیوم' 
-                          ? 'bg-yellow-100 text-yellow-700' 
-                          : 'bg-emerald-100 text-emerald-700'
-                      }`}>
-                        {template.type}
-                      </span>
+                      <div className={`w-12 h-12 bg-gradient-to-r ${template.gradient} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                        <PiSparkle className="text-white text-xl" />
+                      </div>
+                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                        <span className={`px-3 py-1 rounded-xl text-xs font-bold ${
+                          template.status === 'فعال' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'
+                        }`}>
+                          {template.status}
+                        </span>
+                        <span className={`px-3 py-1 rounded-xl text-xs font-bold ${
+                          template.popular 
+                            ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-white' 
+                            : 'bg-gray-100 text-gray-700 border border-gray-200'
+                        }`}>
+                          {template.popular && <PiStar className="inline ml-1 text-xs" />}
+                          {template.badge}
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Rating and Stats */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                        <div className="flex items-center space-x-1 rtl:space-x-reverse">
+                    {/* Template Info */}
+                    <h3 className="font-black text-gray-800 text-lg mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:bg-clip-text transition-all duration-300">
+                      {template.name}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+                      <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium">
+                        {template.category}
+                      </span>
+                      <span className="text-gray-500 text-xs">ایجاد: {template.created}</span>
+                    </p>
+
+                    {/* Features */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {template.features.map((feature, index) => (
+                        <span key={index} className="px-2 py-1 bg-white/60 text-gray-700 rounded-lg text-xs font-medium border border-white/80">
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Stats */}
+                    <div className="grid grid-cols-4 gap-2 mb-4">
+                      <div className="text-center">
+                        <div className="text-gray-800 font-black text-sm">{template.sales}</div>
+                        <div className="text-gray-500 text-xs">فروش</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-gray-800 font-black text-sm">{template.downloads}</div>
+                        <div className="text-gray-500 text-xs">دانلود</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-gray-800 font-black text-sm">{template.reviews}</div>
+                        <div className="text-gray-500 text-xs">نظر</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="flex items-center justify-center space-x-1">
                           {renderStars(template.rating)}
                         </div>
-                        <span className="text-gray-700 text-sm font-bold">{template.rating}</span>
-                        <span className="text-gray-500 text-sm">({template.downloads})</span>
-                      </div>
-                      <div className="flex items-center space-x-1 rtl:space-x-reverse text-gray-500">
-                        <PiHeart className="text-sm" />
-                        <span className="text-sm font-medium">{template.likes}</span>
-                      </div>
-                    </div>
-
-                    {/* Growth and Revenue */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="text-right">
-                        <div className={`flex items-center space-x-1 rtl:space-x-reverse text-sm font-bold ${
-                          template.growth.startsWith('+') ? 'text-emerald-600' : 'text-rose-600'
-                        }`}>
-                          {template.growth.startsWith('+') ? <PiCaretUp className="text-lg" /> : <PiCaretDown className="text-lg" />}
-                          <span>{template.growth}</span>
-                        </div>
-                        <div className="text-gray-500 text-xs">رشد ماهانه</div>
-                      </div>
-                      <div className="text-left">
-                        <div className="text-emerald-600 font-black text-sm">{template.revenue}</div>
-                        <div className="text-gray-500 text-xs">درآمد کل</div>
+                        <div className="text-gray-500 text-xs">امتیاز</div>
                       </div>
                     </div>
 
                     {/* Price and Actions */}
                     <div className="flex items-center justify-between">
                       <div className="text-left">
-                        <div className={`text-xl font-black ${
-                          template.type === 'پرمیوم' ? 'text-yellow-600' : 'text-emerald-600'
-                        }`}>
-                          {template.price === '۰' ? 'رایگان' : `${template.price} تومان`}
+                        <div className="flex items-center space-x-2 rtl:space-x-reverse mb-1">
+                          <div className="text-green-600 font-black text-lg">{template.price}</div>
+                          {template.oldPrice && (
+                            <div className="text-gray-400 text-sm line-through">{template.oldPrice}</div>
+                          )}
+                          <div className={`flex items-center space-x-1 rtl:space-x-reverse text-sm font-bold ${
+                            template.growth.includes('+') ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {template.growth.includes('+') ? <PiTrendUp /> : <PiTrendDown />}
+                            <span>{template.growth}</span>
+                          </div>
                         </div>
-                        <div className="text-gray-500 text-xs">ایجاد: {template.created}</div>
+                        <div className="text-gray-500 text-xs">تومان</div>
                       </div>
-                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                        <button className="w-10 h-10 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center hover:bg-blue-200 hover:scale-110 transition-all duration-300 shadow-lg">
-                          <PiEye className="text-lg" />
+                      <div className="flex items-center space-x-2 rtl:space-x-reverse opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button className="w-10 h-10 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center hover:bg-blue-200 hover:scale-110 transition-all duration-300 shadow-sm">
+                          <PiEye className="text-sm" />
                         </button>
-                        <button className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center hover:bg-emerald-200 hover:scale-110 transition-all duration-300 shadow-lg">
-                          <PiPencil className="text-lg" />
+                        <button className="w-10 h-10 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center hover:bg-green-200 hover:scale-110 transition-all duration-300 shadow-sm">
+                          <PiPencil className="text-sm" />
                         </button>
-                        <button className="w-10 h-10 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center hover:bg-amber-200 hover:scale-110 transition-all duration-300 shadow-lg">
-                          <PiDownload className="text-lg" />
+                        <button className="w-10 h-10 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center hover:bg-red-200 hover:scale-110 transition-all duration-300 shadow-sm">
+                          <PiTrash className="text-sm" />
                         </button>
                       </div>
                     </div>
@@ -591,19 +622,43 @@ const AdminTemplates = ({ onNavigate }) => {
               ))}
             </div>
 
-            {/* Empty State */}
-            {filteredTemplates.length === 0 && (
-              <div className="text-center py-16">
-                <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-gray-300 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <PiMagicWand className="text-gray-400 text-3xl" />
+            {/* Custom Design CTA */}
+            <div className="bg-gradient-to-r from-gray-900 via-purple-900 to-blue-900 rounded-2xl p-8 text-white shadow-2xl mb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4 rtl:space-x-reverse">
+                  <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl flex items-center justify-center shadow-lg">
+                    <PiPaintBrush className="text-white text-2xl" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black mb-2">طراحی سفارشی نیاز دارید؟</h3>
+                    <p className="text-gray-300 text-sm">
+                      تیم طراحی حرفه‌ای ما آماده ایجاد قالب کاملاً سفارشی متناسب با برند شماست
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-black text-gray-800 mb-2">قالبی یافت نشد</h3>
-                <p className="text-gray-600 mb-6">هیچ قالبی با مشخصات جستجو شده پیدا نشد.</p>
-                <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-2xl font-bold hover:shadow-2xl transition-all duration-300">
-                  ایجاد اولین قالب
+                
+                <button className="bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-gray-900 px-6 py-3 rounded-2xl font-bold transition-all duration-300 hover:scale-105 shadow-lg flex items-center space-x-2 rtl:space-x-reverse">
+                  <PiRocket className="text-lg" />
+                  <span>درخواست طراحی سفارشی</span>
                 </button>
               </div>
-            )}
+
+              {/* Trust Badges */}
+              <div className="flex flex-wrap gap-4 mt-6 text-gray-400">
+                <div className="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-xl text-xs">
+                  <PiShieldCheck className="text-sm" />
+                  <span>ضمانت بازگشت وجه ۳۰ روزه</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-xl text-xs">
+                  <PiMedal className="text-sm" />
+                  <span>طراحی توسط متخصصان</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-xl text-xs">
+                  <PiLightning className="text-sm" />
+                  <span>تحویل ۳-۵ روز کاری</span>
+                </div>
+              </div>
+            </div>
           </main>
         </div>
       </div>
@@ -625,10 +680,6 @@ const AdminTemplates = ({ onNavigate }) => {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
           50% { transform: translateY(-15px) rotate(-5deg); }
         }
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 0.1; }
-          50% { opacity: 0.15; }
-        }
         .animate-float {
           animation: float 6s ease-in-out infinite;
         }
@@ -640,12 +691,6 @@ const AdminTemplates = ({ onNavigate }) => {
         }
         .animate-float-delayed {
           animation: float-delayed 7s ease-in-out infinite;
-        }
-        .animate-pulse-slow {
-          animation: pulse-slow 4s ease-in-out infinite;
-        }
-        .shadow-3xl {
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
         }
       `}</style>
     </div>
