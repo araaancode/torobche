@@ -317,7 +317,7 @@ const Features = () => {
           </div>
           
           <h2 style={sectionTitleStyle}>
-            چرا <span style={gradientTextStyle}>کارت‌ساز</span> ما؟
+            چرا <span style={gradientTextStyle}>تربچه</span> ما؟
           </h2>
           
           <p style={{

@@ -143,7 +143,7 @@ const AdminPayments = ({ onNavigate }) => {
             {sidebarOpen && (
               <div>
                 <h1 className="text-lg font-black text-gray-800">پنل مدیریت</h1>
-                <p className="text-gray-500 text-xs">کارت‌ساز</p>
+                <p className="text-gray-500 text-xs">تربچه</p>
               </div>
             )}
           </div>

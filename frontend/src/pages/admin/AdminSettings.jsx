@@ -24,7 +24,7 @@ const AdminSettings = ({ onNavigate }) => {
   
   // General Settings
   const [generalSettings, setGeneralSettings] = useState({
-    siteName: 'کارت‌ساز',
+    siteName: 'تربچه',
     siteDescription: 'سرویس ساخت کارت ویزیت و منو آنلاین',
     language: 'fa',
     timezone: 'Asia/Tehran',
@@ -417,7 +417,7 @@ const AdminSettings = ({ onNavigate }) => {
             {sidebarOpen && (
               <div>
                 <h1 className="text-lg font-black text-gray-800">پنل مدیریت</h1>
-                <p className="text-gray-500 text-xs">کارت‌ساز</p>
+                <p className="text-gray-500 text-xs">تربچه</p>
               </div>
             )}
           </div>

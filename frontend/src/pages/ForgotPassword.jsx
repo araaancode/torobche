@@ -7,24 +7,23 @@ const ForgotPassword = () => {
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-cyan-300 rounded-full blur-3xl opacity-20 floating"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-pink-300 rounded-full blur-3xl opacity-20 floating" style={{animationDelay: '1.5s'}}></div>
+        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-pink-300 rounded-full blur-3xl opacity-20 floating" style={{ animationDelay: '1.5s' }}></div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="min-h-screen flex items-center justify-center py-12">
           <div className="max-w-md w-full">
-            
+
             {/* Header */}
             <div className="text-center mb-12">
               <div className="flex justify-center mb-6 hover-lift">
                 <div className="relative">
-                  <div className="w-20 h-20 bg-gradient-to-br from-cyan-600 to-pink-600 rounded-3xl flex items-center justify-center shadow-2xl glass-card">
-                    <PiRocket className="text-white text-2xl" />
+                  <div className="w-30 h-30 rounded-3xl flex items-center justify-center">
+                    <img src="https://cdn-icons-png.flaticon.com/128/7217/7217779.png" alt="logo" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-400 rounded-full border-4 border-white shimmer"></div>
                 </div>
               </div>
-              
+
               <h1 className="text-4xl font-black gradient-text mb-4">
                 بازیابی رمز عبور
               </h1>
@@ -64,8 +63,8 @@ const ForgotPassword = () => {
 
               {/* Back to Login */}
               <div className="mt-6 text-center">
-                <a 
-                  href="/login" 
+                <a
+                  href="/login"
                   className="inline-flex items-center space-x-2 rtl:space-x-reverse text-cyan-600 hover:text-cyan-700 font-medium transition-colors duration-300 hover-lift"
                 >
                   <PiArrowLeft className="text-lg" />

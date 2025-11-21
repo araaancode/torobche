@@ -19,11 +19,10 @@ const Register = () => {
             {/* Header */}
             <div className="text-center mb-12">
               <div className="flex justify-center mb-6 hover-lift">
-                <div className="relative">
-                  <div className="w-20 h-20 bg-gradient-to-br from-cyan-600 to-pink-600 rounded-3xl flex items-center justify-center shadow-2xl glass-card">
-                    <PiRocket className="text-white text-2xl" />
+                 <div className="relative">
+                  <div className="w-30 h-30 rounded-3xl flex items-center justify-center">
+                    <img src="https://cdn-icons-png.flaticon.com/128/7217/7217779.png" alt="logo" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-400 rounded-full border-4 border-white shimmer"></div>
                 </div>
               </div>
               
@@ -31,7 +30,7 @@ const Register = () => {
                 ساخت حساب جدید
               </h1>
               <p className="text-gray-600 text-lg">
-                به خانواده کارت‌ساز بپیوندید
+                به خانواده تربچه بپیوندید
               </p>
             </div>
 

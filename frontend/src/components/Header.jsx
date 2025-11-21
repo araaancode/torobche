@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  PiCards, 
-  PiUser, 
-  PiRocket, 
-  PiHouse, 
-  PiBriefcase, 
-  PiTag, 
-  PiInfo, 
-  PiPhone, 
-  PiList, 
+import {
+  PiCards,
+  PiUser,
+  PiRocket,
+  PiHouse,
+  PiBriefcase,
+  PiTag,
+  PiInfo,
+  PiPhone,
+  PiList,
   PiX,
   PiCrown,
   PiSparkle,
@@ -61,8 +61,8 @@ const Header = () => {
       transition: 'all 0.5s ease',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      background: isScrolled 
-        ? 'rgba(255, 255, 255, 0.25)' 
+      background: isScrolled
+        ? 'rgba(255, 255, 255, 0.25)'
         : 'transparent',
       padding: isScrolled ? '0.5rem 0' : '1rem 0',
       boxShadow: isScrolled ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : 'none',
@@ -83,12 +83,12 @@ const Header = () => {
     logoIcon: {
       width: '2.5rem',
       height: '2.5rem',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      // background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       borderRadius: '1rem',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      // boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
       position: 'relative',
       overflow: 'hidden'
     },
@@ -238,7 +238,7 @@ const Header = () => {
       <div style={styles.container}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {/* Logo */}
-          <div 
+          <div
             style={styles.logoContainer}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-2px)';
@@ -249,38 +249,37 @@ const Header = () => {
           >
             <div style={{ position: 'relative' }}>
               <div style={styles.logoIcon}>
-                <PiCards style={{ color: 'white', fontSize: '1.125rem' }} />
+                <img src="https://cdn-icons-png.flaticon.com/128/7217/7217779.png" alt="logo" />
                 <div style={styles.shimmer}></div>
               </div>
-              <div style={styles.statusDot}></div>
-              <PiSparkle style={{ 
-                position: 'absolute', 
-                top: '-0.5rem', 
-                left: '-0.5rem', 
-                color: '#fbbf24', 
+              {/* <div style={styles.statusDot}></div> */}
+              <PiSparkle style={{
+                position: 'absolute',
+                top: '-0.5rem',
+                left: '-0.5rem',
+                color: '#fbbf24',
                 fontSize: '0.75rem',
                 animation: 'pulse 2s infinite'
               }} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={styles.logoText}>کارت‌ساز</span>
+              <span style={styles.logoText}>تربچه</span>
               <div style={styles.logoSubtext}>
                 <span>پلتفرم چندمنظوره</span>
-                <PiShieldCheck style={{ color: '#10b981', fontSize: '0.75rem' }} />
               </div>
             </div>
           </div>
-          
+
           {/* Desktop Navigation - Hidden on mobile */}
           <nav style={styles.desktopNav}>
             {navItems.map((item, index) => (
-              <a 
+              <a
                 key={index}
                 href={item.href}
                 style={{
                   ...styles.navItem,
-                  ...(activeNav === item.href 
-                    ? { ...styles.activeNavItem, color: '#2563eb' } 
+                  ...(activeNav === item.href
+                    ? { ...styles.activeNavItem, color: '#2563eb' }
                     : { ...styles.inactiveNavItem, color: '#4b5563' }
                   )
                 }}
@@ -305,7 +304,7 @@ const Header = () => {
                   {item.icon}
                 </div>
                 <span>{item.name}</span>
-                {activeNav === item.href && (
+                {/* {activeNav === item.href && (
                   <div style={{
                     position: 'absolute',
                     bottom: 0,
@@ -316,15 +315,15 @@ const Header = () => {
                     backgroundColor: '#3b82f6',
                     borderRadius: '50%'
                   }}></div>
-                )}
+                )} */}
               </a>
             ))}
           </nav>
-          
+
           {/* CTA Buttons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             {/* Login Button - Hidden on mobile */}
-            <button 
+            <button
               style={styles.loginButton}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
@@ -340,9 +339,9 @@ const Header = () => {
               <PiUser />
               <span>ورود</span>
             </button>
-            
+
             {/* Main CTA Button */}
-            <button 
+            <button
               style={styles.ctaButton}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
@@ -354,12 +353,12 @@ const Header = () => {
               }}
             >
               <div style={styles.shimmer}></div>
-              <PiRocket style={{ 
+              <PiRocket style={{
                 animation: 'bounce 1s infinite',
                 fontSize: '1.125rem'
               }} />
               <span>ساخت کارت رایگان</span>
-              <PiCrown style={{ 
+              <PiCrown style={{
                 position: 'absolute',
                 top: '-0.25rem',
                 right: '-0.25rem',
@@ -368,9 +367,9 @@ const Header = () => {
                 animation: 'pulse 2s infinite'
               }} />
             </button>
-            
+
             {/* Mobile Menu Button - Only shown on small devices */}
-            <button 
+            <button
               style={styles.mobileMenuButton}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               onMouseEnter={(e) => {
@@ -401,13 +400,13 @@ const Header = () => {
             </button>
           </div>
         </div>
-        
+
         {/* Mobile Menu - Only shown on small devices when menu is open */}
         {isMobile && isMenuOpen && (
           <div style={styles.mobileMenu}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {navItems.map((item, index) => (
-                <a 
+                <a
                   key={index}
                   href={item.href}
                   style={{
@@ -450,11 +449,11 @@ const Header = () => {
                   }}></div>
                 </a>
               ))}
-              
-              <div style={{ 
-                paddingTop: '1rem', 
-                marginTop: '0.5rem', 
-                borderTop: '1px solid rgba(209, 213, 219, 0.5)' 
+
+              <div style={{
+                paddingTop: '1rem',
+                marginTop: '0.5rem',
+                borderTop: '1px solid rgba(209, 213, 219, 0.5)'
               }}>
                 <button style={{
                   ...styles.ctaButton,
@@ -466,7 +465,7 @@ const Header = () => {
                   <PiRocket style={{ animation: 'bounce 1s infinite' }} />
                   <span>ساخت کارت رایگان</span>
                 </button>
-                
+
                 <button style={{
                   width: '100%',
                   display: 'flex',
@@ -482,12 +481,12 @@ const Header = () => {
                   fontSize: '0.875rem',
                   fontWeight: 500
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = '#2563eb';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = '#4b5563';
-                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#2563eb';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = '#4b5563';
+                  }}
                 >
                   <PiUser />
                   <span>ورود به حساب کاربری</span>

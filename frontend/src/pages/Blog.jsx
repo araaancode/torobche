@@ -57,7 +57,7 @@ const Blog = () => {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="pt-32 pb-8">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-black gradient-text mb-4">وبلاگ کارت‌ساز</h1>
+            <h1 className="text-4xl font-black gradient-text mb-4">وبلاگ تربچه</h1>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               جدیدترین مقالات و راهنمایی‌ها در زمینه مدیریت رستوران، بازاریابی دیجیتال و فناوری
             </p>
