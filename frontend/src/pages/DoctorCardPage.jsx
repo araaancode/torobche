@@ -145,11 +145,11 @@ const DoctorCardPage = () => {
   };
 
   return (
-    <section className="min-h-screen relative overflow-hidden pt-20 pb-12 bg-gradient-to-br from-green-50/95 via-teal-50/95 to-emerald-50/95 dark:from-green-900/20 dark:via-teal-900/20 dark:to-emerald-900/20 transition-all duration-1000 backdrop-blur-sm">
+    <section className="min-h-screen relative overflow-hidden pt-20 pb-12 bg-gradient-to-br from-purple-50/95 via-teal-50/95 to-emerald-50/95 dark:from-purple-900/20 dark:via-teal-900/20 dark:to-emerald-900/20 transition-all duration-1000 backdrop-blur-sm">
       
       {/* Enhanced Animated Background */}
       <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute top-8 left-8 w-64 h-64 bg-green-300 dark:bg-green-600 rounded-full blur-3xl opacity-20 animate-pulse" />
+        <div className="absolute top-8 left-8 w-64 h-64 bg-purple-300 dark:bg-purple-600 rounded-full blur-3xl opacity-20 animate-pulse" />
         <div className="absolute bottom-8 right-8 w-64 h-64 bg-teal-300 dark:bg-teal-600 rounded-full blur-3xl opacity-20 animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-56 h-56 bg-emerald-300 dark:bg-emerald-600 rounded-full blur-3xl opacity-20 animate-pulse delay-500" />
         
@@ -173,9 +173,9 @@ const DoctorCardPage = () => {
           <div className="inline-flex items-center space-x-2 rtl:space-x-reverse bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl px-4 py-2 mb-6 shadow-xl border border-white/30 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 hover:scale-105 group cursor-pointer">
             <div className="flex items-center space-x-1 rtl:space-x-reverse">
               <PiCrown className="text-yellow-500 text-base group-hover:scale-110 transition-transform duration-300" />
-              <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping backdrop-blur-sm" />
+              <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping backdrop-blur-sm" />
             </div>
-            <span className="text-xs font-black text-gray-800 dark:text-gray-200 bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+            <span className="text-xs font-black text-gray-800 dark:text-gray-200 bg-gradient-to-r from-purple-600 to-teal-600 bg-clip-text text-transparent">
               کارت دیجیتال تخصصی پزشکان
             </span>
             <PiSparkle className="text-teal-500 text-base group-hover:rotate-180 transition-transform duration-500" />
@@ -183,7 +183,7 @@ const DoctorCardPage = () => {
 
           {/* Main Heading */}
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight mb-4 lg:mb-6">
-            <span className="bg-gradient-to-r from-green-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent animate-gradient-x">
+            <span className="bg-gradient-to-r from-purple-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent animate-gradient-x">
               قالب‌های کارت مطب
             </span>
             <br />
@@ -192,7 +192,7 @@ const DoctorCardPage = () => {
 
           {/* Description */}
           <p className="text-base sm:text-lg lg:text-xl text-gray-700 dark:text-gray-300 mb-6 lg:mb-8 leading-relaxed max-w-2xl mx-auto">
-            با <span className="font-black text-green-600 dark:text-green-400">تربچه</span>، کارت دیجیتال حرفه‌ای برای 
+            با <span className="font-black text-purple-600 dark:text-purple-400">تربچه</span>، کارت دیجیتال حرفه‌ای برای 
             <span className="font-black text-teal-600 dark:text-teal-400"> پزشکان، متخصصان و مراکز درمانی</span> ایجاد کنید.
           </p>
         </div>
@@ -251,7 +251,7 @@ const DoctorCardPage = () => {
                 {/* Badges */}
                 <div className="absolute top-4 right-4">
                   {template.popular && (
-                    <div className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-2xl text-sm font-bold flex items-center gap-1 backdrop-blur-sm border border-green-400/30">
+                    <div className="bg-gradient-to-r from-purple-500 to-teal-500 text-white px-3 py-1 rounded-2xl text-sm font-bold flex items-center gap-1 backdrop-blur-sm border border-purple-400/30">
                       <PiStar className="text-sm" />
                       {template.badge}
                     </div>
@@ -275,7 +275,7 @@ const DoctorCardPage = () => {
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                   <h3 className="text-xl font-black text-gray-900 dark:text-white">{template.title}</h3>
-                  <span className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-2xl text-sm font-bold backdrop-blur-sm border border-green-400/30">
+                  <span className="bg-gradient-to-r from-purple-500 to-teal-500 text-white px-3 py-1 rounded-2xl text-sm font-bold backdrop-blur-sm border border-purple-400/30">
                     {template.experience}
                   </span>
                 </div>
@@ -289,7 +289,7 @@ const DoctorCardPage = () => {
                     <span className="font-bold text-gray-900 dark:text-white text-sm">{template.rating}</span>
                   </div>
                   <div className="flex items-center gap-1 bg-gray-50/80 dark:bg-gray-700/80 backdrop-blur-sm rounded-xl p-2 justify-center">
-                    <PiStethoscope className="text-green-500" />
+                    <PiStethoscope className="text-purple-500" />
                     <span className="text-gray-700 dark:text-gray-300 text-sm">{template.specialty}</span>
                   </div>
                   <div className="flex items-center gap-1 bg-gray-50/80 dark:bg-gray-700/80 backdrop-blur-sm rounded-xl p-2 justify-center">
@@ -300,9 +300,9 @@ const DoctorCardPage = () => {
 
                 {/* Location & Availability */}
                 <div className="flex items-center justify-between text-sm mb-4">
-                  <div className="flex items-center gap-1 bg-green-50/80 dark:bg-green-900/30 backdrop-blur-sm rounded-xl px-3 py-2">
-                    <PiMapPin className="text-green-600" />
-                    <span className="text-green-700 dark:text-green-300 font-medium">{template.location}</span>
+                  <div className="flex items-center gap-1 bg-purple-50/80 dark:bg-purple-900/30 backdrop-blur-sm rounded-xl px-3 py-2">
+                    <PiMapPin className="text-purple-600" />
+                    <span className="text-purple-700 dark:text-purple-300 font-medium">{template.location}</span>
                   </div>
                   <div className="flex items-center gap-1 bg-blue-50/80 dark:bg-blue-900/30 backdrop-blur-sm rounded-xl px-3 py-2">
                     <PiCalendar className="text-blue-600" />
@@ -315,7 +315,7 @@ const DoctorCardPage = () => {
                   {template.features.map((feature, index) => (
                     <span 
                       key={index} 
-                      className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-xl text-xs font-bold backdrop-blur-sm border border-green-200 dark:border-green-800"
+                      className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-xl text-xs font-bold backdrop-blur-sm border border-purple-200 dark:border-purple-800"
                     >
                       {feature}
                     </span>
@@ -323,7 +323,7 @@ const DoctorCardPage = () => {
                 </div>
 
                 {/* CTA Button */}
-                <button className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white py-3 rounded-2xl font-bold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl backdrop-blur-sm border border-green-400/30 group">
+                <button className="w-full bg-gradient-to-r from-purple-500 to-teal-500 hover:from-purple-600 hover:to-teal-600 text-white py-3 rounded-2xl font-bold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl backdrop-blur-sm border border-purple-400/30 group">
                   <span className="flex items-center justify-center gap-2">
                     استفاده از این قالب
                     <PiUserCircle className="group-hover:scale-110 transition-transform duration-300" />

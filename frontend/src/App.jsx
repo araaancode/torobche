@@ -138,7 +138,7 @@ const appRoutes = [
 
   // Protected Routes (User Dashboard)
   {
-    path: '/dashboard',
+    path: '/profile',
     component: Dashboard,
     type: ROUTE_TYPES.PROTECTED,
     layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
@@ -182,6 +182,12 @@ const appRoutes = [
   {
     path: '/business-cards',
     component: BusinessCards,
+    type: ROUTE_TYPES.PROTECTED,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
+   {
+    path: '/business-cards/:id',
+    component: BusinessCardPage,
     type: ROUTE_TYPES.PROTECTED,
     layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
   },

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   PiMagnifyingGlass, 
   PiSquaresFour, 
@@ -21,7 +21,14 @@ import {
   PiHouse,
   PiSparkle,
   PiCrown,
-  PiRocket
+  PiRocket,
+  PiPlayCircle,
+  PiCards,
+  PiQrCode,
+  PiShare,
+  PiDownload,
+  PiClock,
+  PiCalendar
 } from 'react-icons/pi';
 
 const BusinessCards = () => {
@@ -29,6 +36,17 @@ const BusinessCards = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [favorites, setFavorites] = useState([]);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Scroll detection
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100);
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const categories = [
     { id: 'all', name: 'همه کارت‌ها', count: 36, color: 'from-blue-500 to-cyan-500', icon: <PiUser className="text-lg" /> },
@@ -58,7 +76,12 @@ const BusinessCards = () => {
       features: ['طراحی لوکس', 'کد QR', 'شبکه‌های اجتماعی'],
       demoUrl: '#',
       color: 'from-blue-500 to-cyan-500',
-      hasLiveDemo: true
+      hasLiveDemo: true,
+      stats: [
+        { value: '۵۰۰+', label: 'استفاده شده' },
+        { icon: <PiStar className="text-yellow-500 fill-current text-lg" />, label: 'امتیاز ۴.۹' },
+        { value: '۲۴/۷', label: 'پشتیبانی' }
+      ]
     },
     {
       id: 2,
@@ -76,7 +99,12 @@ const BusinessCards = () => {
       features: ['نمایش تخصص', 'نوبت‌دهی', 'موقعیت مطب'],
       demoUrl: '#',
       color: 'from-green-500 to-emerald-500',
-      hasLiveDemo: true
+      hasLiveDemo: true,
+      stats: [
+        { value: '۳۰۰+', label: 'استفاده شده' },
+        { icon: <PiStar className="text-yellow-500 fill-current text-lg" />, label: 'امتیاز ۴.۸' },
+        { value: 'پیشرفته', label: 'امکانات' }
+      ]
     },
     {
       id: 3,
@@ -94,7 +122,12 @@ const BusinessCards = () => {
       features: ['رزومه آکادمیک', 'مقالات', 'اطلاعات تماس'],
       demoUrl: '#',
       color: 'from-purple-500 to-pink-500',
-      hasLiveDemo: true
+      hasLiveDemo: true,
+      stats: [
+        { value: '۴۰۰+', label: 'استفاده شده' },
+        { icon: <PiStar className="text-yellow-500 fill-current text-lg" />, label: 'امتیاز ۴.۷' },
+        { value: 'حرفه‌ای', label: 'مناسب اساتید' }
+      ]
     },
     {
       id: 4,
@@ -112,79 +145,12 @@ const BusinessCards = () => {
       features: ['گالری آثار', 'مهارت‌ها', 'نمونه کارها'],
       demoUrl: '#',
       color: 'from-orange-500 to-amber-500',
-      hasLiveDemo: true
-    },
-    {
-      id: 5,
-      name: 'کارت عکاس',
-      description: 'کارت ویزیت بصری برای عکاسان حرفه‌ای',
-      category: 'photography',
-      price: 25000,
-      isPremium: true,
-      rating: 4.8,
-      likes: 167,
-      views: 3120,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
-      tags: ['عکاسی', 'بصری', 'حرفه‌ای'],
-      responsive: true,
-      features: ['گالری عکس', 'سبک عکاسی', 'تجهیزات'],
-      demoUrl: '#',
-      color: 'from-indigo-500 to-blue-500',
-      hasLiveDemo: true
-    },
-    {
-      id: 6,
-      name: 'کارت مشاور املاک',
-      description: 'کارت ویزیت تخصصی برای مشاورین املاک',
-      category: 'realestate',
-      price: 0,
-      isPremium: false,
-      rating: 4.6,
-      likes: 98,
-      views: 2341,
-      image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
-      tags: ['املاک', 'مشاور', 'ملکی'],
-      responsive: true,
-      features: ['لیست املاک', 'موقعیت‌ها', 'تماس مستقیم'],
-      demoUrl: '#',
-      color: 'from-teal-500 to-cyan-500',
-      hasLiveDemo: true
-    },
-    {
-      id: 7,
-      name: 'کارت نمایندگی خودرو',
-      description: 'کارت ویزیت برای نمایندگی‌های خودرو',
-      category: 'automotive',
-      price: 32000,
-      isPremium: true,
-      rating: 4.7,
-      likes: 134,
-      views: 2789,
-      image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
-      tags: ['خودرو', 'نمایندگی', 'فروش'],
-      responsive: true,
-      features: ['مدل‌های موجود', 'خدمات پس از فروش', 'فاینانس'],
-      demoUrl: '#',
-      color: 'from-gray-600 to-gray-700',
-      hasLiveDemo: true
-    },
-    {
-      id: 8,
-      name: 'کارت وکیل',
-      description: 'کارت ویزیت رسمی برای وکلای دادگستری',
-      category: 'business',
-      price: 28000,
-      isPremium: true,
-      rating: 4.9,
-      likes: 178,
-      views: 3456,
-      image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
-      tags: ['حقوقی', 'وکالت', 'قانون'],
-      responsive: true,
-      features: ['تخصص‌های حقوقی', 'پرونده‌ها', 'مشاوره'],
-      demoUrl: '#',
-      color: 'from-blue-600 to-purple-600',
-      hasLiveDemo: true
+      hasLiveDemo: true,
+      stats: [
+        { value: '۶۰۰+', label: 'استفاده شده' },
+        { icon: <PiStar className="text-yellow-500 fill-current text-lg" />, label: 'امتیاز ۴.۹' },
+        { value: 'خلاقانه', label: 'طراحی' }
+      ]
     }
   ];
 
@@ -204,34 +170,73 @@ const BusinessCards = () => {
     return matchesCategory && matchesSearch;
   });
 
+  const CTAButton = ({ children, icon, variant = "primary", className = "", onClick }) => {
+    return (
+      <button 
+        onClick={onClick}
+        className={`group px-6 py-3 rounded-2xl font-bold transition-all duration-500 ease-out flex items-center justify-center space-x-2 rtl:space-x-reverse min-w-[180px] focus:outline-none focus:ring-2 focus:ring-offset-2 backdrop-blur-sm ${
+          variant === "primary" 
+            ? "bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 hover:from-blue-700 hover:via-purple-700 hover:to-cyan-700 text-white shadow-xl hover:shadow-2xl focus:ring-blue-500 relative overflow-hidden hover:scale-105 border border-blue-500/30"
+            : "bg-white/90 backdrop-blur-lg hover:bg-white text-gray-800 shadow-lg hover:shadow-xl border border-white/50 focus:ring-purple-500 hover:scale-105 hover:border-white/80"
+        } ${className}`}
+      >
+        {variant === "primary" && (
+          <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+        )}
+        <span className={`transform transition-transform duration-300 group-hover:scale-110`}>
+          {icon}
+        </span>
+        <span className="relative z-10 font-bold">
+          {children}
+        </span>
+      </button>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 relative overflow-hidden">
-      {/* Animated Background Elements */}
+      {/* Enhanced Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl opacity-20 floating"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20 floating" style={{animationDelay: '1.5s'}}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-300 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+        <div className={`absolute top-20 left-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl opacity-20 floating transition-transform duration-2000 ${
+          isScrolled ? 'scale-110' : 'scale-100'
+        }`} />
+        <div className={`absolute bottom-20 right-20 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20 floating transition-transform duration-2000 ${
+          isScrolled ? 'scale-110' : 'scale-100'
+        }`} style={{animationDelay: '1.5s'}} />
+        <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-cyan-300 rounded-full blur-3xl opacity-20 floating transition-transform duration-2000 ${
+          isScrolled ? 'scale-110' : 'scale-100'
+        }`} style={{animationDelay: '2.5s'}} />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="pt-32 pb-8">
           {/* Enhanced Header */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 rtl:space-x-reverse bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-2 mb-6 shadow-xl border border-white/20">
-              <PiSparkle className="text-yellow-500 text-lg" />
-              <span className="text-sm font-bold text-gray-700">+۳۶ قالب کارت ویزیت حرفه‌ای</span>
+            {/* Premium Badge */}
+            <div className="flex justify-center mb-6">
+              <div className="inline-flex items-center space-x-2 rtl:space-x-reverse glass-effect rounded-2xl px-4 py-2 shadow-xl border border-white/30 hover:shadow-2xl transition-all duration-500 hover:scale-105 group cursor-pointer">
+                <div className="flex items-center space-x-1 rtl:space-x-reverse">
+                  <PiCrown className="text-yellow-500 text-base group-hover:scale-110 transition-transform duration-300" />
+                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                </div>
+                <span className="text-xs font-black text-gray-800 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                  پلتفرم شماره ۱ کارت ویزیت دیجیتال
+                </span>
+                <PiSparkle className="text-purple-500 text-base group-hover:rotate-180 transition-transform duration-500" />
+              </div>
             </div>
-            <h1 className="text-5xl sm:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent mb-6">
+
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black gradient-text mb-6 animate-gradient-x">
               کارت ویزیت دیجیتال
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed glass-effect rounded-2xl p-6 backdrop-blur-sm">
               کارت ویزیت <span className="font-bold text-purple-600">دیجیتال و هوشمند</span> برای هر کسب‌وکار. 
               طراحی‌های <span className="font-bold text-blue-600">حرفه‌ای و ریسپانسیو</span> برای همه مشاغل
             </p>
           </div>
 
           {/* Search and Filters */}
-          <div className="glass-card rounded-3xl p-8 shadow-2xl border border-white/20 mb-12 backdrop-blur-xl">
+          <div className="glass-card rounded-3xl p-8 shadow-2xl border border-white/30 mb-12 backdrop-blur-xl">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-6">
               {/* Search */}
               <div className="flex-1 relative">
@@ -243,12 +248,12 @@ const BusinessCards = () => {
                   placeholder="جستجو در کارت‌ها (نام، توضیحات، تگ‌ها)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full glass-effect rounded-2xl px-6 py-4 pr-12 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-lg"
+                  className="w-full glass-effect rounded-2xl px-6 py-4 pr-12 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-lg border border-white/30"
                 />
               </div>
 
               {/* View Mode Toggle */}
-              <div className="flex items-center space-x-3 rtl:space-x-reverse bg-white/50 rounded-2xl p-1">
+              <div className="flex items-center space-x-3 rtl:space-x-reverse glass-effect rounded-2xl p-1 backdrop-blur-sm border border-white/30">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`p-3 rounded-2xl transition-all duration-300 flex items-center space-x-2 rtl:space-x-reverse ${
@@ -280,7 +285,7 @@ const BusinessCards = () => {
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`group relative px-6 py-3 rounded-2xl font-bold transition-all duration-300 hover-lift overflow-hidden flex items-center space-x-2 rtl:space-x-reverse ${
+                  className={`group relative px-6 py-3 rounded-2xl font-bold transition-all duration-300 hover-lift overflow-hidden flex items-center space-x-2 rtl:space-x-reverse backdrop-blur-sm ${
                     selectedCategory === category.id
                       ? `bg-gradient-to-r ${category.color} text-white shadow-2xl transform scale-105`
                       : 'glass-effect text-gray-600 hover:text-gray-800'
@@ -288,7 +293,7 @@ const BusinessCards = () => {
                 >
                   {category.icon}
                   <span>{category.name}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
                     selectedCategory === category.id 
                       ? 'bg-white/20 text-white' 
                       : 'bg-gray-100 text-gray-600'
@@ -326,17 +331,21 @@ const BusinessCards = () => {
                   {/* Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-between p-6">
                     <div className="transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
-                      <button className="bg-white/90 backdrop-blur-sm text-blue-600 px-4 py-2 rounded-2xl font-bold flex items-center space-x-2 rtl:space-x-reverse hover:bg-white transition-all duration-300">
-                        <PiEye className="text-xl" />
-                        <span>پیش‌نمایش زنده</span>
-                      </button>
+                      <CTAButton
+                        icon={<PiPlayCircle className="text-lg" />}
+                        variant="secondary"
+                        onClick={() => console.log('Preview card:', card.id)}
+                        className="min-w-0"
+                      >
+                        پیش‌نمایش زنده
+                      </CTAButton>
                     </div>
                   </div>
                   
                   {/* Live Demo Badge */}
                   {card.hasLiveDemo && (
                     <div className="absolute top-4 left-4 transform -rotate-6">
-                      <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-2xl font-black shadow-2xl flex items-center space-x-2 rtl:space-x-reverse">
+                      <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-2xl font-black shadow-2xl flex items-center space-x-2 rtl:space-x-reverse backdrop-blur-sm">
                         <PiSparkle className="text-white" />
                         <span>دموی زنده</span>
                       </div>
@@ -346,17 +355,39 @@ const BusinessCards = () => {
                   {/* Premium Badge */}
                   {card.isPremium && (
                     <div className="absolute top-4 right-4 transform rotate-6">
-                      <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-2xl font-black shadow-2xl flex items-center space-x-2 rtl:space-x-reverse">
+                      <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-2xl font-black shadow-2xl flex items-center space-x-2 rtl:space-x-reverse backdrop-blur-sm">
                         <PiCrown className="text-white" />
                         <span>پرمیوم</span>
                       </div>
                     </div>
                   )}
 
+                  {/* Stats Section */}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="grid grid-cols-3 gap-2">
+                      {card.stats.map((stat, index) => (
+                        <div key={index} className="text-center bg-white/90 backdrop-blur-sm rounded-xl p-2 transform hover:scale-105 transition-transform duration-300 cursor-pointer border border-white/30">
+                          {stat.value ? (
+                            <div className="text-sm font-black text-gray-900 mb-1">
+                              {stat.value}
+                            </div>
+                          ) : (
+                            <div className="flex justify-center mb-1">
+                              {stat.icon}
+                            </div>
+                          )}
+                          <div className="text-gray-600 text-xs">
+                            {stat.label}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Favorite Button */}
                   <button
                     onClick={() => toggleFavorite(card.id)}
-                    className="absolute top-20 right-4 w-10 h-10 glass-effect rounded-2xl flex items-center justify-center transition-all duration-300 hover-lift hover:scale-110 shadow-lg"
+                    className="absolute top-20 right-4 w-10 h-10 glass-effect rounded-2xl flex items-center justify-center transition-all duration-300 hover-lift hover:scale-110 shadow-lg backdrop-blur-sm"
                   >
                     <PiHeart
                       className={`text-lg transition-all duration-300 ${
@@ -396,7 +427,7 @@ const BusinessCards = () => {
                     {card.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-700 px-3 py-1 rounded-2xl text-sm font-medium border border-blue-200 transition-all duration-300 hover:scale-105 hover:shadow-md"
+                        className="bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-700 px-3 py-1 rounded-2xl text-sm font-medium border border-blue-200 transition-all duration-300 hover:scale-105 hover:shadow-md backdrop-blur-sm"
                       >
                         #{tag}
                       </span>
@@ -420,7 +451,7 @@ const BusinessCards = () => {
                   {/* Stats and Actions */}
                   <div className="flex items-center justify-between pt-5 border-t border-gray-200/50">
                     <div className="flex items-center space-x-6 rtl:space-x-reverse text-sm">
-                      <div className="flex items-center space-x-2 rtl:space-x-reverse text-amber-600 bg-amber-50 px-3 py-1 rounded-2xl">
+                      <div className="flex items-center space-x-2 rtl:space-x-reverse text-amber-600 bg-amber-50 px-3 py-1 rounded-2xl backdrop-blur-sm">
                         <PiStar className="fill-current" />
                         <span className="font-bold">{card.rating}</span>
                       </div>
@@ -435,14 +466,22 @@ const BusinessCards = () => {
                     </div>
 
                     <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                      <button className="glass-effect text-gray-700 hover:text-blue-600 px-4 py-2 rounded-2xl font-bold transition-all duration-300 hover-lift flex items-center space-x-2 rtl:space-x-reverse hover:shadow-lg">
-                        <PiEye className="text-lg" />
-                        <span>پیش‌نمایش</span>
-                      </button>
-                      <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-5 py-2 rounded-2xl font-bold transition-all duration-300 hover-lift shadow-2xl hover:shadow-blue-500/25 flex items-center space-x-2 rtl:space-x-reverse group/select">
-                        <PiRocket className="text-lg group-hover/select:transform group-hover/select:rotate-12 transition-transform duration-300" />
-                        <span>انتخاب قالب</span>
-                      </button>
+                      <CTAButton
+                        icon={<PiEye className="text-lg" />}
+                        variant="secondary"
+                        onClick={() => console.log('Preview card:', card.id)}
+                        className="min-w-0"
+                      >
+                        پیش‌نمایش
+                      </CTAButton>
+                      <CTAButton
+                        icon={<PiRocket className="text-lg" />}
+                        variant="primary"
+                        onClick={() => console.log('Select card:', card.id)}
+                        className="min-w-0"
+                      >
+                        انتخاب قالب
+                      </CTAButton>
                     </div>
                   </div>
                 </div>
@@ -452,39 +491,111 @@ const BusinessCards = () => {
 
           {/* No Results */}
           {filteredCards.length === 0 && (
-            <div className="text-center py-24">
+            <div className="text-center py-24 glass-card rounded-3xl backdrop-blur-sm">
               <div className="w-32 h-32 bg-gradient-to-r from-gray-400 to-gray-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl">
                 <PiBriefcase className="text-white text-4xl" />
               </div>
               <h3 className="text-3xl font-black text-gray-800 mb-4">کارتی یافت نشد</h3>
               <p className="text-gray-600 text-lg mb-8 max-w-md mx-auto">
-                متأسفانه هیچ کارتی با معیارهای جستجوی شما مطابقت ندارد. می‌توانید فیلترها را تغییر دهید یا عبارت جستجوی خود را اصلاح کنید.
+                متأسفانه هیچ کارتی با معیارهای جستجوی شما مطابقت ندارد.
               </p>
-              <button
+              <CTAButton
+                icon={<PiSparkle className="text-lg" />}
+                variant="primary"
                 onClick={() => {
                   setSearchTerm('');
                   setSelectedCategory('all');
                 }}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-300 hover-lift shadow-2xl text-lg"
               >
                 مشاهده همه کارت‌ها
-              </button>
+              </CTAButton>
             </div>
           )}
 
-          {/* Load More */}
-          {filteredCards.length > 0 && (
-            <div className="text-center mt-16">
-              <button className="group glass-effect text-gray-700 hover:text-blue-600 px-8 py-4 rounded-2xl font-bold transition-all duration-300 hover-lift border border-white/20 hover:border-blue-200 text-lg">
-                <span className="flex items-center space-x-2 rtl:space-x-reverse">
-                  <span>بارگذاری کارت‌های بیشتر</span>
-                  <PiSparkle className="text-blue-500 transform group-hover:rotate-180 transition-transform duration-500" />
-                </span>
-              </button>
+          {/* Newsletter Section */}
+          <div className="glass-card rounded-3xl p-8 text-center shadow-2xl hover-lift border border-white/30 mt-16">
+            <h3 className="text-2xl font-black gradient-text mb-4">آماده ساخت کارت ویزیت حرفه‌ای هستید؟</h3>
+            <p className="text-gray-600 mb-6">همین حالا کارت ویزیت دیجیتال خود را بسازید و کسب‌وکار خود را متحول کنید</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+              <CTAButton
+                icon={<PiRocket className="text-lg" />}
+                variant="primary"
+                onClick={() => console.log('Start creating card')}
+              >
+                شروع ساخت کارت
+              </CTAButton>
+              
+              <CTAButton
+                icon={<PiUser className="text-purple-600 text-lg" />}
+                variant="secondary"
+                onClick={() => console.log('Consultation')}
+              >
+                مشاوره رایگان
+              </CTAButton>
             </div>
-          )}
+          </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .gradient-text {
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        
+        .glass-card {
+          background: rgba(255, 255, 255, 0.7);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .glass-effect {
+          background: rgba(255, 255, 255, 0.5);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .hover-lift {
+          transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        .floating {
+          animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-15px); }
+        }
+        
+        .animate-gradient-x {
+          background-size: 200% 200%;
+          animation: gradient-x 3s ease infinite;
+        }
+        
+        @keyframes gradient-x {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+      `}</style>
     </div>
   );
 };

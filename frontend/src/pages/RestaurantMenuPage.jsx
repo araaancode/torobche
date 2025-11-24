@@ -115,11 +115,11 @@ const RestaurantMenuPage = () => {
   };
 
   return (
-    <section className="min-h-screen relative overflow-hidden pt-20 pb-12 bg-gradient-to-br from-orange-50/95 via-red-50/95 to-amber-50/95 dark:from-orange-900/20 dark:via-red-900/20 dark:to-amber-900/20 transition-all duration-1000 backdrop-blur-sm">
+    <section className="min-h-screen relative overflow-hidden pt-20 pb-12 bg-gradient-to-br from-purple-50/95 via-red-50/95 to-amber-50/95 dark:from-purple-900/20 dark:via-red-900/20 dark:to-amber-900/20 transition-all duration-1000 backdrop-blur-sm">
       
       {/* Enhanced Animated Background */}
       <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute top-8 left-8 w-64 h-64 bg-orange-300 dark:bg-orange-600 rounded-full blur-3xl opacity-20 animate-pulse" />
+        <div className="absolute top-8 left-8 w-64 h-64 bg-purple-300 dark:bg-purple-600 rounded-full blur-3xl opacity-20 animate-pulse" />
         <div className="absolute bottom-8 right-8 w-64 h-64 bg-red-300 dark:bg-red-600 rounded-full blur-3xl opacity-20 animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-56 h-56 bg-amber-300 dark:bg-amber-600 rounded-full blur-3xl opacity-20 animate-pulse delay-500" />
         
@@ -145,7 +145,7 @@ const RestaurantMenuPage = () => {
               <PiCrown className="text-yellow-500 text-base group-hover:scale-110 transition-transform duration-300" />
               <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping backdrop-blur-sm" />
             </div>
-            <span className="text-xs font-black text-gray-800 dark:text-gray-200 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+            <span className="text-xs font-black text-gray-800 dark:text-gray-200 bg-gradient-to-r from-purple-600 to-red-600 bg-clip-text text-transparent">
               برترین قالب‌های منوی دیجیتال
             </span>
             <PiSparkle className="text-red-500 text-base group-hover:rotate-180 transition-transform duration-500" />
@@ -153,7 +153,7 @@ const RestaurantMenuPage = () => {
 
           {/* Main Heading */}
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight mb-4 lg:mb-6">
-            <span className="bg-gradient-to-r from-orange-600 via-red-600 to-amber-600 bg-clip-text text-transparent animate-gradient-x">
+            <span className="bg-gradient-to-r from-purple-600 via-red-600 to-amber-600 bg-clip-text text-transparent animate-gradient-x">
               قالب‌های منوی رستوران
             </span>
             <br />
@@ -162,7 +162,7 @@ const RestaurantMenuPage = () => {
 
           {/* Description */}
           <p className="text-base sm:text-lg lg:text-xl text-gray-700 dark:text-gray-300 mb-6 lg:mb-8 leading-relaxed max-w-2xl mx-auto">
-            با <span className="font-black text-orange-600 dark:text-orange-400">تربچه</span>، منوی دیجیتال حرفه‌ای برای 
+            با <span className="font-black text-purple-600 dark:text-purple-400">تربچه</span>، منوی دیجیتال حرفه‌ای برای 
             <span className="font-black text-red-600 dark:text-red-400"> رستوران، فست فود، کافه و کسب‌وکار</span> خود ایجاد کنید.
           </p>
         </div>
@@ -216,7 +216,7 @@ const RestaurantMenuPage = () => {
                 {/* Badges */}
                 <div className="absolute top-4 right-4">
                   {template.popular && (
-                    <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-2xl text-sm font-bold flex items-center gap-1 backdrop-blur-sm border border-yellow-400/30">
+                    <div className="bg-gradient-to-r from-yellow-500 to-purple-500 text-white px-3 py-1 rounded-2xl text-sm font-bold flex items-center gap-1 backdrop-blur-sm border border-yellow-400/30">
                       <PiStar className="text-sm" />
                       {template.badge}
                     </div>
@@ -268,7 +268,7 @@ const RestaurantMenuPage = () => {
                   {template.features.map((feature, index) => (
                     <span 
                       key={index} 
-                      className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-3 py-1 rounded-xl text-xs font-bold backdrop-blur-sm border border-orange-200 dark:border-orange-800"
+                      className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-xl text-xs font-bold backdrop-blur-sm border border-purple-200 dark:border-purple-800"
                     >
                       {feature}
                     </span>
@@ -276,7 +276,7 @@ const RestaurantMenuPage = () => {
                 </div>
 
                 {/* CTA Button */}
-                <button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 rounded-2xl font-bold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl backdrop-blur-sm border border-orange-400/30 group">
+                <button className="w-full bg-gradient-to-r from-purple-500 to-red-500 hover:from-purple-600 hover:to-red-600 text-white py-3 rounded-2xl font-bold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl backdrop-blur-sm border border-purple-400/30 group">
                   <span className="flex items-center justify-center gap-2">
                     استفاده از این قالب
                     <PiForkKnife className="group-hover:scale-110 transition-transform duration-300" />
