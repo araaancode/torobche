@@ -1,102 +1,24 @@
-const express = require('express');
-const qr = require('qr-image');
-const path = require('path');
+// load env vars
+require("dotenv")
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+// libs
+const express = require("express")
+const colors = require("colors")
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+// init express
+const app = express()
 
-// Serve HTML form
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// connect to database
+require("./config/db")()
 
-// Generate QR code endpoint
-app.get('/generate', (req, res) => {
-    const text = req.query.text;
 
-    if (!text) {
-        return res.status(400).json({ error: 'Text parameter is required' });
-    }
+// middlewares
+app.use(express.json())
 
-    try {
-        const qr_png = qr.image(text, { type: 'png' });
-        res.setHeader('Content-type', 'image/png');
-        qr_png.pipe(res);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to generate QR code' });
-    }
-});
+// routes
+app.use('/api/auth', require("./routes/auth"))
 
-// Generate QR code with custom size
-app.get('/generate-custom', (req, res) => {
-    const { text, size = 200 } = req.query;
-
-    if (!text) {
-        return res.status(400).json({ error: 'Text parameter is required' });
-    }
-
-    try {
-        const qr_svg = qr.image(text, {
-            type: 'svg',
-            size: parseInt(size)
-        });
-        res.setHeader('Content-type', 'image/svg+xml');
-        qr_svg.pipe(res);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to generate QR code' });
-    }
-});
-
-// Download QR code
-app.get('/download', (req, res) => {
-    const { text, filename = 'qrcode' } = req.query;
-
-    if (!text) {
-        return res.status(400).json({ error: 'Text parameter is required' });
-    }
-
-    try {
-        const qr_png = qr.image(text, { type: 'png' });
-        res.setHeader('Content-disposition', `attachment; filename=${filename}.png`);
-        res.setHeader('Content-type', 'image/png');
-        qr_png.pipe(res);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to generate QR code' });
-    }
-});
-
-// API endpoint that returns QR code as base64
-app.post('/api/qrcode', (req, res) => {
-    const { text, format = 'png' } = req.body;
-
-    if (!text) {
-        return res.status(400).json({ error: 'Text parameter is required' });
-    }
-
-    try {
-        const qr_buffer = qr.imageSync(text, { type: format });
-        const base64 = qr_buffer.toString('base64');
-        const dataUrl = `data:image/${format};base64,${base64}`;
-
-        res.json({
-            success: true,
-            data: dataUrl,
-            format: format
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            error: 'Failed to generate QR code'
-        });
-    }
-});
-
-// Start server
+const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
-    console.log(`QR Code Generator running on http://localhost:${PORT}`);
-});
+    console.log(`Server is listening at PORT ${PORT}`)
+})
