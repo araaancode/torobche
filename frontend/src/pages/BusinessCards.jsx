@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  PiMagnifyingGlass, 
-  PiSquaresFour, 
-  PiList, 
-  PiHeart, 
-  PiEye, 
+import {
+  PiMagnifyingGlass,
+  PiSquaresFour,
+  PiList,
+  PiHeart,
+  PiEye,
   PiCheckCircle,
   PiStar,
-  PiDeviceMobile,
+  PiDevicephone,
   PiDesktop,
   PiPalette,
   PiUser,
@@ -43,7 +43,7 @@ const BusinessCards = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 100);
     };
-    
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -155,8 +155,8 @@ const BusinessCards = () => {
   ];
 
   const toggleFavorite = (cardId) => {
-    setFavorites(prev => 
-      prev.includes(cardId) 
+    setFavorites(prev =>
+      prev.includes(cardId)
         ? prev.filter(id => id !== cardId)
         : [...prev, cardId]
     );
@@ -164,21 +164,20 @@ const BusinessCards = () => {
 
   const filteredCards = businessCards.filter(card => {
     const matchesCategory = selectedCategory === 'all' || card.category === selectedCategory;
-    const matchesSearch = card.name.includes(searchTerm) || 
-                         card.description.includes(searchTerm) ||
-                         card.tags.some(tag => tag.includes(searchTerm));
+    const matchesSearch = card.name.includes(searchTerm) ||
+      card.description.includes(searchTerm) ||
+      card.tags.some(tag => tag.includes(searchTerm));
     return matchesCategory && matchesSearch;
   });
 
   const CTAButton = ({ children, icon, variant = "primary", className = "", onClick }) => {
     return (
-      <button 
+      <button
         onClick={onClick}
-        className={`group px-6 py-3 rounded-2xl font-bold transition-all duration-500 ease-out flex items-center justify-center space-x-2 rtl:space-x-reverse min-w-[180px] focus:outline-none focus:ring-2 focus:ring-offset-2 backdrop-blur-sm ${
-          variant === "primary" 
+        className={`group px-6 py-3 rounded-2xl font-bold transition-all duration-500 ease-out flex items-center justify-center space-x-2 rtl:space-x-reverse min-w-[180px] focus:outline-none focus:ring-2 focus:ring-offset-2 backdrop-blur-sm ${variant === "primary"
             ? "bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 hover:from-blue-700 hover:via-purple-700 hover:to-cyan-700 text-white shadow-xl hover:shadow-2xl focus:ring-blue-500 relative overflow-hidden hover:scale-105 border border-blue-500/30"
             : "bg-white/90 backdrop-blur-lg hover:bg-white text-gray-800 shadow-lg hover:shadow-xl border border-white/50 focus:ring-purple-500 hover:scale-105 hover:border-white/80"
-        } ${className}`}
+          } ${className}`}
       >
         {variant === "primary" && (
           <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
@@ -197,15 +196,12 @@ const BusinessCards = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 relative overflow-hidden">
       {/* Enhanced Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className={`absolute top-20 left-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl opacity-20 floating transition-transform duration-2000 ${
-          isScrolled ? 'scale-110' : 'scale-100'
-        }`} />
-        <div className={`absolute bottom-20 right-20 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20 floating transition-transform duration-2000 ${
-          isScrolled ? 'scale-110' : 'scale-100'
-        }`} style={{animationDelay: '1.5s'}} />
-        <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-cyan-300 rounded-full blur-3xl opacity-20 floating transition-transform duration-2000 ${
-          isScrolled ? 'scale-110' : 'scale-100'
-        }`} style={{animationDelay: '2.5s'}} />
+        <div className={`absolute top-20 left-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl opacity-20 floating transition-transform duration-2000 ${isScrolled ? 'scale-110' : 'scale-100'
+          }`} />
+        <div className={`absolute bottom-20 right-20 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20 floating transition-transform duration-2000 ${isScrolled ? 'scale-110' : 'scale-100'
+          }`} style={{ animationDelay: '1.5s' }} />
+        <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-cyan-300 rounded-full blur-3xl opacity-20 floating transition-transform duration-2000 ${isScrolled ? 'scale-110' : 'scale-100'
+          }`} style={{ animationDelay: '2.5s' }} />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
@@ -230,7 +226,7 @@ const BusinessCards = () => {
               کارت ویزیت دیجیتال
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed glass-effect rounded-2xl p-6 backdrop-blur-sm">
-              کارت ویزیت <span className="font-bold text-purple-600">دیجیتال و هوشمند</span> برای هر کسب‌وکار. 
+              کارت ویزیت <span className="font-bold text-purple-600">دیجیتال و هوشمند</span> برای هر کسب‌وکار.
               طراحی‌های <span className="font-bold text-blue-600">حرفه‌ای و ریسپانسیو</span> برای همه مشاغل
             </p>
           </div>
@@ -256,22 +252,20 @@ const BusinessCards = () => {
               <div className="flex items-center space-x-3 rtl:space-x-reverse glass-effect rounded-2xl p-1 backdrop-blur-sm border border-white/30">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-3 rounded-2xl transition-all duration-300 flex items-center space-x-2 rtl:space-x-reverse ${
-                    viewMode === 'grid' 
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105' 
+                  className={`p-3 rounded-2xl transition-all duration-300 flex items-center space-x-2 rtl:space-x-reverse ${viewMode === 'grid'
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
                       : 'text-gray-600 hover:text-gray-800 hover:bg-white/80'
-                  }`}
+                    }`}
                 >
                   <PiSquaresFour className="text-xl" />
                   <span className="font-medium">گرید</span>
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-3 rounded-2xl transition-all duration-300 flex items-center space-x-2 rtl:space-x-reverse ${
-                    viewMode === 'list' 
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105' 
+                  className={`p-3 rounded-2xl transition-all duration-300 flex items-center space-x-2 rtl:space-x-reverse ${viewMode === 'list'
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
                       : 'text-gray-600 hover:text-gray-800 hover:bg-white/80'
-                  }`}
+                    }`}
                 >
                   <PiList className="text-xl" />
                   <span className="font-medium">لیست</span>
@@ -285,19 +279,17 @@ const BusinessCards = () => {
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`group relative px-6 py-3 rounded-2xl font-bold transition-all duration-300 hover-lift overflow-hidden flex items-center space-x-2 rtl:space-x-reverse backdrop-blur-sm ${
-                    selectedCategory === category.id
+                  className={`group relative px-6 py-3 rounded-2xl font-bold transition-all duration-300 hover-lift overflow-hidden flex items-center space-x-2 rtl:space-x-reverse backdrop-blur-sm ${selectedCategory === category.id
                       ? `bg-gradient-to-r ${category.color} text-white shadow-2xl transform scale-105`
                       : 'glass-effect text-gray-600 hover:text-gray-800'
-                  }`}
+                    }`}
                 >
                   {category.icon}
                   <span>{category.name}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
-                    selectedCategory === category.id 
-                      ? 'bg-white/20 text-white' 
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${selectedCategory === category.id
+                      ? 'bg-white/20 text-white'
                       : 'bg-gray-100 text-gray-600'
-                  }`}>
+                    }`}>
                     {category.count}
                   </span>
                 </button>
@@ -307,27 +299,25 @@ const BusinessCards = () => {
 
           {/* Business Cards Grid/List */}
           <div className={
-            viewMode === 'grid' 
+            viewMode === 'grid'
               ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8'
               : 'space-y-6'
           }>
             {filteredCards.map((card) => (
               <div
                 key={card.id}
-                className={`group glass-card rounded-3xl overflow-hidden shadow-2xl border border-white/20 hover-lift transition-all duration-500 backdrop-blur-xl ${
-                  viewMode === 'list' ? 'flex' : ''
-                }`}
+                className={`group glass-card rounded-3xl overflow-hidden shadow-2xl border border-white/20 hover-lift transition-all duration-500 backdrop-blur-xl ${viewMode === 'list' ? 'flex' : ''
+                  }`}
               >
                 {/* Card Image */}
                 <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-80 flex-shrink-0' : ''}`}>
                   <img
                     src={card.image}
                     alt={card.name}
-                    className={`w-full transition-transform duration-700 group-hover:scale-110 ${
-                      viewMode === 'list' ? 'h-64' : 'h-56'
-                    } object-cover cursor-pointer`}
+                    className={`w-full transition-transform duration-700 group-hover:scale-110 ${viewMode === 'list' ? 'h-64' : 'h-56'
+                      } object-cover cursor-pointer`}
                   />
-                  
+
                   {/* Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-between p-6">
                     <div className="transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
@@ -341,7 +331,7 @@ const BusinessCards = () => {
                       </CTAButton>
                     </div>
                   </div>
-                  
+
                   {/* Live Demo Badge */}
                   {card.hasLiveDemo && (
                     <div className="absolute top-4 left-4 transform -rotate-6">
@@ -390,11 +380,10 @@ const BusinessCards = () => {
                     className="absolute top-20 right-4 w-10 h-10 glass-effect rounded-2xl flex items-center justify-center transition-all duration-300 hover-lift hover:scale-110 shadow-lg backdrop-blur-sm"
                   >
                     <PiHeart
-                      className={`text-lg transition-all duration-300 ${
-                        favorites.includes(card.id)
+                      className={`text-lg transition-all duration-300 ${favorites.includes(card.id)
                           ? 'text-red-500 fill-current transform scale-110'
                           : 'text-gray-400 group-hover:text-red-400'
-                      }`}
+                        }`}
                     />
                   </button>
                 </div>
@@ -409,11 +398,10 @@ const BusinessCards = () => {
                       <p className="text-gray-600 leading-relaxed line-clamp-2">{card.description}</p>
                     </div>
                     <div className="text-left ml-4">
-                      <div className={`text-2xl font-black transition-all duration-300 ${
-                        card.price === 0 
-                          ? 'text-green-600 group-hover:text-green-500' 
+                      <div className={`text-2xl font-black transition-all duration-300 ${card.price === 0
+                          ? 'text-green-600 group-hover:text-green-500'
                           : 'text-orange-600 group-hover:text-orange-500'
-                      }`}>
+                        }`}>
                         {card.price === 0 ? 'رایگان' : `${card.price.toLocaleString()}`}
                       </div>
                       {card.price > 0 && (
@@ -524,7 +512,7 @@ const BusinessCards = () => {
               >
                 شروع ساخت کارت
               </CTAButton>
-              
+
               <CTAButton
                 icon={<PiUser className="text-purple-600 text-lg" />}
                 variant="secondary"

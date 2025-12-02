@@ -19,26 +19,26 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeNav, setActiveNav] = useState('#home');
-  const [isMobile, setIsMobile] = useState(false);
+  const [isphone, setIsphone] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
 
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
+    const checkphone = () => {
+      setIsphone(window.innerWidth < 1024);
     };
 
     // Initial check
-    checkMobile();
+    checkphone();
 
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', checkMobile);
+    window.addEventListener('resize', checkphone);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('resize', checkphone);
     };
   }, []);
 
@@ -110,7 +110,7 @@ const Header = () => {
       gap: '0.25rem'
     },
     desktopNav: {
-      display: isMobile ? 'none' : 'flex',
+      display: isphone ? 'none' : 'flex',
       alignItems: 'center',
       gap: '0.25rem',
       background: 'rgba(255, 255, 255, 0.05)',
@@ -145,8 +145,8 @@ const Header = () => {
       overflow: 'hidden',
       boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
     },
-    mobileMenuButton: {
-      display: isMobile ? 'flex' : 'none',
+    phoneMenuButton: {
+      display: isphone ? 'flex' : 'none',
       width: '3rem',
       height: '3rem',
       background: 'rgba(255, 255, 255, 0.25)',
@@ -159,8 +159,8 @@ const Header = () => {
       transition: 'all 0.3s ease',
       position: 'relative'
     },
-    mobileMenu: {
-      display: isMobile ? 'block' : 'none',
+    phoneMenu: {
+      display: isphone ? 'block' : 'none',
       background: 'rgba(255, 255, 255, 0.95)',
       backdropFilter: 'blur(20px)',
       borderRadius: '1.5rem',
@@ -170,7 +170,7 @@ const Header = () => {
       marginTop: '1rem',
       animation: 'floating 3s ease-in-out infinite'
     },
-    mobileNavItem: {
+    phoneNavItem: {
       display: 'flex',
       alignItems: 'center',
       gap: '0.75rem',
@@ -210,7 +210,7 @@ const Header = () => {
       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
     },
     loginButton: {
-      display: isMobile ? 'none' : 'flex',
+      display: isphone ? 'none' : 'flex',
       alignItems: 'center',
       gap: '0.5rem',
       color: '#4b5563',
@@ -227,7 +227,7 @@ const Header = () => {
   };
 
   // Adjust logo size for larger screens
-  if (!isMobile) {
+  if (!isphone) {
     styles.logoIcon.width = '3rem';
     styles.logoIcon.height = '3rem';
     styles.logoText.fontSize = '1.875rem';
@@ -270,7 +270,7 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Desktop Navigation - Hidden on mobile */}
+          {/* Desktop Navigation - Hidden on phone */}
           <nav style={styles.desktopNav}>
             {navItems.map((item, index) => (
               <a
@@ -322,7 +322,7 @@ const Header = () => {
 
           {/* CTA Buttons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {/* Login Button - Hidden on mobile */}
+            {/* Login Button - Hidden on phone */}
             <button
               style={styles.loginButton}
               onMouseEnter={(e) => {
@@ -368,9 +368,9 @@ const Header = () => {
               }} />
             </button>
 
-            {/* Mobile Menu Button - Only shown on small devices */}
+            {/* phone Menu Button - Only shown on small devices */}
             <button
-              style={styles.mobileMenuButton}
+              style={styles.phoneMenuButton}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
@@ -401,16 +401,16 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Menu - Only shown on small devices when menu is open */}
-        {isMobile && isMenuOpen && (
-          <div style={styles.mobileMenu}>
+        {/* phone Menu - Only shown on small devices when menu is open */}
+        {isphone && isMenuOpen && (
+          <div style={styles.phoneMenu}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {navItems.map((item, index) => (
                 <a
                   key={index}
                   href={item.href}
                   style={{
-                    ...styles.mobileNavItem,
+                    ...styles.phoneNavItem,
                     ...(activeNav === item.href ? styles.activeNavItem : styles.inactiveNavItem)
                   }}
                   onClick={() => {

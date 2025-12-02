@@ -1,17 +1,17 @@
 import React, { useState, useRef } from 'react';
-import { 
-  PiQrCode, 
-  PiDownload, 
-  PiCopy, 
-  PiShare, 
-  PiEye, 
-  PiTrash, 
+import {
+  PiQrCode,
+  PiDownload,
+  PiCopy,
+  PiShare,
+  PiEye,
+  PiTrash,
   PiPlus,
   PiPalette,
   PiTextbox,
   PiLink,
   PiUser,
-  PiDeviceMobile,
+  PiDevicephone,
   PiSparkle,
   PiCheckCircle,
   PiExport
@@ -64,7 +64,7 @@ const QRCodeManager = () => {
     { id: 'vcard', name: 'کارت ویزیت', icon: <PiUser className="text-lg" />, color: 'from-green-500 to-emerald-500' },
     { id: 'text', name: 'متن ساده', icon: <PiTextbox className="text-lg" />, color: 'from-purple-500 to-pink-500' },
     { id: 'social', name: 'شبکه اجتماعی', icon: <PiShare className="text-lg" />, color: 'from-orange-500 to-amber-500' },
-    { id: 'wifi', name: 'شبکه WiFi', icon: <PiDeviceMobile className="text-lg" />, color: 'from-red-500 to-rose-500' }
+    { id: 'wifi', name: 'شبکه WiFi', icon: <PiDevicephone className="text-lg" />, color: 'from-red-500 to-rose-500' }
   ];
 
   const colorPresets = [
@@ -101,7 +101,7 @@ const QRCodeManager = () => {
     };
 
     setGeneratedQRs(prev => [newQR, ...prev]);
-    
+
     // ریست فرم
     setQrData({
       type: 'url',
@@ -134,21 +134,20 @@ const QRCodeManager = () => {
   const QRCodePreview = ({ qr }) => (
     <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-200">
       <div className="flex items-center justify-between mb-3">
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          qr.type === 'url' ? 'bg-blue-100 text-blue-700' :
-          qr.type === 'vcard' ? 'bg-green-100 text-green-700' :
-          qr.type === 'social' ? 'bg-purple-100 text-purple-700' :
-          'bg-orange-100 text-orange-700'
-        }`}>
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${qr.type === 'url' ? 'bg-blue-100 text-blue-700' :
+            qr.type === 'vcard' ? 'bg-green-100 text-green-700' :
+              qr.type === 'social' ? 'bg-purple-100 text-purple-700' :
+                'bg-orange-100 text-orange-700'
+          }`}>
           {qrTypes.find(t => t.id === qr.type)?.name}
         </span>
         <span className="text-xs text-gray-500">{qr.scans} اسکن</span>
       </div>
-      
+
       <div className="w-32 h-32 mx-auto mb-3 bg-gray-100 rounded-2xl flex items-center justify-center border-2 border-gray-200">
         <PiQrCode className="text-gray-400 text-4xl" style={{ color: qr.color }} />
       </div>
-      
+
       <h4 className="font-bold text-gray-800 text-center mb-1 truncate">{qr.title}</h4>
       <p className="text-gray-600 text-xs text-center truncate" dir="ltr">{qr.content}</p>
       <p className="text-gray-500 text-xs text-center mt-1">{qr.createdAt}</p>
@@ -160,7 +159,7 @@ const QRCodeManager = () => {
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl opacity-20 floating"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20 floating" style={{animationDelay: '1.5s'}}></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20 floating" style={{ animationDelay: '1.5s' }}></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-300 rounded-full blur-3xl opacity-20 animate-pulse"></div>
       </div>
 
@@ -176,7 +175,7 @@ const QRCodeManager = () => {
               تولید کننده QR کد
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              ایجاد و مدیریت <span className="font-bold text-purple-600">QR کدهای حرفه‌ای</span> برای 
+              ایجاد و مدیریت <span className="font-bold text-purple-600">QR کدهای حرفه‌ای</span> برای
               <span className="font-bold text-blue-600"> لینک‌ها، کارت ویزیت و محتوای دیجیتال</span>
             </p>
           </div>
@@ -186,22 +185,20 @@ const QRCodeManager = () => {
             <div className="flex space-x-2 rtl:space-x-reverse">
               <button
                 onClick={() => setActiveTab('generator')}
-                className={`flex-1 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse ${
-                  activeTab === 'generator'
+                className={`flex-1 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse ${activeTab === 'generator'
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
-                }`}
+                  }`}
               >
                 <PiQrCode className="text-xl" />
                 <span>تولید QR کد</span>
               </button>
               <button
                 onClick={() => setActiveTab('management')}
-                className={`flex-1 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse ${
-                  activeTab === 'management'
+                className={`flex-1 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse ${activeTab === 'management'
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
-                }`}
+                  }`}
               >
                 <PiEye className="text-xl" />
                 <span>مدیریت QR کدها</span>
@@ -230,11 +227,10 @@ const QRCodeManager = () => {
                       <button
                         key={type.id}
                         onClick={() => updateQRData('type', type.id)}
-                        className={`p-3 rounded-2xl transition-all duration-300 flex flex-col items-center space-y-2 ${
-                          qrData.type === type.id
+                        className={`p-3 rounded-2xl transition-all duration-300 flex flex-col items-center space-y-2 ${qrData.type === type.id
                             ? `bg-gradient-to-r ${type.color} text-white shadow-lg transform scale-105`
                             : 'glass-effect text-gray-600 hover:text-gray-800'
-                        }`}
+                          }`}
                       >
                         {type.icon}
                         <span className="text-xs font-medium">{type.name}</span>
@@ -312,7 +308,7 @@ const QRCodeManager = () => {
                     <PiPalette className="text-purple-500" />
                     <span>رنگ‌بندی QR کد</span>
                   </label>
-                  
+
                   <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-4">
                     {colorPresets.map((preset, index) => (
                       <button
@@ -322,8 +318,8 @@ const QRCodeManager = () => {
                           updateQRData('bgColor', preset.bgColor);
                         }}
                         className="aspect-square rounded-2xl transition-all duration-300 hover:scale-110 border-2 border-gray-200"
-                        style={{ 
-                          background: `linear-gradient(135deg, ${preset.color} 0%, ${preset.bgColor} 100%)` 
+                        style={{
+                          background: `linear-gradient(135deg, ${preset.color} 0%, ${preset.bgColor} 100%)`
                         }}
                         title={preset.name}
                       />
@@ -365,9 +361,9 @@ const QRCodeManager = () => {
               {/* Preview Panel */}
               <div className="glass-card rounded-3xl p-6 shadow-2xl border border-white/20 backdrop-blur-xl">
                 <h3 className="text-xl font-black text-gray-800 mb-6">پیش‌نمایش QR کد</h3>
-                
+
                 <div className="text-center">
-                  <div 
+                  <div
                     className="w-64 h-64 mx-auto rounded-2xl flex items-center justify-center border-4 border-gray-200 shadow-lg mb-4"
                     style={{ backgroundColor: qrData.bgColor }}
                   >

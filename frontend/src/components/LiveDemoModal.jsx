@@ -1,12 +1,12 @@
 import React from 'react';
-import { PiX, PiDeviceMobile, PiDesktop, PiLaptop } from 'react-icons/pi';
+import { PiX, PiDevicephone, PiDesktop, PiLaptop } from 'react-icons/pi';
 
 const LiveDemoModal = ({ template, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const demoUrls = {
     1: 'https://restaurant-menu-demo.netlify.app',
-    2: 'https://cafe-menu-demo.netlify.app', 
+    2: 'https://cafe-menu-demo.netlify.app',
     3: 'https://fastfood-menu-demo.netlify.app',
     4: 'https://bakery-menu-demo.netlify.app',
     5: 'https://delivery-menu-demo.netlify.app',
@@ -17,7 +17,7 @@ const LiveDemoModal = ({ template, isOpen, onClose }) => {
 
   const getDeviceSize = () => {
     switch (deviceMode) {
-      case 'mobile':
+      case 'phone':
         return 'w-80 h-[600px]';
       case 'tablet':
         return 'w-[768px] h-[1024px]';
@@ -29,7 +29,7 @@ const LiveDemoModal = ({ template, isOpen, onClose }) => {
   };
 
   const getDeviceIcon = (mode) => {
-    return mode === 'mobile' ? <PiDeviceMobile /> : <PiDesktop />;
+    return mode === 'phone' ? <PiDevicephone /> : <PiDesktop />;
   };
 
   return (
@@ -46,22 +46,21 @@ const LiveDemoModal = ({ template, isOpen, onClose }) => {
               <p className="text-gray-300">در حال مشاهده نسخه دموی قالب</p>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-4 rtl:space-x-reverse">
             {/* Device Mode Selector */}
             <div className="flex items-center space-x-2 rtl:space-x-reverse bg-gray-700 rounded-2xl p-1">
-              {['mobile', 'tablet', 'desktop'].map((mode) => (
+              {['phone', 'tablet', 'desktop'].map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setDeviceMode(mode)}
-                  className={`p-2 rounded-2xl transition-all duration-300 ${
-                    deviceMode === mode 
-                      ? 'bg-blue-500 text-white shadow-lg' 
+                  className={`p-2 rounded-2xl transition-all duration-300 ${deviceMode === mode
+                      ? 'bg-blue-500 text-white shadow-lg'
                       : 'text-gray-300 hover:text-white'
-                  }`}
+                    }`}
                   title={
-                    mode === 'mobile' ? 'موبایل' :
-                    mode === 'tablet' ? 'تبلت' : 'دسکتاپ'
+                    mode === 'phone' ? 'موبایل' :
+                      mode === 'tablet' ? 'تبلت' : 'دسکتاپ'
                   }
                 >
                   {getDeviceIcon(mode)}
@@ -94,7 +93,7 @@ const LiveDemoModal = ({ template, isOpen, onClose }) => {
               </div>
               <div className="w-12"></div>
             </div>
-            
+
             <iframe
               src={demoUrls[template.id]}
               className="w-full h-full border-0"

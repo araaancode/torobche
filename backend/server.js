@@ -4,6 +4,10 @@ require("dotenv")
 // libs
 const express = require("express")
 const colors = require("colors")
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 
 // init express
 const app = express()
@@ -11,9 +15,32 @@ const app = express()
 // connect to database
 require("./config/db")()
 
-
 // middlewares
-app.use(express.json())
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "same-site" }
+}));
+
+app.use(cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: {
+        success: false,
+        message: 'تعداد درخواست‌ها بیش از حد مجاز است'
+    }
+});
+app.use(limiter);
+
 
 // routes
 app.use('/api/auth', require("./routes/auth"))

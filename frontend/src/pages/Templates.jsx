@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { 
-  PiMagnifyingGlass, 
-  PiSquaresFour, 
-  PiList, 
-  PiHeart, 
-  PiEye, 
+import {
+  PiMagnifyingGlass,
+  PiSquaresFour,
+  PiList,
+  PiHeart,
+  PiEye,
   PiCheckCircle,
   PiStar,
-  PiDeviceMobile,
+  PiDevicephone,
   PiDesktop,
   PiPalette,
   PiX,
@@ -180,8 +180,8 @@ const Templates = () => {
   ];
 
   const toggleFavorite = (templateId) => {
-    setFavorites(prev => 
-      prev.includes(templateId) 
+    setFavorites(prev =>
+      prev.includes(templateId)
         ? prev.filter(id => id !== templateId)
         : [...prev, templateId]
     );
@@ -210,7 +210,7 @@ const Templates = () => {
 
   const nextImage = () => {
     if (previewTemplate) {
-      setCurrentPreviewImage((prev) => 
+      setCurrentPreviewImage((prev) =>
         prev === previewTemplate.previewImages.length - 1 ? 0 : prev + 1
       );
     }
@@ -218,7 +218,7 @@ const Templates = () => {
 
   const prevImage = () => {
     if (previewTemplate) {
-      setCurrentPreviewImage((prev) => 
+      setCurrentPreviewImage((prev) =>
         prev === 0 ? previewTemplate.previewImages.length - 1 : prev - 1
       );
     }
@@ -226,9 +226,9 @@ const Templates = () => {
 
   const filteredTemplates = templates.filter(template => {
     const matchesCategory = selectedCategory === 'all' || template.category === selectedCategory;
-    const matchesSearch = template.name.includes(searchTerm) || 
-                         template.description.includes(searchTerm) ||
-                         template.tags.some(tag => tag.includes(searchTerm));
+    const matchesSearch = template.name.includes(searchTerm) ||
+      template.description.includes(searchTerm) ||
+      template.tags.some(tag => tag.includes(searchTerm));
     return matchesCategory && matchesSearch;
   });
 
@@ -237,7 +237,7 @@ const Templates = () => {
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl opacity-20 floating"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20 floating" style={{animationDelay: '1.5s'}}></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20 floating" style={{ animationDelay: '1.5s' }}></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-300 rounded-full blur-3xl opacity-20 animate-pulse"></div>
       </div>
 
@@ -253,7 +253,7 @@ const Templates = () => {
               گالری قالب‌ها
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              قالبی که <span className="font-bold text-purple-600">کسب‌وکار شما</span> را متحول می‌کند انتخاب کنید. 
+              قالبی که <span className="font-bold text-purple-600">کسب‌وکار شما</span> را متحول می‌کند انتخاب کنید.
               <span className="font-bold text-green-600"> دموی زنده </span>همه قالب‌ها در دسترس است!
             </p>
           </div>
@@ -262,30 +262,28 @@ const Templates = () => {
 
           {/* Enhanced Templates Grid/List */}
           <div className={
-            viewMode === 'grid' 
+            viewMode === 'grid'
               ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8'
               : 'space-y-6'
           }>
             {filteredTemplates.map((template) => (
               <div
                 key={template.id}
-                className={`group glass-card rounded-3xl overflow-hidden shadow-2xl border border-white/20 hover-lift transition-all duration-500 backdrop-blur-xl ${
-                  viewMode === 'list' ? 'flex' : ''
-                }`}
+                className={`group glass-card rounded-3xl overflow-hidden shadow-2xl border border-white/20 hover-lift transition-all duration-500 backdrop-blur-xl ${viewMode === 'list' ? 'flex' : ''
+                  }`}
               >
                 {/* Template Image */}
                 <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-80 flex-shrink-0' : ''}`}>
                   <img
                     src={template.image}
                     alt={template.name}
-                    className={`w-full transition-transform duration-700 group-hover:scale-110 ${
-                      viewMode === 'list' ? 'h-64' : 'h-56'
-                    } object-cover cursor-pointer`}
+                    className={`w-full transition-transform duration-700 group-hover:scale-110 ${viewMode === 'list' ? 'h-64' : 'h-56'
+                      } object-cover cursor-pointer`}
                     onClick={() => openPreview(template)}
                   />
-                  
+
                   {/* Enhanced Overlay */}
-                  <div 
+                  <div
                     className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-between p-6 cursor-pointer"
                     onClick={() => openPreview(template)}
                   >
@@ -296,7 +294,7 @@ const Templates = () => {
                       </button>
                     </div>
                   </div>
-                  
+
                   {/* Live Demo Badge */}
                   {template.hasLiveDemo && (
                     <div className="absolute top-4 left-4 transform -rotate-6">
@@ -326,11 +324,10 @@ const Templates = () => {
                     className="absolute top-20 right-4 w-10 h-10 glass-effect rounded-2xl flex items-center justify-center transition-all duration-300 hover-lift hover:scale-110 shadow-lg"
                   >
                     <PiHeart
-                      className={`text-lg transition-all duration-300 ${
-                        favorites.includes(template.id)
+                      className={`text-lg transition-all duration-300 ${favorites.includes(template.id)
                           ? 'text-red-500 fill-current transform scale-110'
                           : 'text-gray-400 group-hover:text-red-400'
-                      }`}
+                        }`}
                     />
                   </button>
                 </div>
@@ -345,11 +342,10 @@ const Templates = () => {
                       <p className="text-gray-600 leading-relaxed line-clamp-2">{template.description}</p>
                     </div>
                     <div className="text-left ml-4">
-                      <div className={`text-2xl font-black transition-all duration-300 ${
-                        template.price === 0 
-                          ? 'text-green-600 group-hover:text-green-500' 
+                      <div className={`text-2xl font-black transition-all duration-300 ${template.price === 0
+                          ? 'text-green-600 group-hover:text-green-500'
                           : 'text-orange-600 group-hover:text-orange-500'
-                      }`}>
+                        }`}>
                         {template.price === 0 ? 'رایگان' : `${template.price.toLocaleString()}`}
                       </div>
                       {template.price > 0 && (
@@ -384,7 +380,7 @@ const Templates = () => {
                     </div>
 
                     <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                      <button 
+                      <button
                         onClick={() => openLiveDemo(template)}
                         className="glass-effect text-gray-700 hover:text-green-600 px-4 py-2 rounded-2xl font-bold transition-all duration-300 hover-lift flex items-center space-x-2 rtl:space-x-reverse hover:shadow-lg border border-green-200 hover:border-green-300"
                       >
@@ -421,7 +417,7 @@ const Templates = () => {
                 >
                   بستن پیش‌نمایش
                 </button>
-                <button 
+                <button
                   onClick={() => openLiveDemo(previewTemplate)}
                   className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-4 rounded-2xl font-bold transition-all duration-300 hover-lift shadow-2xl text-lg flex items-center justify-center space-x-3 rtl:space-x-reverse group"
                 >
@@ -439,10 +435,10 @@ const Templates = () => {
       )}
 
       {/* Live Demo Modal */}
-      <LiveDemoModal 
-        template={liveDemoTemplate} 
-        isOpen={!!liveDemoTemplate} 
-        onClose={closeLiveDemo} 
+      <LiveDemoModal
+        template={liveDemoTemplate}
+        isOpen={!!liveDemoTemplate}
+        onClose={closeLiveDemo}
       />
     </div>
   );

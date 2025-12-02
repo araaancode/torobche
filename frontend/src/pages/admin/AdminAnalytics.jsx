@@ -1,7 +1,7 @@
 // pages/AdminAnalytics.js
 import React, { useState, useEffect } from 'react';
-import { 
-  PiShield, 
+import {
+  PiShield,
   PiBell,
   PiSparkle,
   PiChartLine,
@@ -24,7 +24,7 @@ import {
   PiClock,
   PiEye,
   PiCalendar,
-  PiDeviceMobile,
+  PiDevicephone,
   PiGlobe,
   PiChartBar,
   PiChartDonut,
@@ -43,42 +43,42 @@ const AdminAnalytics = ({ onNavigate }) => {
   }, []);
 
   const stats = [
-    { 
-      label: 'بازدید کل', 
-      value: '۴۵,۶۷۸', 
-      change: '+۲۳٪', 
+    {
+      label: 'بازدید کل',
+      value: '۴۵,۶۷۸',
+      change: '+۲۳٪',
       changeValue: '۸,۵۴۳',
-      icon: <PiChartLine className="text-2xl" />, 
+      icon: <PiChartLine className="text-2xl" />,
       color: 'from-blue-500 to-cyan-500',
       bgGradient: 'bg-gradient-to-br from-blue-50/80 via-cyan-50/60 to-white',
       trend: 'up'
     },
-    { 
-      label: 'کاربران جدید', 
-      value: '۱,۲۳۴', 
-      change: '+۱۲٪', 
+    {
+      label: 'کاربران جدید',
+      value: '۱,۲۳۴',
+      change: '+۱۲٪',
       changeValue: '۱۳۲',
-      icon: <PiUsers className="text-2xl" />, 
+      icon: <PiUsers className="text-2xl" />,
       color: 'from-green-500 to-emerald-500',
       bgGradient: 'bg-gradient-to-br from-green-50/80 via-emerald-50/60 to-white',
       trend: 'up'
     },
-    { 
-      label: 'منوهای ایجاد شده', 
-      value: '۵۶۷', 
-      change: '+۸٪', 
+    {
+      label: 'منوهای ایجاد شده',
+      value: '۵۶۷',
+      change: '+۸٪',
       changeValue: '۴۲',
-      icon: <PiStorefront className="text-2xl" />, 
+      icon: <PiStorefront className="text-2xl" />,
       color: 'from-purple-500 to-pink-500',
       bgGradient: 'bg-gradient-to-br from-purple-50/80 via-pink-50/60 to-white',
       trend: 'up'
     },
-    { 
-      label: 'درآمد ماه', 
-      value: '۳۴.۲M', 
-      change: '+۱۸٪', 
+    {
+      label: 'درآمد ماه',
+      value: '۳۴.۲M',
+      change: '+۱۸٪',
       changeValue: '۵.۲M',
-      icon: <PiMoney className="text-2xl" />, 
+      icon: <PiMoney className="text-2xl" />,
       color: 'from-orange-500 to-amber-500',
       bgGradient: 'bg-gradient-to-br from-orange-50/80 via-amber-50/60 to-white',
       trend: 'up'
@@ -86,42 +86,42 @@ const AdminAnalytics = ({ onNavigate }) => {
   ];
 
   const topPages = [
-    { 
-      name: 'منوی رستوران برگرلند', 
-      views: 1245, 
-      conversion: '۱۲.۳٪', 
+    {
+      name: 'منوی رستوران برگرلند',
+      views: 1245,
+      conversion: '۱۲.۳٪',
       bounce: '۲۳.۴٪',
       growth: '+۱۵٪',
       gradient: 'from-orange-500 to-amber-500'
     },
-    { 
-      name: 'کارت ویزیت دکتر محمدی', 
-      views: 987, 
-      conversion: '۱۵.۶٪', 
+    {
+      name: 'کارت ویزیت دکتر محمدی',
+      views: 987,
+      conversion: '۱۵.۶٪',
       bounce: '۱۸.۹٪',
       growth: '+۲۲٪',
       gradient: 'from-blue-500 to-cyan-500'
     },
-    { 
-      name: 'پروفایل شرکت نوآور', 
-      views: 856, 
-      conversion: '۹.۸٪', 
+    {
+      name: 'پروفایل شرکت نوآور',
+      views: 856,
+      conversion: '۹.۸٪',
       bounce: '۲۸.۷٪',
       growth: '+۸٪',
       gradient: 'from-purple-500 to-pink-500'
     },
-    { 
-      name: 'کاتالوگ محصولات', 
-      views: 765, 
-      conversion: '۱۱.۲٪', 
+    {
+      name: 'کاتالوگ محصولات',
+      views: 765,
+      conversion: '۱۱.۲٪',
       bounce: '۲۱.۵٪',
       growth: '+۱۸٪',
       gradient: 'from-green-500 to-emerald-500'
     },
-    { 
-      name: 'منوی کافه دنج', 
-      views: 654, 
-      conversion: '۱۴.۱٪', 
+    {
+      name: 'منوی کافه دنج',
+      views: 654,
+      conversion: '۱۴.۱٪',
       bounce: '۱۹.۸٪',
       growth: '+۲۵٪',
       gradient: 'from-indigo-500 to-purple-500'
@@ -137,7 +137,7 @@ const AdminAnalytics = ({ onNavigate }) => {
   ];
 
   const deviceStats = [
-    { device: 'موبایل', percentage: 62, visits: 28321, icon: <PiDeviceMobile className="text-lg" />, color: 'from-blue-500 to-cyan-500' },
+    { device: 'موبایل', percentage: 62, visits: 28321, icon: <PiDevicephone className="text-lg" />, color: 'from-blue-500 to-cyan-500' },
     { device: 'دسکتاپ', percentage: 28, visits: 12789, icon: <PiGlobe className="text-lg" />, color: 'from-purple-500 to-pink-500' },
     { device: 'تبلت', percentage: 10, visits: 4568, icon: <PiChartBar className="text-lg" />, color: 'from-green-500 to-emerald-500' }
   ];
@@ -156,13 +156,13 @@ const AdminAnalytics = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-purple-50/20 relative overflow-hidden">
-      
+
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float-slow"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float-slower"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-pulse"></div>
-        
+
         {/* Grid Pattern */}
         <div className="absolute inset-0 opacity-[0.02]">
           <div className="absolute inset-0" style={{
@@ -198,7 +198,7 @@ const AdminAnalytics = ({ onNavigate }) => {
                 )}
               </div>
               {sidebarOpen && (
-                <button 
+                <button
                   onClick={() => setSidebarOpen(false)}
                   className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200"
                 >
@@ -214,35 +214,31 @@ const AdminAnalytics = ({ onNavigate }) => {
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
-                className={`w-full flex items-center justify-between space-x-3 rtl:space-x-reverse p-3 rounded-xl mb-2 transition-all duration-200 group ${
-                  item.id === 'analytics'
+                className={`w-full flex items-center justify-between space-x-3 rtl:space-x-reverse p-3 rounded-xl mb-2 transition-all duration-200 group ${item.id === 'analytics'
                     ? 'bg-gradient-to-r from-blue-50 to-blue-100/50 border border-blue-200 text-blue-700 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-800 border border-transparent'
-                }`}
+                  }`}
               >
                 <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <div className={`transition-colors duration-200 ${
-                    item.id === 'analytics' ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'
-                  }`}>
+                  <div className={`transition-colors duration-200 ${item.id === 'analytics' ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'
+                    }`}>
                     {item.icon}
                   </div>
                   {sidebarOpen && (
-                    <span className={`font-medium text-sm transition-all duration-200 ${
-                      item.id === 'analytics' ? 'text-blue-800' : 'text-gray-700'
-                    }`}>
+                    <span className={`font-medium text-sm transition-all duration-200 ${item.id === 'analytics' ? 'text-blue-800' : 'text-gray-700'
+                      }`}>
                       {item.name}
                     </span>
                   )}
                 </div>
-                
+
                 {sidebarOpen && item.badge && (
-                  <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                    item.id === 'analytics' 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : item.badge === 'جدید' 
+                  <span className={`px-2 py-1 rounded-lg text-xs font-medium ${item.id === 'analytics'
+                      ? 'bg-blue-100 text-blue-700'
+                      : item.badge === 'جدید'
                         ? 'bg-green-100 text-green-700'
                         : 'bg-gray-100 text-gray-600'
-                  }`}>
+                    }`}>
                     {item.badge}
                   </span>
                 )}
@@ -291,7 +287,7 @@ const AdminAnalytics = ({ onNavigate }) => {
 
               <div className="flex items-center space-x-3 rtl:space-x-reverse">
                 <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                  <select 
+                  <select
                     value={timeRange}
                     onChange={(e) => setTimeRange(e.target.value)}
                     className="px-4 py-2 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm text-sm"
@@ -350,9 +346,8 @@ const AdminAnalytics = ({ onNavigate }) => {
                     <div className={`w-12 h-12 bg-gradient-to-r ${stat.color} rounded-2xl flex items-center justify-center shadow-lg`}>
                       {stat.icon}
                     </div>
-                    <div className={`flex items-center space-x-1 rtl:space-x-reverse text-sm font-bold ${
-                      stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                    }`}>
+                    <div className={`flex items-center space-x-1 rtl:space-x-reverse text-sm font-bold ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
+                      }`}>
                       {stat.trend === 'up' ? <PiTrendUp /> : <PiTrendDown />}
                       <span>{stat.change}</span>
                     </div>
@@ -433,7 +428,7 @@ const AdminAnalytics = ({ onNavigate }) => {
                         </div>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
+                        <div
                           className={`h-2 rounded-full bg-gradient-to-r ${source.color} transition-all duration-500 group-hover:scale-105`}
                           style={{ width: `${source.percentage}%` }}
                         ></div>
@@ -466,7 +461,7 @@ const AdminAnalytics = ({ onNavigate }) => {
                         </div>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
+                        <div
                           className={`h-2 rounded-full bg-gradient-to-r ${device.color}`}
                           style={{ width: `${device.percentage}%` }}
                         ></div>
