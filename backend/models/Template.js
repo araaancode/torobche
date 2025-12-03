@@ -4,7 +4,6 @@ const templateSchema = new mongoose.Schema({
 
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
         ref: "User"
     },
     title: {
@@ -32,7 +31,15 @@ const templateSchema = new mongoose.Schema({
     }],
 
 
-}, { timestamps: true })
+}, {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+})
+
+templateSchema.index({ title: 'text', description: 'text' });
+templateSchema.index({ user: 1 });
+templateSchema.index({ price: 1 });
 
 
 const Template = mongoose.model('Template', templateSchema)
