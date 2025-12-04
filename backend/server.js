@@ -46,6 +46,7 @@ app.use(limiter);
 // app.use('/api/auth', require("./routes/auth"))
 app.use('/api/templates', require("./routes/templates"))
 app.use('/api/menus', require("./routes/menus"))
+app.use('/api/foods', require("./routes/foods"))
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {

@@ -26,7 +26,12 @@ const menuSchema = new mongoose.Schema({
     },
     qrcode: {
         type: String
-    }
+    },
+    foods: [{
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Food'
+    }]
 
 }, { timestamps: true })
 
