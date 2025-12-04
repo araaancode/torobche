@@ -67,7 +67,6 @@ exports.getAllTemplates = async (req, res) => {
 
         const [templates, total] = await Promise.all([
             VisitTemplate.find(query)
-                .populate('createdBy', 'name email')
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(parseInt(limit)),
@@ -109,8 +108,7 @@ exports.getTemplateById = async (req, res) => {
         }
 
         const template = await VisitTemplate.findById(id)
-            .populate('createdBy', 'name email phone')
-            .populate('usedInCards', 'title uniqueCode');
+
 
         if (!template) {
             return res.status(404).json({
@@ -201,7 +199,8 @@ exports.createTemplate = async (req, res) => {
             address,
             city,
             clinicName: clinicName || '',
-            createdBy: req.user._id,
+            // createdBy: req.user._id,
+            createdBy: "6924c610eaadce3699fc149f",
             isActive: true
         };
 
@@ -337,6 +336,7 @@ exports.updateTemplate = async (req, res) => {
     try {
         const { id } = req.params;
 
+        // اعتبارسنجی شناسه
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 success: false,
@@ -344,8 +344,8 @@ exports.updateTemplate = async (req, res) => {
             });
         }
 
+        // پیدا کردن قالب
         const template = await VisitTemplate.findById(id);
-
         if (!template) {
             return res.status(404).json({
                 success: false,
@@ -353,78 +353,136 @@ exports.updateTemplate = async (req, res) => {
             });
         }
 
-        // بررسی مالکیت (اگر سیستم احراز هویت دارید)
-        // if (template.createdBy.toString() !== req.user._id.toString()) {
-        //   return res.status(403).json({
-        //     success: false,
-        //     message: 'شما دسترسی ویرایش این قالب را ندارید'
-        //   });
-        // }
+        // آماده‌سازی داده‌های به‌روزرسانی
+        const updateData = {};
+        const allowedFields = [
+            'title', 'description', 'doctorName', 'specialty', 'degree',
+            'phoneNumbers', 'address', 'city', 'clinicName', 'officeHours',
+            'services', 'certificates', 'socialMedia', 'templateStyle',
+            'location', 'isActive', 'isPremium'
+        ];
 
-        // به‌روزرسانی فیلدها
-        const updateData = { ...req.body };
-
-        // پردازش فایل‌های آپلود شده
-        if (req.files) {
-            if (req.files.logo) {
-                // حذف لوگوی قدیمی
-                if (template.logo) {
-                    await deleteOldFile(template.logo);
-                }
-                updateData.logo = `/uploads/templates/${req.files.logo[0].filename}`;
-            }
-
-            if (req.files.profileImage) {
-                if (template.profileImage) {
-                    await deleteOldFile(template.profileImage);
-                }
-                updateData.profileImage = `/uploads/templates/${req.files.profileImage[0].filename}`;
-            }
-
-            if (req.files.backgroundImage) {
-                if (template.backgroundImage) {
-                    await deleteOldFile(template.backgroundImage);
-                }
-                updateData.backgroundImage = `/uploads/templates/${req.files.backgroundImage[0].filename}`;
-            }
-        }
-
-        // پردازش آرایه‌ها
-        if (updateData.phoneNumbers && typeof updateData.phoneNumbers === 'string') {
-            updateData.phoneNumbers = updateData.phoneNumbers.split(',').map(p => p.trim());
-        }
-
-        if (updateData.services && typeof updateData.services === 'string') {
-            updateData.services = updateData.services.split(',').map(s => s.trim());
-        }
-
-        // پردازش JSON fields
-        const jsonFields = ['officeHours', 'certificates', 'socialMedia', 'templateStyle', 'location'];
-        jsonFields.forEach(field => {
-            if (updateData[field] && typeof updateData[field] === 'string') {
-                try {
-                    updateData[field] = JSON.parse(updateData[field]);
-                } catch (error) {
-                    // اگر JSON نباشد، به همان صورت ذخیره می‌شود
-                }
+        // اضافه کردن فیلدهای مجاز
+        allowedFields.forEach(field => {
+            if (req.body[field] !== undefined) {
+                updateData[field] = req.body[field];
             }
         });
 
+        // پردازش فایل‌های آپلود شده
+        if (req.files) {
+            const fileMappings = {
+                logo: 'logo',
+                profileImage: 'profileImage',
+                backgroundImage: 'backgroundImage'
+            };
+
+            Object.entries(fileMappings).forEach(([field, dbField]) => {
+                if (req.files[field] && req.files[field][0]) {
+                    // حذف فایل قدیمی
+                    if (template[dbField]) {
+                        deleteOldFile(template[dbField]);
+                    }
+                    // ذخیره فایل جدید
+                    updateData[dbField] = `/uploads/templates/${req.files[field][0].filename}`;
+                }
+            });
+        }
+
+        // پردازش آرایه‌های رشته‌ای
+        ['phoneNumbers', 'services'].forEach(field => {
+            if (updateData[field] && typeof updateData[field] === 'string') {
+                updateData[field] = updateData[field]
+                    .split(',')
+                    .map(item => item.trim())
+                    .filter(item => item.length > 0);
+            }
+        });
+
+        // پردازش فیلدهای JSON
+        ['officeHours', 'certificates', 'socialMedia', 'templateStyle', 'location']
+            .forEach(field => {
+                if (updateData[field] && typeof updateData[field] === 'string') {
+                    try {
+                        updateData[field] = JSON.parse(updateData[field]);
+                    } catch (error) {
+                        // حذف فیلد نامعتبر
+                        delete updateData[field];
+                    }
+                }
+            });
+
+        // اعتبارسنجی تخصص
+        if (updateData.specialty) {
+            const validSpecialties = [
+                'عمومی', 'داخلی', 'جراح', 'ارتوپد', 'قلب و عروق', 'گوارش',
+                'اعصاب و روان', 'پوست و مو', 'زنان و زایمان', 'اورولوژی',
+                'اطفال', 'چشم پزشکی', 'ENT', 'دندانپزشکی', 'سایر'
+            ];
+
+            if (!validSpecialties.includes(updateData.specialty)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'تخصص نامعتبر است',
+                    validSpecialties
+                });
+            }
+        }
+
+        // اعتبارسنجی مدرک
+        if (updateData.degree) {
+            const validDegrees = ['دکترای عمومی', 'متخصص', 'فوق تخصص', 'استاد دانشگاه', 'فلوشیپ'];
+
+            if (!validDegrees.includes(updateData.degree)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'مدرک نامعتبر است',
+                    validDegrees
+                });
+            }
+        }
+
+        // بررسی وجود داده برای به‌روزرسانی
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'هیچ داده‌ای برای به‌روزرسانی ارسال نشده است'
+            });
+        }
+
+        // به‌روزرسانی قالب
         const updatedTemplate = await VisitTemplate.findByIdAndUpdate(
             id,
             updateData,
             { new: true, runValidators: true }
-        ).populate('createdBy', 'name email');
+        );
+
+        // آماده‌سازی پاسخ
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const response = {
+            id: updatedTemplate._id,
+            title: updatedTemplate.title,
+            doctorName: updatedTemplate.doctorName,
+            specialty: updatedTemplate.specialty,
+            phoneNumbers: updatedTemplate.phoneNumbers,
+            address: updatedTemplate.address,
+            city: updatedTemplate.city,
+            isActive: updatedTemplate.isActive,
+            logo: updatedTemplate.logo ? `${baseUrl}${updatedTemplate.logo}` : null,
+            profileImage: updatedTemplate.profileImage ? `${baseUrl}${updatedTemplate.profileImage}` : null,
+            backgroundImage: updatedTemplate.backgroundImage ? `${baseUrl}${updatedTemplate.backgroundImage}` : null,
+            createdAt: updatedTemplate.createdAt,
+            updatedAt: updatedTemplate.updatedAt,
+            updatedFields: Object.keys(updateData)
+        };
 
         res.status(200).json({
             success: true,
             message: 'قالب با موفقیت به‌روزرسانی شد',
-            data: formatTemplateResponse(updatedTemplate, req)
+            data: response
         });
 
     } catch (error) {
-        console.error('خطا در به‌روزرسانی قالب:', error);
-
         // پاک‌سازی فایل‌های آپلود شده در صورت خطا
         if (req.files) {
             for (const field in req.files) {
@@ -442,6 +500,13 @@ exports.updateTemplate = async (req, res) => {
             });
         }
 
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: 'عنوان قالب تکراری است'
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: 'خطا در به‌روزرسانی قالب',
@@ -449,6 +514,7 @@ exports.updateTemplate = async (req, res) => {
         });
     }
 };
+
 
 // حذف قالب
 exports.deleteTemplate = async (req, res) => {
