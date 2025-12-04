@@ -12,11 +12,11 @@ const menuSchema = new mongoose.Schema({
         ref: 'Template'
     }],
 
-    category: {
+    icon: {
         type: String,
         required: true,
     },
-    icon: {
+    coverImage: {
         type: String,
         required: true,
     },
@@ -24,6 +24,9 @@ const menuSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    qrcode: {
+        type: String
+    }
 
 }, { timestamps: true })
 
