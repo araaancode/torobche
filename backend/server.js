@@ -48,6 +48,7 @@ app.use('/api/templates', require("./routes/templates"))
 app.use('/api/menus', require("./routes/menus"))
 app.use('/api/foods', require("./routes/foods"))
 app.use('/api/visit-templates', require("./routes/visitTemplates"))
+app.use('/api/visit-cards', require("./routes/visitCards"))
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {

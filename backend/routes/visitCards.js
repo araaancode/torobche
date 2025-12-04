@@ -1,26 +1,15 @@
-// routes/visitCardRoutes.js
+// routes/visitCardRoutes.js - فوق ساده
 const express = require('express');
 const router = express.Router();
-const visitCardController = require('../controllers/visitCardController');
-const { upload } = require('../config/multerConfig');
+const visitCardCtlrs = require('../controllers/visitCards');
 
-const cardUpload = upload.fields([
-    { name: 'customLogo', maxCount: 1 },
-    { name: 'customProfileImage', maxCount: 1 }
-]);
+router.get('/', visitCardCtlrs.getAllCards);
+router.get('/:id', visitCardCtlrs.getCard);
+router.post('/', visitCardCtlrs.createCardFromTemplate);
+router.put('/:id', visitCardCtlrs.updateCard);
+router.delete('/:id', visitCardCtlrs.deleteCard);
 
-router.get('/', visitCardController.getAllCards);
-router.get('/code/:code', visitCardController.getCardByCode);
-router.get('/:id', visitCardController.getCardById);
-router.get('/user/:userId', visitCardController.getUserCards);
-router.get('/:id/stats', visitCardController.getCardStats);
-
-router.post('/create', cardUpload, visitCardController.createCardFromTemplate);
-router.put('/:id', cardUpload, visitCardController.updateCard);
-router.delete('/:id', visitCardController.deleteCard);
-router.patch('/:id/status', visitCardController.updateCardStatus);
-
-router.post('/:id/track-share', visitCardController.trackShare);
-router.post('/:id/track-contact', visitCardController.trackContact);
+router.get('/template/:templateId', visitCardCtlrs.getCardsByTemplate);
+router.patch('/:id/toggle', visitCardCtlrs.toggleCardStatus);
 
 module.exports = router;

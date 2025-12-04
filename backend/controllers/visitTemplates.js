@@ -514,8 +514,6 @@ exports.updateTemplate = async (req, res) => {
         });
     }
 };
-
-
 // حذف قالب
 exports.deleteTemplate = async (req, res) => {
     try {
