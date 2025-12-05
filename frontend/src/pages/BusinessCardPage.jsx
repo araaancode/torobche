@@ -11,7 +11,7 @@ import {
   PiEye,
   PiCheckCircle,
   PiQrCode,
-  PiDevicephone,
+  PiPhoneCall,
   PiDesktop,
   PiPalette,
   PiSparkle,
@@ -159,10 +159,10 @@ const CardDetailPage = () => {
         onClick={onClick}
         disabled={loading}
         className={`group relative px-8 py-4 rounded-2xl font-bold transition-all duration-500 ease-out flex items-center justify-center space-x-3 rtl:space-x-reverse min-w-[200px] focus:outline-none focus:ring-4 focus:ring-offset-4 backdrop-blur-sm border ${variant === "primary"
-            ? "bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 hover:from-blue-700 hover:via-purple-700 hover:to-cyan-700 text-white shadow-2xl hover:shadow-3xl focus:ring-blue-500/50 hover:scale-105 border-transparent"
-            : variant === "secondary"
-              ? "bg-white/90 backdrop-blur-lg hover:bg-white text-gray-800 shadow-xl hover:shadow-2xl border border-white/50 focus:ring-purple-500/50 hover:scale-105 hover:border-white/80"
-              : "bg-gradient-to-r from-gray-900 to-black text-white shadow-2xl hover:shadow-3xl focus:ring-gray-500/50 hover:scale-105 border border-gray-700"
+          ? "bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 hover:from-blue-700 hover:via-purple-700 hover:to-cyan-700 text-white shadow-2xl hover:shadow-3xl focus:ring-blue-500/50 hover:scale-105 border-transparent"
+          : variant === "secondary"
+            ? "bg-white/90 backdrop-blur-lg hover:bg-white text-gray-800 shadow-xl hover:shadow-2xl border border-white/50 focus:ring-purple-500/50 hover:scale-105 hover:border-white/80"
+            : "bg-gradient-to-r from-gray-900 to-black text-white shadow-2xl hover:shadow-3xl focus:ring-gray-500/50 hover:scale-105 border border-gray-700"
           } ${loading ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
       >
         {variant === "primary" && (
@@ -272,7 +272,7 @@ const CardDetailPage = () => {
             {/* Enhanced Device View Toggle */}
             <div className="glass-effect rounded-2xl p-2 backdrop-blur-xl border border-white/10 flex items-center space-x-1 rtl:space-x-reverse">
               {[
-                { view: 'phone', icon: PiDevicephone, label: 'موبایل' },
+                { view: 'phone', icon: PiPhoneCall, label: 'موبایل' },
                 { view: 'tablet', icon: PiDesktop, label: 'تبلت' },
                 { view: 'desktop', icon: PiDesktop, label: 'دسکتاپ' }
               ].map(({ view, icon: Icon, label }) => (
@@ -280,8 +280,8 @@ const CardDetailPage = () => {
                   key={view}
                   onClick={() => setCurrentView(view)}
                   className={`p-3 rounded-xl transition-all duration-300 flex items-center space-x-2 rtl:space-x-reverse group ${currentView === view
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
                     }`}
                 >
                   <Icon className="text-lg" />
@@ -504,13 +504,13 @@ const CardDetailPage = () => {
                 <button
                   onClick={() => setIsFavorite(!isFavorite)}
                   className={`group w-14 h-14 glass-effect rounded-2xl flex items-center justify-center transition-all duration-300 hover-lift backdrop-blur-sm border ${isFavorite
-                      ? 'text-red-500 border-red-500/20 bg-red-500/10'
-                      : 'text-gray-400 border-white/20 hover:text-red-400 hover:border-red-500/20'
+                    ? 'text-red-500 border-red-500/20 bg-red-500/10'
+                    : 'text-gray-400 border-white/20 hover:text-red-400 hover:border-red-500/20'
                     }`}
                 >
                   <PiHeart className={`text-2xl transition-all duration-300 ${isFavorite
-                      ? 'fill-current scale-110'
-                      : 'group-hover:scale-110'
+                    ? 'fill-current scale-110'
+                    : 'group-hover:scale-110'
                     }`} />
                 </button>
                 <button
@@ -590,8 +590,8 @@ const CardDetailPage = () => {
                           key={color.id}
                           onClick={() => setSelectedColor(color.id)}
                           className={`group relative p-4 rounded-2xl transition-all duration-300 hover-lift border-2 ${selectedColor === color.id
-                              ? 'border-blue-500 shadow-2xl transform scale-110'
-                              : 'border-white/30 hover:border-white/50 hover:scale-105'
+                            ? 'border-blue-500 shadow-2xl transform scale-110'
+                            : 'border-white/30 hover:border-white/50 hover:scale-105'
                             }`}
                         >
                           <div className={`w-12 h-12 rounded-xl ${color.bg} shadow-lg transform group-hover:rotate-12 transition-transform duration-300`} />
@@ -683,8 +683,8 @@ const CardDetailPage = () => {
                   <div className="grid grid-cols-2 gap-6 mb-8">
                     <div className="text-center glass-effect rounded-2xl p-6 backdrop-blur-sm border border-white/30 hover-lift transition-all duration-300">
                       <div className={`text-4xl font-black mb-2 ${cardData.price === 0
-                          ? 'text-green-600'
-                          : 'text-orange-600'
+                        ? 'text-green-600'
+                        : 'text-orange-600'
                         }`}>
                         {cardData.price === 0 ? 'رایگان' : `${cardData.price.toLocaleString()}`}
                       </div>
@@ -770,8 +770,8 @@ const CardDetailPage = () => {
                     key={id}
                     onClick={() => setActiveTab(id)}
                     className={`group px-8 py-4 rounded-2xl font-bold transition-all duration-300 hover-lift flex items-center space-x-3 rtl:space-x-reverse ${activeTab === id
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-2xl transform scale-105'
-                        : 'glass-effect text-gray-600 hover:text-gray-800 border border-white/20'
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-2xl transform scale-105'
+                      : 'glass-effect text-gray-600 hover:text-gray-800 border border-white/20'
                       }`}
                   >
                     <Icon className={`text-xl ${activeTab === id ? 'text-white' : 'text-gray-400 group-hover:text-current'
@@ -824,7 +824,7 @@ const CardDetailPage = () => {
                       {
                         title: 'سازگاری کامل',
                         items: cardData.templateInfo.compatibility,
-                        icon: PiDevicephone,
+                        icon: PiPhoneCall,
                         color: 'from-purple-500 to-pink-500'
                       }
                     ].map((section, index) => (

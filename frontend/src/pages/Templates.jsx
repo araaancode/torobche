@@ -7,7 +7,7 @@ import {
   PiEye,
   PiCheckCircle,
   PiStar,
-  PiDevicephone,
+  PiPhoneCall,
   PiDesktop,
   PiPalette,
   PiX,
@@ -325,8 +325,8 @@ const Templates = () => {
                   >
                     <PiHeart
                       className={`text-lg transition-all duration-300 ${favorites.includes(template.id)
-                          ? 'text-red-500 fill-current transform scale-110'
-                          : 'text-gray-400 group-hover:text-red-400'
+                        ? 'text-red-500 fill-current transform scale-110'
+                        : 'text-gray-400 group-hover:text-red-400'
                         }`}
                     />
                   </button>
@@ -343,8 +343,8 @@ const Templates = () => {
                     </div>
                     <div className="text-left ml-4">
                       <div className={`text-2xl font-black transition-all duration-300 ${template.price === 0
-                          ? 'text-green-600 group-hover:text-green-500'
-                          : 'text-orange-600 group-hover:text-orange-500'
+                        ? 'text-green-600 group-hover:text-green-500'
+                        : 'text-orange-600 group-hover:text-orange-500'
                         }`}>
                         {template.price === 0 ? 'رایگان' : `${template.price.toLocaleString()}`}
                       </div>

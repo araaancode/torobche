@@ -24,7 +24,7 @@ import {
   PiClock,
   PiEye,
   PiCalendar,
-  PiDevicephone,
+  PiPhoneCall,
   PiGlobe,
   PiChartBar,
   PiChartDonut,
@@ -137,7 +137,7 @@ const AdminAnalytics = ({ onNavigate }) => {
   ];
 
   const deviceStats = [
-    { device: 'موبایل', percentage: 62, visits: 28321, icon: <PiDevicephone className="text-lg" />, color: 'from-blue-500 to-cyan-500' },
+    { device: 'موبایل', percentage: 62, visits: 28321, icon: <PiPhoneCall className="text-lg" />, color: 'from-blue-500 to-cyan-500' },
     { device: 'دسکتاپ', percentage: 28, visits: 12789, icon: <PiGlobe className="text-lg" />, color: 'from-purple-500 to-pink-500' },
     { device: 'تبلت', percentage: 10, visits: 4568, icon: <PiChartBar className="text-lg" />, color: 'from-green-500 to-emerald-500' }
   ];
@@ -215,8 +215,8 @@ const AdminAnalytics = ({ onNavigate }) => {
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
                 className={`w-full flex items-center justify-between space-x-3 rtl:space-x-reverse p-3 rounded-xl mb-2 transition-all duration-200 group ${item.id === 'analytics'
-                    ? 'bg-gradient-to-r from-blue-50 to-blue-100/50 border border-blue-200 text-blue-700 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-800 border border-transparent'
+                  ? 'bg-gradient-to-r from-blue-50 to-blue-100/50 border border-blue-200 text-blue-700 shadow-sm'
+                  : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-800 border border-transparent'
                   }`}
               >
                 <div className="flex items-center space-x-3 rtl:space-x-reverse">
@@ -234,10 +234,10 @@ const AdminAnalytics = ({ onNavigate }) => {
 
                 {sidebarOpen && item.badge && (
                   <span className={`px-2 py-1 rounded-lg text-xs font-medium ${item.id === 'analytics'
-                      ? 'bg-blue-100 text-blue-700'
-                      : item.badge === 'جدید'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-600'
+                    ? 'bg-blue-100 text-blue-700'
+                    : item.badge === 'جدید'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-gray-100 text-gray-600'
                     }`}>
                     {item.badge}
                   </span>

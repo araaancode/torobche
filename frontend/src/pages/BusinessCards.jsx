@@ -7,7 +7,7 @@ import {
   PiEye,
   PiCheckCircle,
   PiStar,
-  PiDevicephone,
+  PiPhoneCall,
   PiDesktop,
   PiPalette,
   PiUser,
@@ -175,8 +175,8 @@ const BusinessCards = () => {
       <button
         onClick={onClick}
         className={`group px-6 py-3 rounded-2xl font-bold transition-all duration-500 ease-out flex items-center justify-center space-x-2 rtl:space-x-reverse min-w-[180px] focus:outline-none focus:ring-2 focus:ring-offset-2 backdrop-blur-sm ${variant === "primary"
-            ? "bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 hover:from-blue-700 hover:via-purple-700 hover:to-cyan-700 text-white shadow-xl hover:shadow-2xl focus:ring-blue-500 relative overflow-hidden hover:scale-105 border border-blue-500/30"
-            : "bg-white/90 backdrop-blur-lg hover:bg-white text-gray-800 shadow-lg hover:shadow-xl border border-white/50 focus:ring-purple-500 hover:scale-105 hover:border-white/80"
+          ? "bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 hover:from-blue-700 hover:via-purple-700 hover:to-cyan-700 text-white shadow-xl hover:shadow-2xl focus:ring-blue-500 relative overflow-hidden hover:scale-105 border border-blue-500/30"
+          : "bg-white/90 backdrop-blur-lg hover:bg-white text-gray-800 shadow-lg hover:shadow-xl border border-white/50 focus:ring-purple-500 hover:scale-105 hover:border-white/80"
           } ${className}`}
       >
         {variant === "primary" && (
@@ -253,8 +253,8 @@ const BusinessCards = () => {
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`p-3 rounded-2xl transition-all duration-300 flex items-center space-x-2 rtl:space-x-reverse ${viewMode === 'grid'
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-white/80'
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-white/80'
                     }`}
                 >
                   <PiSquaresFour className="text-xl" />
@@ -263,8 +263,8 @@ const BusinessCards = () => {
                 <button
                   onClick={() => setViewMode('list')}
                   className={`p-3 rounded-2xl transition-all duration-300 flex items-center space-x-2 rtl:space-x-reverse ${viewMode === 'list'
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-white/80'
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-white/80'
                     }`}
                 >
                   <PiList className="text-xl" />
@@ -280,15 +280,15 @@ const BusinessCards = () => {
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
                   className={`group relative px-6 py-3 rounded-2xl font-bold transition-all duration-300 hover-lift overflow-hidden flex items-center space-x-2 rtl:space-x-reverse backdrop-blur-sm ${selectedCategory === category.id
-                      ? `bg-gradient-to-r ${category.color} text-white shadow-2xl transform scale-105`
-                      : 'glass-effect text-gray-600 hover:text-gray-800'
+                    ? `bg-gradient-to-r ${category.color} text-white shadow-2xl transform scale-105`
+                    : 'glass-effect text-gray-600 hover:text-gray-800'
                     }`}
                 >
                   {category.icon}
                   <span>{category.name}</span>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${selectedCategory === category.id
-                      ? 'bg-white/20 text-white'
-                      : 'bg-gray-100 text-gray-600'
+                    ? 'bg-white/20 text-white'
+                    : 'bg-gray-100 text-gray-600'
                     }`}>
                     {category.count}
                   </span>
@@ -381,8 +381,8 @@ const BusinessCards = () => {
                   >
                     <PiHeart
                       className={`text-lg transition-all duration-300 ${favorites.includes(card.id)
-                          ? 'text-red-500 fill-current transform scale-110'
-                          : 'text-gray-400 group-hover:text-red-400'
+                        ? 'text-red-500 fill-current transform scale-110'
+                        : 'text-gray-400 group-hover:text-red-400'
                         }`}
                     />
                   </button>
@@ -399,8 +399,8 @@ const BusinessCards = () => {
                     </div>
                     <div className="text-left ml-4">
                       <div className={`text-2xl font-black transition-all duration-300 ${card.price === 0
-                          ? 'text-green-600 group-hover:text-green-500'
-                          : 'text-orange-600 group-hover:text-orange-500'
+                        ? 'text-green-600 group-hover:text-green-500'
+                        : 'text-orange-600 group-hover:text-orange-500'
                         }`}>
                         {card.price === 0 ? 'رایگان' : `${card.price.toLocaleString()}`}
                       </div>

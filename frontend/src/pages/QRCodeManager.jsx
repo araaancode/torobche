@@ -11,7 +11,7 @@ import {
   PiTextbox,
   PiLink,
   PiUser,
-  PiDevicephone,
+  PiPhoneCall,
   PiSparkle,
   PiCheckCircle,
   PiExport
@@ -64,7 +64,7 @@ const QRCodeManager = () => {
     { id: 'vcard', name: 'کارت ویزیت', icon: <PiUser className="text-lg" />, color: 'from-green-500 to-emerald-500' },
     { id: 'text', name: 'متن ساده', icon: <PiTextbox className="text-lg" />, color: 'from-purple-500 to-pink-500' },
     { id: 'social', name: 'شبکه اجتماعی', icon: <PiShare className="text-lg" />, color: 'from-orange-500 to-amber-500' },
-    { id: 'wifi', name: 'شبکه WiFi', icon: <PiDevicephone className="text-lg" />, color: 'from-red-500 to-rose-500' }
+    { id: 'wifi', name: 'شبکه WiFi', icon: <PiPhoneCall className="text-lg" />, color: 'from-red-500 to-rose-500' }
   ];
 
   const colorPresets = [
@@ -135,9 +135,9 @@ const QRCodeManager = () => {
     <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-200">
       <div className="flex items-center justify-between mb-3">
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${qr.type === 'url' ? 'bg-blue-100 text-blue-700' :
-            qr.type === 'vcard' ? 'bg-green-100 text-green-700' :
-              qr.type === 'social' ? 'bg-purple-100 text-purple-700' :
-                'bg-orange-100 text-orange-700'
+          qr.type === 'vcard' ? 'bg-green-100 text-green-700' :
+            qr.type === 'social' ? 'bg-purple-100 text-purple-700' :
+              'bg-orange-100 text-orange-700'
           }`}>
           {qrTypes.find(t => t.id === qr.type)?.name}
         </span>
@@ -186,8 +186,8 @@ const QRCodeManager = () => {
               <button
                 onClick={() => setActiveTab('generator')}
                 className={`flex-1 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse ${activeTab === 'generator'
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
                   }`}
               >
                 <PiQrCode className="text-xl" />
@@ -196,8 +196,8 @@ const QRCodeManager = () => {
               <button
                 onClick={() => setActiveTab('management')}
                 className={`flex-1 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse ${activeTab === 'management'
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
                   }`}
               >
                 <PiEye className="text-xl" />
@@ -228,8 +228,8 @@ const QRCodeManager = () => {
                         key={type.id}
                         onClick={() => updateQRData('type', type.id)}
                         className={`p-3 rounded-2xl transition-all duration-300 flex flex-col items-center space-y-2 ${qrData.type === type.id
-                            ? `bg-gradient-to-r ${type.color} text-white shadow-lg transform scale-105`
-                            : 'glass-effect text-gray-600 hover:text-gray-800'
+                          ? `bg-gradient-to-r ${type.color} text-white shadow-lg transform scale-105`
+                          : 'glass-effect text-gray-600 hover:text-gray-800'
                           }`}
                       >
                         {type.icon}

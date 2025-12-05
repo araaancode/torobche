@@ -1,5 +1,5 @@
 import React from 'react';
-import { PiX, PiDevicephone, PiDesktop, PiLaptop } from 'react-icons/pi';
+import { PiX, PiDesktop, PiLaptop, PiPhoneCall } from 'react-icons/pi';
 
 const LiveDemoModal = ({ template, isOpen, onClose }) => {
   if (!isOpen) return null;
@@ -29,7 +29,7 @@ const LiveDemoModal = ({ template, isOpen, onClose }) => {
   };
 
   const getDeviceIcon = (mode) => {
-    return mode === 'phone' ? <PiDevicephone /> : <PiDesktop />;
+    return mode === 'phone' ? <PiPhoneCall /> : <PiDesktop />;
   };
 
   return (
@@ -55,8 +55,8 @@ const LiveDemoModal = ({ template, isOpen, onClose }) => {
                   key={mode}
                   onClick={() => setDeviceMode(mode)}
                   className={`p-2 rounded-2xl transition-all duration-300 ${deviceMode === mode
-                      ? 'bg-blue-500 text-white shadow-lg'
-                      : 'text-gray-300 hover:text-white'
+                    ? 'bg-blue-500 text-white shadow-lg'
+                    : 'text-gray-300 hover:text-white'
                     }`}
                   title={
                     mode === 'phone' ? 'موبایل' :
