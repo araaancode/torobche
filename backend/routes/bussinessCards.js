@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const businessCardController = require('../controllers/businessCardController');
+const businessCardController = require('../controllers/bussinessCards');
 
-// Import middleware
-const { protect, authorize } = require('../middleware/auth');
+
 
 // Public routes
 router.get('/', businessCardController.getBusinessCards);
@@ -16,8 +15,7 @@ router.get('/short/:shortUrl', businessCardController.getBusinessCardByShortUrl)
 router.get('/code/:uniqueCode', businessCardController.getBusinessCardByUniqueCode);
 router.get('/template/:templateId', businessCardController.getBusinessCardsByTemplate);
 
-// Protected routes (require authentication)
-router.use(protect);
+
 
 router.post('/', businessCardController.createBusinessCard);
 router.post('/from-template/:templateId', businessCardController.createBusinessCardFromTemplate);
@@ -32,7 +30,6 @@ router.put('/:id/qr-settings', businessCardController.updateQRSettings);
 router.get('/:id/qr-analytics', businessCardController.getQRAnalytics);
 
 // Admin only routes
-router.use(authorize('admin'));
 
 // Additional admin routes can be added here
 

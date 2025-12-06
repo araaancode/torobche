@@ -28,6 +28,7 @@ import RestaurantMenuPage from './pages/RestaurantMenuPage';
 import DoctorCardPage from './pages/DoctorCardPage';
 import DigitalResumePage from './pages/DigitalResumePage';
 import BusinessCardPage from './pages/BusinessCardPage';
+import BusinessCardsApiPage from "./pages/BusinessCardsApiPage"
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -180,12 +181,18 @@ const appRoutes = [
     layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
   },
   {
+    path: '/business-cards/api',
+    component: BusinessCardsApiPage,
+    type: ROUTE_TYPES.PROTECTED,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
+  {
     path: '/business-cards',
     component: BusinessCards,
     type: ROUTE_TYPES.PROTECTED,
     layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
   },
-   {
+  {
     path: '/business-cards/:id',
     component: BusinessCardPage,
     type: ROUTE_TYPES.PROTECTED,
@@ -280,7 +287,7 @@ const getLayoutComponent = (layoutType) => {
     [LAYOUT_TYPES.ADMIN_LAYOUT]: LayoutAdmin,
     [LAYOUT_TYPES.AUTH_LAYOUT]: LayoutAuth
   };
-  
+
   return layoutComponents[layoutType] || LayoutAuth;
 };
 
@@ -288,7 +295,7 @@ const getLayoutComponent = (layoutType) => {
 const AppRoute = ({ route }) => {
   const { component: Component, layout } = route;
   const LayoutComponent = getLayoutComponent(layout);
-  
+
   return (
     <LayoutComponent>
       <Component />
@@ -302,7 +309,7 @@ const App = () => {
     <Router>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
         <div className="fixed inset-0 bg-gradient-to-br from-blue-600/5 via-purple-600/5 to-cyan-600/5 pointer-events-none" />
-        
+
         <Routes>
           {appRoutes.map((route) => (
             <Route

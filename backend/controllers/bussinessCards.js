@@ -1,4 +1,4 @@
-const BusinessCard = require('../models/BusinessCard');
+const BusinessCard = require('../models/BussinessCard');
 const BusinessTemplate = require('../models/BusinessTemplate');
 const mongoose = require('mongoose');
 const QRCode = require('qrcode');
