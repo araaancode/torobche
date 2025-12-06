@@ -1,17 +1,17 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { 
-  PiUser, 
-  PiEnvelope, 
-  PiPhone, 
-  PiMapPin, 
-  PiCamera, 
-  PiCheckCircle, 
-  PiPencil, 
-  PiShieldCheck, 
-  PiCreditCard, 
-  PiBell, 
-  PiLock, 
-  PiGlobe, 
+import {
+  PiUser,
+  PiEnvelope,
+  PiPhone,
+  PiMapPin,
+  PiCamera,
+  PiCheckCircle,
+  PiPencil,
+  PiShieldCheck,
+  PiCreditCard,
+  PiBell,
+  PiLock,
+  PiGlobe,
   PiTrash,
   PiQrCode,
   PiChartLine,
@@ -31,19 +31,19 @@ const Profile = () => {
     phone: '۰۹۱۲XXX XXXX',
     location: 'تهران، جردن',
     bio: 'توسعه‌دهنده ارشد فرانت‌اند با ۸+ سال تجربه در زمینه طراحی و توسعه رابط کاربری',
-    
+
     // Business Information
     businessName: 'شرکت نوآوران فناوری',
     businessType: 'استارتاپ فناوری',
     website: 'www.techinnovators.com',
     industry: 'نرم‌افزار و فناوری',
-    
+
     // Subscription
     plan: 'حرفه‌ای',
     planExpiry: '۱۴۰۳/۰۲/۱۵',
     cardsCreated: '۴۲',
     qrScans: '۱,۲۴۷',
-    
+
     // Stats
     profileViews: '۲,۸۴۱',
     customerRating: '۴.۹',
@@ -99,7 +99,7 @@ const Profile = () => {
             <PiCamera className="text-gray-600 dark:text-gray-400 text-sm" />
           </button>
         </div>
-        
+
         <div className="flex-1 text-right">
           <h2 className="text-2xl font-black text-gray-800 dark:text-white mb-2">
             {isEditing ? (
@@ -128,7 +128,7 @@ const Profile = () => {
           <div className="flex items-center gap-3 flex-wrap">
             <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
               <PiCheckCircle className="text-sm" />
-              تأیید شده
+              تایید شده
             </span>
             <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
               <PiSparkle className="text-sm" />
@@ -144,7 +144,7 @@ const Profile = () => {
           <PiEnvelope className="text-blue-500" />
           اطلاعات تماس
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex items-center gap-3 p-3 bg-gray-50/80 dark:bg-gray-700/80 rounded-xl">
             <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
@@ -214,7 +214,7 @@ const Profile = () => {
           <PiShieldCheck className="text-green-500" />
           اطلاعات کسب‌وکار
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex items-center gap-3 p-3 bg-gray-50/80 dark:bg-gray-700/80 rounded-xl">
             <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
@@ -309,7 +309,7 @@ const Profile = () => {
             فعال
           </span>
         </div>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div>
             <div className="text-2xl font-black">{profileData.cardsCreated}</div>
@@ -328,7 +328,7 @@ const Profile = () => {
             <div className="text-blue-100 text-sm">امتیاز</div>
           </div>
         </div>
-        
+
         <div className="mt-4 pt-4 border-t border-white/20">
           <div className="text-sm text-blue-100">تاریخ انقضا: {profileData.planExpiry}</div>
         </div>
@@ -391,12 +391,10 @@ const Profile = () => {
                   <div className="text-sm text-gray-600 dark:text-gray-400">{setting.description}</div>
                 </div>
               </div>
-              <button className={`w-12 h-6 rounded-full transition-colors duration-200 ${
-                setting.enabled ? 'bg-green-500' : 'bg-gray-400'
-              }`}>
-                <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-200 ${
-                  setting.enabled ? 'transform translate-x-7' : 'transform translate-x-1'
-                }`}></div>
+              <button className={`w-12 h-6 rounded-full transition-colors duration-200 ${setting.enabled ? 'bg-green-500' : 'bg-gray-400'
+                }`}>
+                <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-200 ${setting.enabled ? 'transform translate-x-7' : 'transform translate-x-1'
+                  }`}></div>
               </button>
             </div>
           ))}
@@ -419,8 +417,8 @@ const Profile = () => {
   );
 
   return (
-    <section 
-      id="profile" 
+    <section
+      id="profile"
       className="min-h-screen relative overflow-hidden pt-20 pb-12 md:pt-28 md:pb-16 bg-gradient-to-br from-gray-50/95 via-blue-50/95 to-purple-50/95 dark:from-gray-900/95 dark:via-blue-900/20 dark:to-purple-900/20 backdrop-blur-sm"
       aria-label="پروفایل کاربری"
     >
@@ -429,10 +427,10 @@ const Profile = () => {
         <div className="absolute top-8 left-8 w-64 h-64 md:w-80 md:h-80 bg-blue-300 dark:bg-blue-600 rounded-full blur-3xl opacity-20" />
         <div className="absolute bottom-8 right-8 w-64 h-64 md:w-80 md:h-80 bg-purple-300 dark:bg-purple-600 rounded-full blur-3xl opacity-20" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-56 h-56 md:w-72 md:h-72 bg-cyan-300 dark:bg-cyan-600 rounded-full blur-3xl opacity-20" />
-        
+
         {/* Static Grid Pattern */}
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] backdrop-blur-sm">
-          <div 
+          <div
             className="absolute inset-0"
             style={{
               backgroundImage: `linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px)`,
@@ -464,17 +462,16 @@ const Profile = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
-                      activeTab === tab.id
+                    className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${activeTab === tab.id
                         ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
                         : 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-gray-700/50'
-                    }`}
+                      }`}
                   >
                     {tab.icon}
                     {tab.name}
                   </button>
                 ))}
-                
+
                 {/* Edit/Save Buttons */}
                 <div className="flex-1 flex justify-end gap-2">
                   {isEditing ? (

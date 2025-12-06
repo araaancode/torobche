@@ -33,7 +33,8 @@ const userSchema = new mongoose.Schema({
         required: function () {
             return !this.isOAuthUser;
         },
-        minlength: [6, 'رمز عبور باید حداقل 6 کاراکتر باشد']
+        minlength: [6, 'رمز عبور باید حداقل 6 کاراکتر باشد'],
+        select: false
     },
     role: {
         type: String,
@@ -52,33 +53,36 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    lockUntil: Date
+    lockUntil: {
+        type: Date
+    }
 }, {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 });
 
-userSchema.index({ phone: 1 });
+/* ============ INDEXES ============ */
+userSchema.index({ phone: 1 }, { unique: true });
 userSchema.index({ 'verificationCode.expiresAt': 1 }, { expireAfterSeconds: 0 });
 
+/* ============ VIRTUALS ============ */
 userSchema.virtual('isLocked').get(function () {
     return !!(this.lockUntil && this.lockUntil > Date.now());
 });
 
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+/* ============ MIDDLEWARES ============ */
+userSchema.pre('save', async function () {
+    if (!this.isModified('password')) return;
 
-    try {
-        const salt = await bcrypt.genSalt(12);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (error) {
-        next(error);
-    }
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
 });
 
+/* ============ METHODS ============ */
 userSchema.methods.comparePassword = async function (candidatePassword) {
     if (this.isLocked) {
-        throw new Error('حساب کاربری قفل شده است. لطفاً بعداً تلاش کنید.');
+        throw new Error('حساب کاربری موقتاً قفل شده است. لطفا بعداً دوباره تلاش کنید.');
     }
 
     const isMatch = await bcrypt.compare(candidatePassword, this.password);
@@ -92,8 +96,9 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
         this.loginAttempts += 1;
 
         if (this.loginAttempts >= 5) {
-            this.lockUntil = Date.now() + 30 * 60 * 1000;
+            this.lockUntil = new Date(Date.now() + 30 * 60 * 1000);
         }
+
         await this.save();
         return false;
     }
@@ -101,17 +106,21 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 
 userSchema.methods.generateVerificationCode = function () {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
+
     this.verificationCode = {
-        code: code,
+        code,
         expiresAt: new Date(Date.now() + 10 * 60 * 1000)
     };
+
     return code;
 };
 
 userSchema.methods.verifyCode = function (code) {
-    if (!this.verificationCode ||
+    if (
+        !this.verificationCode ||
         this.verificationCode.expiresAt < new Date() ||
-        this.verificationCode.code !== code) {
+        this.verificationCode.code !== code
+    ) {
         return false;
     }
 
@@ -120,4 +129,5 @@ userSchema.methods.verifyCode = function (code) {
     return true;
 };
 
+/* ============ EXPORT MODEL ============ */
 module.exports = mongoose.model('User', userSchema);

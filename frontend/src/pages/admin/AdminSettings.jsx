@@ -1,7 +1,7 @@
 // pages/AdminSettings.js
 import React, { useState, useEffect } from 'react';
-import { 
-  PiShield, 
+import {
+  PiShield,
   PiBell,
   PiSparkle,
   PiGear,
@@ -48,7 +48,7 @@ const AdminSettings = ({ onNavigate }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('general');
   const [isVisible, setIsVisible] = useState(false);
-  
+
   // General Settings
   const [generalSettings, setGeneralSettings] = useState({
     siteName: 'تربچه',
@@ -183,14 +183,12 @@ const AdminSettings = ({ onNavigate }) => {
       </div>
       <button
         onClick={onChange}
-        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all duration-300 ${
-          enabled ? 'bg-green-500' : 'bg-gray-300'
-        }`}
+        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all duration-300 ${enabled ? 'bg-green-500' : 'bg-gray-300'
+          }`}
       >
         <span
-          className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition-all duration-300 ${
-            enabled ? 'translate-x-6' : 'translate-x-1'
-          }`}
+          className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition-all duration-300 ${enabled ? 'translate-x-6' : 'translate-x-1'
+            }`}
         />
       </button>
     </div>
@@ -198,8 +196,8 @@ const AdminSettings = ({ onNavigate }) => {
 
   const renderGeneralSettings = () => (
     <div className="space-y-6">
-      <SettingCard 
-        title="تنظیمات اصلی" 
+      <SettingCard
+        title="تنظیمات اصلی"
         description="تنظیمات پایه و عمومی سیستم"
         gradient="from-blue-500 to-cyan-500"
       >
@@ -209,7 +207,7 @@ const AdminSettings = ({ onNavigate }) => {
             <input
               type="text"
               value={generalSettings.siteName}
-              onChange={(e) => setGeneralSettings({...generalSettings, siteName: e.target.value})}
+              onChange={(e) => setGeneralSettings({ ...generalSettings, siteName: e.target.value })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all duration-300"
             />
           </div>
@@ -218,7 +216,7 @@ const AdminSettings = ({ onNavigate }) => {
             <input
               type="text"
               value={generalSettings.siteDescription}
-              onChange={(e) => setGeneralSettings({...generalSettings, siteDescription: e.target.value})}
+              onChange={(e) => setGeneralSettings({ ...generalSettings, siteDescription: e.target.value })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all duration-300"
             />
           </div>
@@ -229,7 +227,7 @@ const AdminSettings = ({ onNavigate }) => {
             <label className="block text-sm font-bold text-gray-700 mb-3">زبان</label>
             <select
               value={generalSettings.language}
-              onChange={(e) => setGeneralSettings({...generalSettings, language: e.target.value})}
+              onChange={(e) => setGeneralSettings({ ...generalSettings, language: e.target.value })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             >
               <option value="fa">فارسی</option>
@@ -240,7 +238,7 @@ const AdminSettings = ({ onNavigate }) => {
             <label className="block text-sm font-bold text-gray-700 mb-3">منطقه زمانی</label>
             <select
               value={generalSettings.timezone}
-              onChange={(e) => setGeneralSettings({...generalSettings, timezone: e.target.value})}
+              onChange={(e) => setGeneralSettings({ ...generalSettings, timezone: e.target.value })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             >
               <option value="Asia/Tehran">تهران (UTC+3:30)</option>
@@ -251,7 +249,7 @@ const AdminSettings = ({ onNavigate }) => {
             <label className="block text-sm font-bold text-gray-700 mb-3">فرمت تاریخ</label>
             <select
               value={generalSettings.dateFormat}
-              onChange={(e) => setGeneralSettings({...generalSettings, dateFormat: e.target.value})}
+              onChange={(e) => setGeneralSettings({ ...generalSettings, dateFormat: e.target.value })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             >
               <option value="jalali">شمسی (Jalali)</option>
@@ -280,8 +278,8 @@ const AdminSettings = ({ onNavigate }) => {
 
   const renderUserSettings = () => (
     <div className="space-y-6">
-      <SettingCard 
-        title="تنظیمات کاربران" 
+      <SettingCard
+        title="تنظیمات کاربران"
         description="مدیریت ثبت‌نام و دسترسی کاربران"
         gradient="from-green-500 to-emerald-500"
       >
@@ -290,7 +288,7 @@ const AdminSettings = ({ onNavigate }) => {
             <label className="block text-sm font-bold text-gray-700 mb-3">نقش پیش‌فرض کاربر</label>
             <select
               value={userSettings.defaultUserRole}
-              onChange={(e) => setUserSettings({...userSettings, defaultUserRole: e.target.value})}
+              onChange={(e) => setUserSettings({ ...userSettings, defaultUserRole: e.target.value })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             >
               <option value="user">کاربر عادی</option>
@@ -303,7 +301,7 @@ const AdminSettings = ({ onNavigate }) => {
             <input
               type="number"
               value={userSettings.maxMenusPerUser}
-              onChange={(e) => setUserSettings({...userSettings, maxMenusPerUser: parseInt(e.target.value)})}
+              onChange={(e) => setUserSettings({ ...userSettings, maxMenusPerUser: parseInt(e.target.value) })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             />
           </div>
@@ -315,7 +313,7 @@ const AdminSettings = ({ onNavigate }) => {
             <input
               type="number"
               value={userSettings.maxCardsPerUser}
-              onChange={(e) => setUserSettings({...userSettings, maxCardsPerUser: parseInt(e.target.value)})}
+              onChange={(e) => setUserSettings({ ...userSettings, maxCardsPerUser: parseInt(e.target.value) })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             />
           </div>
@@ -324,7 +322,7 @@ const AdminSettings = ({ onNavigate }) => {
             <input
               type="number"
               value={userSettings.userSessionTimeout}
-              onChange={(e) => setUserSettings({...userSettings, userSessionTimeout: parseInt(e.target.value)})}
+              onChange={(e) => setUserSettings({ ...userSettings, userSessionTimeout: parseInt(e.target.value) })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             />
           </div>
@@ -356,8 +354,8 @@ const AdminSettings = ({ onNavigate }) => {
 
   const renderPaymentSettings = () => (
     <div className="space-y-6">
-      <SettingCard 
-        title="تنظیمات پرداخت" 
+      <SettingCard
+        title="تنظیمات پرداخت"
         description="مدیریت درگاه‌های پرداخت و مالیات"
         gradient="from-purple-500 to-pink-500"
       >
@@ -366,7 +364,7 @@ const AdminSettings = ({ onNavigate }) => {
             <label className="block text-sm font-bold text-gray-700 mb-3">ارز</label>
             <select
               value={paymentSettings.currency}
-              onChange={(e) => setPaymentSettings({...paymentSettings, currency: e.target.value})}
+              onChange={(e) => setPaymentSettings({ ...paymentSettings, currency: e.target.value })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             >
               <option value="IRT">تومان (IRT)</option>
@@ -378,7 +376,7 @@ const AdminSettings = ({ onNavigate }) => {
             <label className="block text-sm font-bold text-gray-700 mb-3">درگاه پرداخت</label>
             <select
               value={paymentSettings.gateway}
-              onChange={(e) => setPaymentSettings({...paymentSettings, gateway: e.target.value})}
+              onChange={(e) => setPaymentSettings({ ...paymentSettings, gateway: e.target.value })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             >
               <option value="zarinpal">زرین‌پال</option>
@@ -394,7 +392,7 @@ const AdminSettings = ({ onNavigate }) => {
             <input
               type="number"
               value={paymentSettings.taxRate}
-              onChange={(e) => setPaymentSettings({...paymentSettings, taxRate: parseInt(e.target.value)})}
+              onChange={(e) => setPaymentSettings({ ...paymentSettings, taxRate: parseInt(e.target.value) })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             />
           </div>
@@ -403,7 +401,7 @@ const AdminSettings = ({ onNavigate }) => {
             <input
               type="number"
               value={paymentSettings.minimumAmount}
-              onChange={(e) => setPaymentSettings({...paymentSettings, minimumAmount: parseInt(e.target.value)})}
+              onChange={(e) => setPaymentSettings({ ...paymentSettings, minimumAmount: parseInt(e.target.value) })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             />
           </div>
@@ -429,8 +427,8 @@ const AdminSettings = ({ onNavigate }) => {
 
   const renderSecuritySettings = () => (
     <div className="space-y-6">
-      <SettingCard 
-        title="تنظیمات امنیتی" 
+      <SettingCard
+        title="تنظیمات امنیتی"
         description="مدیریت امنیت و دسترسی سیستم"
         gradient="from-orange-500 to-amber-500"
       >
@@ -440,7 +438,7 @@ const AdminSettings = ({ onNavigate }) => {
             <input
               type="number"
               value={securitySettings.passwordMinLength}
-              onChange={(e) => setSecuritySettings({...securitySettings, passwordMinLength: parseInt(e.target.value)})}
+              onChange={(e) => setSecuritySettings({ ...securitySettings, passwordMinLength: parseInt(e.target.value) })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             />
           </div>
@@ -449,7 +447,7 @@ const AdminSettings = ({ onNavigate }) => {
             <input
               type="number"
               value={securitySettings.loginAttempts}
-              onChange={(e) => setSecuritySettings({...securitySettings, loginAttempts: parseInt(e.target.value)})}
+              onChange={(e) => setSecuritySettings({ ...securitySettings, loginAttempts: parseInt(e.target.value) })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             />
           </div>
@@ -461,7 +459,7 @@ const AdminSettings = ({ onNavigate }) => {
             <input
               type="number"
               value={securitySettings.sessionTimeout}
-              onChange={(e) => setSecuritySettings({...securitySettings, sessionTimeout: parseInt(e.target.value)})}
+              onChange={(e) => setSecuritySettings({ ...securitySettings, sessionTimeout: parseInt(e.target.value) })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             />
           </div>
@@ -470,7 +468,7 @@ const AdminSettings = ({ onNavigate }) => {
             <input
               type="text"
               value={securitySettings.ipWhitelist}
-              onChange={(e) => setSecuritySettings({...securitySettings, ipWhitelist: e.target.value})}
+              onChange={(e) => setSecuritySettings({ ...securitySettings, ipWhitelist: e.target.value })}
               placeholder="IP ها را با کاما جدا کنید"
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             />
@@ -483,7 +481,7 @@ const AdminSettings = ({ onNavigate }) => {
           enabled={securitySettings.twoFactorAuth}
           onChange={() => toggleSwitch(securitySettings, setSecuritySettings, 'twoFactorAuth')}
           label="احراز هویت دو مرحله‌ای"
-          description="کاربران باید از طریق کد تأیید وارد شوند"
+          description="کاربران باید از طریق کد تایید وارد شوند"
         />
         <ToggleSwitch
           enabled={securitySettings.forceHTTPS}
@@ -503,8 +501,8 @@ const AdminSettings = ({ onNavigate }) => {
 
   const renderNotificationSettings = () => (
     <div className="space-y-6">
-      <SettingCard 
-        title="تنظیمات اعلان‌ها" 
+      <SettingCard
+        title="تنظیمات اعلان‌ها"
         description="مدیریت انواع اعلان‌های سیستم"
         gradient="from-indigo-500 to-purple-500"
       >
@@ -540,8 +538,8 @@ const AdminSettings = ({ onNavigate }) => {
 
   const renderAdvancedSettings = () => (
     <div className="space-y-6">
-      <SettingCard 
-        title="تنظیمات پیشرفته" 
+      <SettingCard
+        title="تنظیمات پیشرفته"
         description="تنظیمات فنی و سیستمی"
         gradient="from-gray-600 to-gray-700"
       >
@@ -550,7 +548,7 @@ const AdminSettings = ({ onNavigate }) => {
             <label className="block text-sm font-bold text-gray-700 mb-3">فرکانس پشتیبان‌گیری</label>
             <select
               value={advancedSettings.backupFrequency}
-              onChange={(e) => setAdvancedSettings({...advancedSettings, backupFrequency: e.target.value})}
+              onChange={(e) => setAdvancedSettings({ ...advancedSettings, backupFrequency: e.target.value })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             >
               <option value="daily">روزانه</option>
@@ -563,7 +561,7 @@ const AdminSettings = ({ onNavigate }) => {
             <input
               type="number"
               value={advancedSettings.apiRateLimit}
-              onChange={(e) => setAdvancedSettings({...advancedSettings, apiRateLimit: parseInt(e.target.value)})}
+              onChange={(e) => setAdvancedSettings({ ...advancedSettings, apiRateLimit: parseInt(e.target.value) })}
               className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
             />
           </div>
@@ -613,13 +611,13 @@ const AdminSettings = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-purple-50/20 relative overflow-hidden">
-      
+
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float-slow"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float-slower"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-pulse"></div>
-        
+
         {/* Grid Pattern */}
         <div className="absolute inset-0 opacity-[0.02]">
           <div className="absolute inset-0" style={{
@@ -655,7 +653,7 @@ const AdminSettings = ({ onNavigate }) => {
                 )}
               </div>
               {sidebarOpen && (
-                <button 
+                <button
                   onClick={() => setSidebarOpen(false)}
                   className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200"
                 >
@@ -671,35 +669,31 @@ const AdminSettings = ({ onNavigate }) => {
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
-                className={`w-full flex items-center justify-between space-x-3 rtl:space-x-reverse p-3 rounded-xl mb-2 transition-all duration-200 group ${
-                  item.id === 'settings'
+                className={`w-full flex items-center justify-between space-x-3 rtl:space-x-reverse p-3 rounded-xl mb-2 transition-all duration-200 group ${item.id === 'settings'
                     ? 'bg-gradient-to-r from-blue-50 to-blue-100/50 border border-blue-200 text-blue-700 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-800 border border-transparent'
-                }`}
+                  }`}
               >
                 <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <div className={`transition-colors duration-200 ${
-                    item.id === 'settings' ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'
-                  }`}>
+                  <div className={`transition-colors duration-200 ${item.id === 'settings' ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'
+                    }`}>
                     {item.icon}
                   </div>
                   {sidebarOpen && (
-                    <span className={`font-medium text-sm transition-all duration-200 ${
-                      item.id === 'settings' ? 'text-blue-800' : 'text-gray-700'
-                    }`}>
+                    <span className={`font-medium text-sm transition-all duration-200 ${item.id === 'settings' ? 'text-blue-800' : 'text-gray-700'
+                      }`}>
                       {item.name}
                     </span>
                   )}
                 </div>
-                
+
                 {sidebarOpen && item.badge && (
-                  <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                    item.id === 'settings' 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : item.badge === 'جدید' 
+                  <span className={`px-2 py-1 rounded-lg text-xs font-medium ${item.id === 'settings'
+                      ? 'bg-blue-100 text-blue-700'
+                      : item.badge === 'جدید'
                         ? 'bg-green-100 text-green-700'
                         : 'bg-gray-100 text-gray-600'
-                  }`}>
+                    }`}>
                     {item.badge}
                   </span>
                 )}
@@ -795,17 +789,15 @@ const AdminSettings = ({ onNavigate }) => {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center space-x-3 rtl:space-x-reverse px-6 py-4 border-b-2 transition-all duration-300 whitespace-nowrap group ${
-                        activeTab === tab.id
+                      className={`flex items-center space-x-3 rtl:space-x-reverse px-6 py-4 border-b-2 transition-all duration-300 whitespace-nowrap group ${activeTab === tab.id
                           ? `border-blue-500 text-blue-700 bg-white shadow-sm`
                           : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-white/50'
-                      }`}
+                        }`}
                     >
-                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
-                        activeTab === tab.id 
-                          ? `bg-gradient-to-r ${tab.gradient} text-white shadow-lg` 
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${activeTab === tab.id
+                          ? `bg-gradient-to-r ${tab.gradient} text-white shadow-lg`
                           : 'bg-gray-100 text-gray-500 group-hover:bg-gray-200'
-                      }`}>
+                        }`}>
                         {tab.icon}
                       </div>
                       <span className="font-bold text-sm">{tab.name}</span>

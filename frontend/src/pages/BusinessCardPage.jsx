@@ -323,7 +323,7 @@ const CardDetailPage = () => {
                   <p className="text-xl font-bold bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
                     در حال بارگذاری پیش‌نمایش...
                   </p>
-                  <p className="text-white/70 text-sm">لطفاً چند لحظه صبر کنید</p>
+                  <p className="text-white/70 text-sm">لطفا چند لحظه صبر کنید</p>
                 </div>
               </div>
             </div>
@@ -482,7 +482,7 @@ const CardDetailPage = () => {
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                   </div>
                   <span className="text-sm font-black bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
-                    قالب پرمیوم تأیید شده
+                    قالب پرمیوم تایید شده
                   </span>
                   <PiSparkle className="text-purple-500 text-lg group-hover:rotate-180 transition-transform duration-500" />
                 </div>

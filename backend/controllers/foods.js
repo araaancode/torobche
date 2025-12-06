@@ -701,16 +701,16 @@ exports.addFoodToMenu = async (req, res) => {
         console.log(`✅ منو پیدا شد: ${menu.title}`);
         console.log(`✅ غذا پیدا شد: ${food.title}`);
 
-        // بررسی آیا غذا قبلاً در این منو اضافه شده است
+        // بررسی آیا غذا قبلا در این منو اضافه شده است
         const foodAlreadyInMenu = menu.foods.some(foodRef =>
             foodRef.toString() === foodId
         );
 
         if (foodAlreadyInMenu) {
-            console.log('⚠️ غذا قبلاً در این منو اضافه شده است');
+            console.log('⚠️ غذا قبلا در این منو اضافه شده است');
             return res.status(400).json({
                 success: false,
-                message: 'این غذا قبلاً در منو اضافه شده است',
+                message: 'این غذا قبلا در منو اضافه شده است',
                 alreadyAdded: true
             });
         }

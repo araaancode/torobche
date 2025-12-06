@@ -45,7 +45,7 @@ const generalLimiter = rateLimit({
     max: 100, // حداکثر 100 درخواست
     message: {
         success: false,
-        message: 'تعداد درخواست‌های شما بیش از حد مجاز است. لطفاً ۱۵ دقیقه دیگر مجدد تلاش کنید.'
+        message: 'تعداد درخواست‌های شما بیش از حد مجاز است. لطفا ۱۵ دقیقه دیگر مجدد تلاش کنید.'
     },
     standardHeaders: true,
     legacyHeaders: false
@@ -57,18 +57,18 @@ const authLimiter = rateLimit({
     max: 5, // حداکثر 5 تلاش ناموفق
     message: {
         success: false,
-        message: 'تعداد تلاش‌های ناموفق شما بیش از حد مجاز است. لطفاً ۱ ساعت دیگر مجدد تلاش کنید.'
+        message: 'تعداد تلاش‌های ناموفق شما بیش از حد مجاز است. لطفا ۱ ساعت دیگر مجدد تلاش کنید.'
     },
     skipSuccessfulRequests: true // فقط درخواست‌های ناموفق شمرده شوند
 });
 
-// محدودیت برای ارسال کد تأیید
+// محدودیت برای ارسال کد تایید
 const verificationCodeLimiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 دقیقه
     max: 3, // حداکثر 3 درخواست در 10 دقیقه
     message: {
         success: false,
-        message: 'تعداد درخواست‌های کد تأیید شما بیش از حد مجاز است. لطفاً ۱۰ دقیقه دیگر مجدد تلاش کنید.'
+        message: 'تعداد درخواست‌های کد تایید شما بیش از حد مجاز است. لطفا ۱۰ دقیقه دیگر مجدد تلاش کنید.'
     }
 });
 
@@ -78,7 +78,7 @@ const sensitiveLimiter = rateLimit({
     max: 50, // حداکثر 50 درخواست در روز
     message: {
         success: false,
-        message: 'محدودیت روزانه شما به پایان رسیده است. لطفاً فردا مجدد تلاش کنید.'
+        message: 'محدودیت روزانه شما به پایان رسیده است. لطفا فردا مجدد تلاش کنید.'
     }
 });
 
@@ -101,7 +101,7 @@ const createIPLimiter = (windowMs, max, message) => {
 const rateLimitHandler = (req, res) => {
     res.status(429).json({
         success: false,
-        message: 'محدودیت نرخ درخواست. لطفاً بعداً مجدد تلاش کنید.',
+        message: 'محدودیت نرخ درخواست. لطفا بعداً مجدد تلاش کنید.',
         retryAfter: Math.ceil(res.getHeader('Retry-After') / 60) || 1
     });
 };

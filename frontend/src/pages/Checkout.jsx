@@ -19,7 +19,7 @@ const Checkout = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl opacity-20 floating"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20 floating" style={{animationDelay: '1.5s'}}></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20 floating" style={{ animationDelay: '1.5s' }}></div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
@@ -37,19 +37,17 @@ const Checkout = () => {
                 {[1, 2, 3].map((stepNumber) => (
                   <div key={stepNumber} className="flex items-center">
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300 ${
-                        step >= stepNumber
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300 ${step >= stepNumber
                           ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
                           : 'bg-gray-200 text-gray-500'
-                      }`}
+                        }`}
                     >
                       {step > stepNumber ? <PiCheckCircle className="text-xl" /> : stepNumber}
                     </div>
                     {stepNumber < 3 && (
                       <div
-                        className={`w-16 h-1 transition-all duration-300 ${
-                          step > stepNumber ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gray-200'
-                        }`}
+                        className={`w-16 h-1 transition-all duration-300 ${step > stepNumber ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gray-200'
+                          }`}
                       ></div>
                     )}
                   </div>
@@ -64,13 +62,12 @@ const Checkout = () => {
                   {step === 1 && (
                     <div className="space-y-6">
                       <h3 className="text-xl font-black text-gray-800 mb-4">انتخاب روش پرداخت</h3>
-                      
+
                       <div className="space-y-4">
                         <button
                           onClick={() => setPaymentMethod('card')}
-                          className={`w-full glass-effect rounded-2xl p-4 text-right transition-all duration-300 hover-lift ${
-                            paymentMethod === 'card' ? 'ring-2 ring-blue-500' : ''
-                          }`}
+                          className={`w-full glass-effect rounded-2xl p-4 text-right transition-all duration-300 hover-lift ${paymentMethod === 'card' ? 'ring-2 ring-blue-500' : ''
+                            }`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3 rtl:space-x-reverse">
@@ -86,9 +83,8 @@ const Checkout = () => {
 
                         <button
                           onClick={() => setPaymentMethod('zarinpal')}
-                          className={`w-full glass-effect rounded-2xl p-4 text-right transition-all duration-300 hover-lift ${
-                            paymentMethod === 'zarinpal' ? 'ring-2 ring-blue-500' : ''
-                          }`}
+                          className={`w-full glass-effect rounded-2xl p-4 text-right transition-all duration-300 hover-lift ${paymentMethod === 'zarinpal' ? 'ring-2 ring-blue-500' : ''
+                            }`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3 rtl:space-x-reverse">
@@ -113,7 +109,7 @@ const Checkout = () => {
                               className="w-full glass-effect rounded-2xl px-4 py-3 text-gray-800 placeholder-gray-400"
                             />
                           </div>
-                          
+
                           <div className="grid grid-cols-2 gap-4">
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-2">تاریخ انقضا</label>
@@ -147,8 +143,8 @@ const Checkout = () => {
 
                   {step === 2 && (
                     <div className="space-y-6">
-                      <h3 className="text-xl font-black text-gray-800 mb-4">تأیید اطلاعات</h3>
-                      
+                      <h3 className="text-xl font-black text-gray-800 mb-4">تایید اطلاعات</h3>
+
                       <div className="glass-effect rounded-2xl p-4">
                         <h4 className="font-bold text-gray-800 mb-3">خلاصه خرید</h4>
                         <div className="space-y-2 text-sm">
@@ -215,7 +211,7 @@ const Checkout = () => {
               <div className="lg:col-span-1">
                 <div className="glass-card rounded-3xl p-6 shadow-2xl hover-lift sticky top-32">
                   <h3 className="text-xl font-black text-gray-800 mb-4">پلن انتخابی</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="text-center">
                       <div className="text-3xl font-black text-gray-800 mb-2">{plan.name}</div>

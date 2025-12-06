@@ -1,5 +1,6 @@
 // load env vars
-require("dotenv")
+require("dotenv").config();
+
 
 // libs
 const express = require("express")
@@ -50,6 +51,7 @@ app.use('/api/foods', require("./routes/foods"))
 app.use('/api/visit-templates', require("./routes/visitTemplates"))
 app.use('/api/visit-cards', require("./routes/visitCards"))
 app.use('/api/bussiness-cards', require("./routes/bussinessCards"))
+app.use('/api/auth', require("./routes/auth"))
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {

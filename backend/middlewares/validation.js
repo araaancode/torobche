@@ -1,6 +1,4 @@
-/**
- * میدلورهای اعتبارسنجی پیشرفته
- */
+
 
 const validator = require('validator');
 const User = require('../models/User');
@@ -49,7 +47,7 @@ const validateRegister = async (req, res, next) => {
         if (existingUser) {
             return res.status(400).json({
                 success: false,
-                message: 'این شماره موبایل قبلاً ثبت شده است'
+                message: 'این شماره موبایل قبلا ثبت شده است'
             });
         }
 
@@ -169,7 +167,7 @@ const validatephone = async (req, res, next) => {
     }
 };
 
-// اعتبارسنجی کد تأیید
+// اعتبارسنجی کد تایید
 const validateVerificationCode = async (req, res, next) => {
     try {
         const { phone, code } = req.body;
@@ -177,7 +175,7 @@ const validateVerificationCode = async (req, res, next) => {
         if (!phone || !code) {
             return res.status(400).json({
                 success: false,
-                message: 'شماره موبایل و کد تأیید الزامی هستند'
+                message: 'شماره موبایل و کد تایید الزامی هستند'
             });
         }
 
@@ -191,7 +189,7 @@ const validateVerificationCode = async (req, res, next) => {
         if (!/^\d{6}$/.test(code)) {
             return res.status(400).json({
                 success: false,
-                message: 'کد تأیید باید ۶ رقم باشد'
+                message: 'کد تایید باید ۶ رقم باشد'
             });
         }
 

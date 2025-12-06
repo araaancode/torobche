@@ -85,7 +85,7 @@ exports.createTemplate = async (req, res) => {
         if (!req.file) {
             return res.status(400).json({
                 success: false,
-                message: 'لطفاً یک تصویر آپلود کنید'
+                message: 'لطفا یک تصویر آپلود کنید'
             });
         }
 
@@ -97,7 +97,7 @@ exports.createTemplate = async (req, res) => {
             }
             return res.status(400).json({
                 success: false,
-                message: 'لطفاً تمام فیلدهای الزامی را پر کنید (عنوان، توضیحات، قیمت)'
+                message: 'لطفا تمام فیلدهای الزامی را پر کنید (عنوان، توضیحات، قیمت)'
             });
         }
 
@@ -243,7 +243,7 @@ exports.updateTemplateImage = async (req, res) => {
         if (!req.file) {
             return res.status(400).json({
                 success: false,
-                message: 'لطفاً یک تصویر جدید آپلود کنید'
+                message: 'لطفا یک تصویر جدید آپلود کنید'
             });
         }
 
@@ -305,7 +305,7 @@ exports.updateTemplateColors = async (req, res) => {
         if (!colorPallete) {
             return res.status(400).json({
                 success: false,
-                message: 'لطفاً پالت رنگ‌ها را ارسال کنید'
+                message: 'لطفا پالت رنگ‌ها را ارسال کنید'
             });
         }
 

@@ -37,7 +37,7 @@ const auth = async (req, res, next) => {
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: 'دسترسی غیرمجاز. لطفاً مجدداً وارد شوید.'
+                message: 'دسترسی غیرمجاز. لطفا مجدداً وارد شوید.'
             });
         }
 
@@ -79,7 +79,7 @@ const auth = async (req, res, next) => {
         if (error.name === 'TokenExpiredError') {
             return res.status(401).json({
                 success: false,
-                message: 'توکن منقضی شده است. لطفاً مجدداً وارد شوید.'
+                message: 'توکن منقضی شده است. لطفا مجدداً وارد شوید.'
             });
         }
 

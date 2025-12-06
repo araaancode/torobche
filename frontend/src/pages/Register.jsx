@@ -9,23 +9,23 @@ const Register = () => {
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-cyan-300 rounded-full blur-3xl opacity-20 floating"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-pink-300 rounded-full blur-3xl opacity-20 floating" style={{animationDelay: '1.5s'}}></div>
+        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-pink-300 rounded-full blur-3xl opacity-20 floating" style={{ animationDelay: '1.5s' }}></div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="min-h-screen flex items-center justify-center py-12">
           <div className="max-w-md w-full">
-            
+
             {/* Header */}
             <div className="text-center mb-12">
               <div className="flex justify-center mb-6 hover-lift">
-                 <div className="relative">
+                <div className="relative">
                   <div className="w-30 h-30 rounded-3xl flex items-center justify-center">
                     <img src="https://cdn-icons-png.flaticon.com/128/7217/7217779.png" alt="logo" />
                   </div>
                 </div>
               </div>
-              
+
               <h1 className="text-4xl font-black gradient-text mb-4">
                 ساخت حساب جدید
               </h1>
@@ -118,7 +118,7 @@ const Register = () => {
               {/* Login Link */}
               <div className="text-center">
                 <p className="text-gray-600">
-                  قبلاً حساب دارید؟{' '}
+                  قبلا حساب دارید؟{' '}
                   <a href="/login" className="gradient-text font-bold transition-colors duration-300 hover-lift">
                     وارد شوید
                   </a>

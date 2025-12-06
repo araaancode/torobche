@@ -42,7 +42,7 @@ const errorHandler = (err, req, res, next) => {
     // خطاهای تکراری
     if (err.code === 11000) {
         const field = Object.keys(err.keyValue)[0];
-        const message = `این ${field} قبلاً ثبت شده است`;
+        const message = `این ${field} قبلا ثبت شده است`;
         error = new AppError(message, 400);
     }
 

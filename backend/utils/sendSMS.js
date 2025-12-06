@@ -40,7 +40,7 @@ class SMSService {
         this.templateName = process.env.SMS_TEMPLATE_NAME || 'verification';
     }
 
-    // ارسال کد تأیید
+    // ارسال کد تایید
     async sendVerificationCode(phone, code) {
         try {
             // اعتبارسنجی شماره موبایل
@@ -159,7 +159,7 @@ class SMSService {
 
         const data = {
             to: phone,
-            message: `کد تأیید شما: ${code}`,
+            message: `کد تایید شما: ${code}`,
             from: '3000', // شماره سرویس
             apiKey: this.apiKey
         };
@@ -211,8 +211,8 @@ class SMSService {
     // تولید متن SMS
     generateSMSText(code, templateType = 'verification') {
         const templates = {
-            verification: `کد تأیید شما: ${code}\n\nاین کد تا ۱۰ دقیقه معتبر است.`,
-            welcome: `به سامانه ما خوش آمدید!\n\nکد تأیید شما: ${code}`,
+            verification: `کد تایید شما: ${code}\n\nاین کد تا ۱۰ دقیقه معتبر است.`,
+            welcome: `به سامانه ما خوش آمدید!\n\nکد تایید شما: ${code}`,
             reset: `کد بازیابی رمز عبور: ${code}\n\nاین کد تا ۱۵ دقیقه معتبر است.`
         };
 

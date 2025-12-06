@@ -86,7 +86,7 @@ exports.createResume = async (req, res) => {
         if (error.code === 11000) {
             return res.status(400).json({
                 success: false,
-                message: 'رزومه با این مشخصات قبلاً ایجاد شده است'
+                message: 'رزومه با این مشخصات قبلا ایجاد شده است'
             });
         }
 
@@ -1534,7 +1534,7 @@ exports.verifyResume = async (req, res) => {
         if (req.user.role !== 'admin') {
             return res.status(403).json({
                 success: false,
-                message: 'فقط ادمین می‌تواند رزومه را تأیید کند'
+                message: 'فقط ادمین می‌تواند رزومه را تایید کند'
             });
         }
 
@@ -1544,13 +1544,13 @@ exports.verifyResume = async (req, res) => {
         res.status(200).json({
             success: true,
             data: resume,
-            message: 'رزومه با موفقیت تأیید شد'
+            message: 'رزومه با موفقیت تایید شد'
         });
     } catch (error) {
         console.error('Error verifying resume:', error);
         res.status(500).json({
             success: false,
-            message: 'خطای سرور در تأیید رزومه'
+            message: 'خطای سرور در تایید رزومه'
         });
     }
 };

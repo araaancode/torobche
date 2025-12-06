@@ -1022,7 +1022,7 @@ const BusinessTemplatesPage = () => {
                                 marginLeft: 'auto',
                                 marginRight: 'auto'
                             }}>
-                                با فیلترهای فعلی هیچ قالبی پیدا نشد. لطفاً فیلترها را تغییر دهید.
+                                با فیلترهای فعلی هیچ قالبی پیدا نشد. لطفا فیلترها را تغییر دهید.
                             </p>
                             <button
                                 onClick={resetFilters}
