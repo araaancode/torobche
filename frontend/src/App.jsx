@@ -28,7 +28,7 @@ import RestaurantMenuPage from './pages/RestaurantMenuPage';
 import DoctorCardPage from './pages/DoctorCardPage';
 import DigitalResumePage from './pages/DigitalResumePage';
 import BusinessCardPage from './pages/BusinessCardPage';
-import BusinessCardsApiPage from "./pages/BusinessCardsApiPage"
+// import BusinessCardsApiPage from "./pages/BusinessCardsApiPage"
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -43,6 +43,10 @@ import AdminSettings from './pages/admin/AdminSettings';
 
 // Styles
 import './App.css';
+import RestaurantMenuBuilder from './pages/RestaurantMenuBuilder';
+import VisitCardBuilder from './pages/VisitCardBuilder';
+import BusinessCardBuilder from './pages/BusinessCardBuilder';
+import ResumeBuilder from './pages/ResumeBuilder';
 
 // Constants
 const ROUTE_TYPES = {
@@ -180,12 +184,12 @@ const appRoutes = [
     type: ROUTE_TYPES.PROTECTED,
     layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
   },
-  {
-    path: '/business-cards/api',
-    component: BusinessCardsApiPage,
-    type: ROUTE_TYPES.PROTECTED,
-    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
-  },
+  // {
+  //   path: '/business-cards/api',
+  //   component: BusinessCardsApiPage,
+  //   type: ROUTE_TYPES.PROTECTED,
+  //   layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  // },
   {
     path: '/business-cards',
     component: BusinessCards,
@@ -209,6 +213,35 @@ const appRoutes = [
     component: QRCodeManager,
     type: ROUTE_TYPES.PROTECTED,
     layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
+
+  // builder pages
+  {
+    path: '/restaurant-menu-builder',
+    component: RestaurantMenuBuilder,
+    type: ROUTE_TYPES.ADMIN,
+    layout: LAYOUT_TYPES.ADMIN_LAYOUT
+  },
+
+  {
+    path: '/visit-card-builder',
+    component: VisitCardBuilder,
+    type: ROUTE_TYPES.ADMIN,
+    layout: LAYOUT_TYPES.ADMIN_LAYOUT
+  },
+
+  {
+    path: '/business-card-builder',
+    component: BusinessCardBuilder,
+    type: ROUTE_TYPES.ADMIN,
+    layout: LAYOUT_TYPES.ADMIN_LAYOUT
+  },
+
+  {
+    path: '/resume-builder',
+    component: ResumeBuilder,
+    type: ROUTE_TYPES.ADMIN,
+    layout: LAYOUT_TYPES.ADMIN_LAYOUT
   },
 
   // Admin Routes
@@ -265,7 +298,9 @@ const appRoutes = [
     component: AdminSettings,
     type: ROUTE_TYPES.ADMIN,
     layout: LAYOUT_TYPES.ADMIN_LAYOUT
-  }
+  },
+
+
 ];
 
 // Layout Components

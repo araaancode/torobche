@@ -21,7 +21,7 @@ const UserProfile = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl opacity-20 floating"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20 floating" style={{animationDelay: '1.5s'}}></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-20 floating" style={{ animationDelay: '1.5s' }}></div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
@@ -53,10 +53,10 @@ const UserProfile = () => {
                   <PiCamera className="text-gray-600 text-sm" />
                 </button>
               </div>
-              
+
               <h2 className="text-xl font-black text-gray-800 mb-2">{user.name}</h2>
               <p className="text-gray-600 text-sm mb-4">{user.bio}</p>
-              
+
               <div className="space-y-2 text-right">
                 <div className="flex items-center space-x-2 rtl:space-x-reverse text-gray-600">
                   <PiEnvelope className="text-blue-500" />
@@ -78,57 +78,57 @@ const UserProfile = () => {
           <div className="lg:col-span-2">
             <div className="glass-card rounded-3xl p-6 shadow-2xl hover-lift">
               <h3 className="text-xl font-black text-gray-800 mb-6">اطلاعات شخصی</h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">نام کامل</label>
                   <input
                     type="text"
                     value={user.name}
-                    onChange={(e) => setUser({...user, name: e.target.value})}
+                    onChange={(e) => setUser({ ...user, name: e.target.value })}
                     disabled={!isEditing}
                     className="w-full glass-effect rounded-2xl px-4 py-3 text-gray-800 disabled:opacity-50"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">ایمیل</label>
                   <input
                     type="email"
                     value={user.email}
-                    onChange={(e) => setUser({...user, email: e.target.value})}
+                    onChange={(e) => setUser({ ...user, email: e.target.value })}
                     disabled={!isEditing}
                     className="w-full glass-effect rounded-2xl px-4 py-3 text-gray-800 disabled:opacity-50"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">شماره تماس</label>
                   <input
                     type="tel"
                     value={user.phone}
-                    onChange={(e) => setUser({...user, phone: e.target.value})}
+                    onChange={(e) => setUser({ ...user, phone: e.target.value })}
                     disabled={!isEditing}
                     className="w-full glass-effect rounded-2xl px-4 py-3 text-gray-800 disabled:opacity-50"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">آدرس</label>
                   <input
                     type="text"
                     value={user.address}
-                    onChange={(e) => setUser({...user, address: e.target.value})}
+                    onChange={(e) => setUser({ ...user, address: e.target.value })}
                     disabled={!isEditing}
                     className="w-full glass-effect rounded-2xl px-4 py-3 text-gray-800 disabled:opacity-50"
                   />
                 </div>
-                
+
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">درباره من</label>
                   <textarea
                     value={user.bio}
-                    onChange={(e) => setUser({...user, bio: e.target.value})}
+                    onChange={(e) => setUser({ ...user, bio: e.target.value })}
                     disabled={!isEditing}
                     rows="3"
                     className="w-full glass-effect rounded-2xl px-4 py-3 text-gray-800 disabled:opacity-50 resize-none"

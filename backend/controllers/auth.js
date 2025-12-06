@@ -16,7 +16,7 @@ const generateToken = (userId) => {
 
 const register = async (req, res) => {
     try {
-        const { firstName, lastName, phone, password } = req.body;
+        const { firstName, lastName, phone, password, confirmPassword } = req.body;
 
         // Check if user already exists
         const existingUser = await User.findOne({ phone });
@@ -32,25 +32,26 @@ const register = async (req, res) => {
             firstName,
             lastName,
             phone,
-            password // Will be hashed by pre-save middleware
+            password,
+            confirmPassword
         });
 
         // Save user first (without OTP)
         await user.save();
 
-        // // Generate OTP
-        // const code = user.generateVerificationCode();
-        // await user.save();
+        // Generate OTP
+        const code = user.generateVerificationCode();
+        await user.save();
 
-        // // Send OTP via SMS
-        // const smsSent = await sendOTP(phone, code);
+        // Send OTP via SMS
+        const smsSent = await sendOTP(phone, code);
 
-        // if (!smsSent) {
-        //     return res.status(500).json({
-        //         success: false,
-        //         message: 'خطا در ارسال کد تایید'
-        //     });
-        // }
+        if (!smsSent) {
+            return res.status(500).json({
+                success: false,
+                message: 'خطا در ارسال کد تایید'
+            });
+        }
 
         // Generate token for later verification
         const token = generateToken(user._id);
@@ -93,9 +94,18 @@ const register = async (req, res) => {
 };
 
 // ورود با رمز عبور
+// controllers/auth.js - بخش loginWithPassword
 const loginWithPassword = async (req, res) => {
     try {
         const { phone, password } = req.body;
+
+        // اعتبارسنجی ورودی
+        if (!phone || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'شماره موبایل و رمز عبور الزامی هستند'
+            });
+        }
 
         const user = await User.findOne({ phone });
         if (!user) {
@@ -105,24 +115,55 @@ const loginWithPassword = async (req, res) => {
             });
         }
 
-        // Check if account is locked
-        if (user.isLocked) {
-            const remainingTime = Math.ceil((user.lockUntil - Date.now()) / (60 * 1000));
+        // بررسی قفل بودن حساب
+        try {
+            user.isAccountLocked();
+        } catch (lockError) {
             return res.status(423).json({
                 success: false,
-                message: `حساب شما قفل شده است. ${remainingTime} دقیقه دیگر مجدد تلاش کنید.`
+                message: lockError.message
             });
         }
 
+        // بررسی وجود رمز عبور در دیتابیس
+        if (!user.password) {
+            console.error(`User ${phone} has no password in database`);
+            return res.status(400).json({
+                success: false,
+                message: 'خطا در اطلاعات حساب کاربری'
+            });
+        }
+
+        // مقایسه رمز عبور
         const isPasswordValid = await user.comparePassword(password);
         if (!isPasswordValid) {
+            // افزایش تعداد تلاش‌های ناموفق
+            user.loginAttempts += 1;
+
+            // قفل کردن حساب پس از ۵ تلاش ناموفق
+            if (user.loginAttempts >= 5) {
+                user.lockUntil = Date.now() + 15 * 60 * 1000; // 15 دقیقه
+                user.isLocked = true;
+            }
+
+            // ذخیره تغییرات بدون استفاده از pre-save middleware
+            await user.save({ validateBeforeSave: false });
+
             return res.status(400).json({
                 success: false,
                 message: 'شماره موبایل یا رمز عبور اشتباه است'
             });
         }
 
-        // تولید توکن و تنظیم کوکی
+        // بازنشانی تعداد تلاش‌های ناموفق پس از ورود موفق
+        user.loginAttempts = 0;
+        user.isLocked = false;
+        user.lockUntil = null;
+
+        // ذخیره تغییرات بدون استفاده از pre-save middleware
+        await user.save({ validateBeforeSave: false });
+
+        // تولید توکن
         const token = generateToken(user._id);
         setAuthCookie(res, token);
 
@@ -142,6 +183,14 @@ const loginWithPassword = async (req, res) => {
     } catch (error) {
         console.error('Login error:', error);
 
+        // بررسی خطای خاص bcrypt
+        if (error.message.includes('Illegal arguments') || error.message.includes('رمز عبور کاربر')) {
+            return res.status(500).json({
+                success: false,
+                message: 'خطا در اطلاعات حساب کاربری'
+            });
+        }
+
         if (error.message.includes('قفل شده')) {
             return res.status(423).json({
                 success: false,
@@ -151,10 +200,11 @@ const loginWithPassword = async (req, res) => {
 
         res.status(500).json({
             success: false,
-            message: error.message || 'خطای سرور در ورود'
+            message: 'خطای سرور در ورود'
         });
     }
 };
+
 
 // درخواست کد تایید برای ورود/ثبت‌نام
 const requestVerificationCode = async (req, res) => {

@@ -15,6 +15,8 @@ import {
   PiShieldCheck
 } from 'react-icons/pi';
 
+import { Link } from "react-router-dom"
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -43,12 +45,15 @@ const Header = () => {
   }, []);
 
   const navItems = [
-    { name: 'صفحه اصلی', href: '#home', icon: <PiHouse style={{ fontSize: '0.875rem' }} /> },
-    { name: 'قالب‌ها', href: '#templates', icon: <PiCards style={{ fontSize: '0.875rem' }} /> },
-    { name: 'نمونه کارها', href: '#portfolio', icon: <PiBriefcase style={{ fontSize: '0.875rem' }} /> },
-    { name: 'قیمت‌گذاری', href: '#pricing', icon: <PiTag style={{ fontSize: '0.875rem' }} /> },
-    { name: 'درباره ما', href: '#about', icon: <PiInfo style={{ fontSize: '0.875rem' }} /> },
-    { name: 'تماس', href: '#contact', icon: <PiPhone style={{ fontSize: '0.875rem' }} /> }
+    { name: 'صفحه اصلی', href: '/', icon: <PiHouse style={{ fontSize: '0.875rem' }} /> },
+    { name: 'ساخت منوی رستوران', href: '/restaurant-menu-builder', icon: <PiCards style={{ fontSize: '0.875rem' }} /> },
+    { name: 'ساخت کارت ویزیت', href: '/visit-card-builder', icon: <PiCards style={{ fontSize: '0.875rem' }} /> },
+    { name: 'ساخت کارت مشاغل', href: '/business-card-builder', icon: <PiCards style={{ fontSize: '0.875rem' }} /> },
+    { name: 'ساخت رزومه', href: '/resume-builder', icon: <PiCards style={{ fontSize: '0.875rem' }} /> },
+    // { name: 'نمونه کارها', href: '#portfolio', icon: <PiBriefcase style={{ fontSize: '0.875rem' }} /> },
+    // { name: 'قیمت‌گذاری', href: '#pricing', icon: <PiTag style={{ fontSize: '0.875rem' }} /> },
+    // { name: 'درباره ما', href: '#about', icon: <PiInfo style={{ fontSize: '0.875rem' }} /> },
+    // { name: 'تماس', href: '#contact', icon: <PiPhone style={{ fontSize: '0.875rem' }} /> }
   ];
 
   // Inline styles
@@ -336,8 +341,12 @@ const Header = () => {
                 e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
               }}
             >
-              <PiUser />
-              <span>ورود</span>
+
+              <Link to="/login">
+                <PiUser />
+                <span>ورود</span>
+              </Link>
+
             </button>
 
             {/* Main CTA Button */}

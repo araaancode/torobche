@@ -1,50 +1,42 @@
-// models/VisitTemplate.js - نسخه ساده‌تر
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const visitTemplateSchema = new mongoose.Schema({
+
     title: {
         type: String,
         required: true,
         trim: true
     },
-
-    doctorName: {
+    description: {
         type: String,
-        required: true
+        required: true,
+        trim: true
+    },
+    price: {
+        type: Number,
+        required: true,
     },
 
-    specialty: {
+    image: {
         type: String,
-        default: "عمومی"
+        required: true,
     },
-
-    phoneNumbers: [{
-        type: String
+    colorPallete: [{
+        type: String,
+        required: true,
     }],
 
-    address: String,
-    city: String,
-
-    // تصاویر قالب
-    logo: String,
-    profileImage: String,
-
-    // وضعیت
-    isActive: {
-        type: Boolean,
-        default: true
-    },
-
-    // لیست کارت‌های ساخته شده از این قالب
-    usedInCards: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'VisitCard'
-    }]
-
 }, {
-    timestamps: true
-});
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+})
 
-const VisitTemplate = mongoose.model('VisitTemplate', visitTemplateSchema);
+visitTemplateSchema.index({ title: 'text', description: 'text' });
+visitTemplateSchema.index({ user: 1 });
+visitTemplateSchema.index({ price: 1 });
 
-module.exports = VisitTemplate;
+
+const VisitTemplate = mongoose.model('VisitTemplate', visitTemplateSchema)
+
+module.exports = VisitTemplate

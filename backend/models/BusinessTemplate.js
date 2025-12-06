@@ -34,7 +34,6 @@ const businessTemplateSchema = new mongoose.Schema({
             'دیگر'
         ]
     },
-    // Default fields for business cards created from this template
     defaultFields: {
         title: {
             type: String,
