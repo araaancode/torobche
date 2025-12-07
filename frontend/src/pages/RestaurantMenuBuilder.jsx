@@ -22,7 +22,7 @@ import {
     List
 } from 'lucide-react';
 
-const MenuBuilder = () => {
+const RestaurantMenuBuilder = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const isEditing = !!id;
@@ -501,8 +501,8 @@ const MenuBuilder = () => {
                                                     key={category}
                                                     onClick={() => setSelectedCategory(category)}
                                                     className={`px-4 py-2 rounded-lg transition-all duration-300 ${selectedCategory === category
-                                                            ? 'bg-purple-600 text-white shadow-md'
-                                                            : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                                                        ? 'bg-purple-600 text-white shadow-md'
+                                                        : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
                                                         }`}
                                                 >
                                                     {category === 'all' ? 'همه' : category}
@@ -965,4 +965,4 @@ const MenuBuilder = () => {
     );
 };
 
-export default MenuBuilder;
+export default RestaurantMenuBuilder;

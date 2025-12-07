@@ -1,7 +1,7 @@
 // routes/templates.js
 const express = require('express');
 const router = express.Router();
-const upload = require('../config/multerConfig'); // Now it's the upload instance
+const upload = require('../config/multerConfig');
 const templatesCtrls = require("../controllers/templates");
 
 router.get('/', templatesCtrls.getTemplates);

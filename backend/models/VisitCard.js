@@ -1,51 +1,119 @@
-// models/VisitCard.js
 const mongoose = require("mongoose");
 
 const visitCardSchema = new mongoose.Schema({
-    template: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'VisitTemplate',
-        required: true
-    },
-
     title: {
         type: String,
-        required: true,
+        required: [true, "عنوان کارت الزامی است"],
+        trim: true,
+        minlength: [2, "عنوان باید حداقل ۲ کاراکتر باشد"],
+        maxlength: [100, "عنوان نباید بیشتر از ۱۰۰ کاراکتر باشد"]
+    },
+
+    template: [{
+        type: mongoose.Schema.Types.ObjectId,
+        required: [true, "تمپلیت کارت الزامی است"],
+        ref: "VisitTemplate"
+    }],
+
+    coverImage: {
+        type: String,
+        required: [true, "تصویر کاور الزامی است"]
+    },
+
+    bussinessName: {
+        type: String,
+        required: [true, "نام کسب‌وکار الزامی است"],
+        trim: true,
+        minlength: [2, "نام کسب‌وکار باید حداقل ۲ کاراکتر باشد"],
+        maxlength: [200, "نام کسب‌وکار نباید بیشتر از ۲۰۰ کاراکتر باشد"]
+    },
+
+    qrcode: {
+        type: String,
+        default: null
+    },
+
+    specialities: [{
+        type: String,
+        trim: true,
+        maxlength: [50, "هر تخصص نباید بیشتر از ۵۰ کاراکتر باشد"]
+    }],
+
+    uniqueCode: {
+        type: String,
+        unique: true,
+        sparse: true,
         trim: true
     },
 
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+    // فیلد مشکل‌دار اصلاح شد
+    shareableLink: {
+        type: String,
+        unique: true,
+        sparse: true,   // اجازه می‌دهد چند null داشته باشیم
+        trim: true,
+        default: null
     },
 
-    doctorInfo: {
-        name: String,
-        specialty: String,
-        phoneNumbers: [String],
-        address: String,
-        city: String
+    isActive: {
+        type: Boolean,
+        default: true
     },
-
-    image: String,
-
 
     viewCount: {
         type: Number,
-        default: 0
+        default: 0,
+        min: 0
     },
 
-    createdAt: {
-        type: Date,
-        default: Date.now
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: [true, "شناسه ایجادکننده الزامی است"]
     },
-    updatedAt: {
-        type: Date,
-        default: Date.now
+
+    metadata: {
+        type: Map,
+        of: mongoose.Schema.Types.Mixed,
+        default: {}
     }
 
+}, {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 });
 
-const VisitCard = mongoose.model('VisitCard', visitCardSchema);
+
+// Indexes
+visitCardSchema.index({ bussinessName: 1 });
+visitCardSchema.index({ createdBy: 1 });
+visitCardSchema.index({ isActive: 1 });
+
+/*  
+|--------------------------------------------------------------------------
+| Middleware قبل از ذخیره
+|--------------------------------------------------------------------------
+*/
+visitCardSchema.pre("save", async function () {
+
+    // تولید uniqueCode اگر وجود ندارد
+    if (!this.uniqueCode) {
+        this.uniqueCode = `VC-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    }
+
+    // تولید shareableLink اگر وجود ندارد
+    if (!this.shareableLink) {
+        this.shareableLink = `share-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    }
+
+    // حذف موارد تکراری در specialities
+    if (this.specialities && this.specialities.length > 0) {
+        this.specialities = [...new Set(this.specialities.map(s => s.trim()))];
+    }
+});
+
+
+const VisitCard = mongoose.model("VisitCard", visitCardSchema);
 
 module.exports = VisitCard;

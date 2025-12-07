@@ -1,23 +1,15 @@
-// routes/visitTemplateRoutes.js
+// routes/templates.js
 const express = require('express');
 const router = express.Router();
-const visitTemplateCtrls = require('../controllers/visitTemplates');
 const upload = require('../config/multerConfig');
+const visitTemplatesCtrls = require("../controllers/visitTemplates");
 
-const templateUpload = upload.fields([
-    { name: 'logo', maxCount: 1 },
-    { name: 'profileImage', maxCount: 1 },
-    { name: 'backgroundImage', maxCount: 1 }
-]);
-
-router.get('/', visitTemplateCtrls.getAllTemplates);
-router.get('/search', visitTemplateCtrls.searchTemplates);
-router.get('/user/:userId', visitTemplateCtrls.getUserTemplates);
-router.get('/:id', visitTemplateCtrls.getTemplateById);
-
-router.post('/', templateUpload, visitTemplateCtrls.createTemplate);
-router.put('/:id', templateUpload, visitTemplateCtrls.updateTemplate);
-router.delete('/:id', visitTemplateCtrls.deleteTemplate);
-router.patch('/:id/toggle-status', visitTemplateCtrls.toggleTemplateStatus);
+router.get('/', visitTemplatesCtrls.getVisitTemplates);
+router.get('/:id', visitTemplatesCtrls.getVisitTemplate);
+router.post('/', upload.single('image'), visitTemplatesCtrls.createVisitTemplate);
+router.put('/:id/update', visitTemplatesCtrls.updateVisitTemplate);
+router.put('/:id/update-image', upload.single('image'), visitTemplatesCtrls.updateVisitTemplateImage);
+router.put('/:id/update-colors', visitTemplatesCtrls.updateVisitTemplateColors);
+router.delete('/:id', visitTemplatesCtrls.deleteVisitTemplate);
 
 module.exports = router;

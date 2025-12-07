@@ -1,699 +1,395 @@
 const VisitTemplate = require('../models/VisitTemplate');
-const VisitCard = require('../models/VisitCard');
-const mongoose = require('mongoose');
-const QRCode = require('qrcode');
 const fs = require('fs').promises;
 const path = require('path');
+
+// ایمپورت کانفیگ مالتر
 const { upload } = require('../config/multerConfig');
 
-// Helper functions
-const deleteOldFile = async (filePath) => {
-    if (filePath && filePath.startsWith('/')) {
-        try {
-            const fullPath = path.join(process.cwd(), filePath.substring(1));
+// تابع کمکی برای حذف فایل عکس قدیمی
+const deleteOldImage = async (imagePath) => {
+    try {
+        if (imagePath && !imagePath.includes('default-')) {
+            const fullPath = path.join(__dirname, '..', imagePath);
             await fs.unlink(fullPath);
-        } catch (error) {
-            if (error.code !== 'ENOENT') {
-                console.error(`خطا در حذف فایل: ${filePath}`, error);
-            }
         }
+    } catch (error) {
+        console.log('خطا در حذف عکس قدیمی:', error.message);
+        // خطا رو پرتاب نکنیم، فقط لاگ کنیم
     }
 };
 
-const formatTemplateResponse = (template, req) => {
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const templateObj = template.toObject ? template.toObject() : template;
-
-    return {
-        ...templateObj,
-        logo: templateObj.logo ? `${baseUrl}${templateObj.logo}` : null,
-        profileImage: templateObj.profileImage ? `${baseUrl}${templateObj.profileImage}` : null,
-        backgroundImage: templateObj.backgroundImage ? `${baseUrl}${templateObj.backgroundImage}` : null,
-        qrCode: templateObj.qrCode ? `${baseUrl}${templateObj.qrCode}` : null
-    };
-};
-
-// ================== VISIT TEMPLATE CONTROLLERS ==================
-
-// دریافت تمام قالب‌ها
-exports.getAllTemplates = async (req, res) => {
+// @description =>> دریافت تمام قالب‌ها
+// @http verb =>> GET
+// @access =>> عمومی
+// @route =>> /api/visit-templates
+exports.getVisitTemplates = async (req, res) => {
     try {
-        const {
-            specialty,
-            city,
-            isActive,
-            isPremium,
-            search,
-            page = 1,
-            limit = 10
-        } = req.query;
+        const templates = await VisitTemplate.find()
 
-        const query = {};
-
-        if (specialty) query.specialty = specialty;
-        if (city) query.city = city;
-        if (isActive !== undefined) query.isActive = isActive === 'true';
-        if (isPremium !== undefined) query.isPremium = isPremium === 'true';
-
-        if (search) {
-            query.$or = [
-                { title: { $regex: search, $options: 'i' } },
-                { description: { $regex: search, $options: 'i' } },
-                { doctorName: { $regex: search, $options: 'i' } }
-            ];
-        }
-
-        const skip = (parseInt(page) - 1) * parseInt(limit);
-
-        const [templates, total] = await Promise.all([
-            VisitTemplate.find(query)
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(parseInt(limit)),
-            VisitTemplate.countDocuments(query)
-        ]);
-
-        const templatesWithUrls = templates.map(template =>
-            formatTemplateResponse(template, req)
-        );
 
         res.status(200).json({
             success: true,
+            message: 'قالب‌ها با موفقیت دریافت شدند',
             count: templates.length,
-            total,
-            totalPages: Math.ceil(total / parseInt(limit)),
-            currentPage: parseInt(page),
-            data: templatesWithUrls
+            data: templates
         });
     } catch (error) {
-        console.error('خطا در دریافت قالب‌ها:', error);
+        console.error(error);
         res.status(500).json({
             success: false,
-            message: 'خطا در دریافت لیست قالب‌ها',
-            error: error.message
+            message: 'خطای سرور در دریافت قالب‌ها'
         });
     }
 };
 
-// دریافت قالب بر اساس ID
-exports.getTemplateById = async (req, res) => {
+// @description =>> دریافت یک قالب
+// @http verb =>> GET
+// @access =>> عمومی
+// @route =>> /api/visit-templates/:id
+exports.getVisitTemplate = async (req, res) => {
     try {
-        const { id } = req.params;
-
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({
-                success: false,
-                message: 'شناسه قالب نامعتبر است'
-            });
-        }
-
-        const template = await VisitTemplate.findById(id)
-
+        const template = await VisitTemplate.findById(req.params.id)
 
         if (!template) {
             return res.status(404).json({
                 success: false,
-                message: 'قالب یافت نشد'
+                message: 'قالب مورد نظر یافت نشد'
             });
         }
 
-        // افزایش تعداد بازدید
-        template.viewCount += 1;
-        await template.save();
-
         res.status(200).json({
             success: true,
-            data: formatTemplateResponse(template, req)
+            message: 'قالب با موفقیت دریافت شد',
+            data: template
         });
     } catch (error) {
-        console.error('خطا در دریافت قالب:', error);
+        console.error(error);
         res.status(500).json({
             success: false,
-            message: 'خطا در دریافت قالب',
-            error: error.message
+            message: 'خطای سرور در دریافت قالب'
         });
     }
 };
 
-// ایجاد قالب جدید
-exports.createTemplate = async (req, res) => {
+// @description =>> ایجاد قالب جدید (با آپلود عکس)
+// @http verb =>> POST
+// @access =>> خصوصی
+// @route =>> /api/visit-templates
+exports.createVisitTemplate = async (req, res) => {
     try {
-        const {
-            title,
-            description,
-            doctorName,
-            specialty,
-            degree,
-            phoneNumbers,
-            address,
-            city,
-            clinicName,
-            services,
-            certificates,
-            socialMedia,
-            templateStyle
-        } = req.body;
+        const { title, description, price, colorPallete, user } = req.body;
 
-        // اعتبارسنجی فیلدهای اجباری
-        const requiredFields = {
-            title,
-            description,
-            doctorName,
-            specialty,
-            phoneNumbers,
-            address,
-            city
-        };
-
-        const missingFields = Object.keys(requiredFields)
-            .filter(key => !requiredFields[key])
-            .map(key => {
-                const persianNames = {
-                    title: 'عنوان',
-                    description: 'توضیحات',
-                    doctorName: 'نام پزشک',
-                    specialty: 'تخصص',
-                    phoneNumbers: 'شماره تلفن',
-                    address: 'آدرس',
-                    city: 'شهر'
-                };
-                return persianNames[key];
-            });
-
-        if (missingFields.length > 0) {
+        // بررسی آیا عکس آپلود شده است
+        if (!req.file) {
             return res.status(400).json({
                 success: false,
-                message: 'فیلدهای اجباری پر نشده‌اند',
-                missingFields
+                message: 'لطفا یک تصویر آپلود کنید'
             });
         }
 
-        // پردازش داده‌ها
-        const templateData = {
+        // بررسی فیلدهای الزامی
+        if (!title || !description || !price) {
+            // حذف عکس آپلود شده چون داده‌ها ناقص هستند
+            if (req.file) {
+                await deleteOldImage(`uploads/templates/${req.file.filename}`);
+            }
+            return res.status(400).json({
+                success: false,
+                message: 'لطفا تمام فیلدهای الزامی را پر کنید (عنوان، توضیحات، قیمت)'
+            });
+        }
+
+        // پارس کردن رنگ‌ها
+        let colors = colorPallete;
+        if (typeof colorPallete === 'string') {
+            try {
+                colors = JSON.parse(colorPallete);
+            } catch (e) {
+                colors = colorPallete.split(',').map(color => color.trim());
+            }
+        }
+
+        // ایجاد قالب جدید
+        const template = await VisitTemplate.create({
             title,
             description,
-            doctorName,
-            specialty,
-            degree: degree || 'دکترای عمومی',
-            phoneNumbers: Array.isArray(phoneNumbers) ? phoneNumbers : [phoneNumbers],
-            address,
-            city,
-            clinicName: clinicName || '',
-            // createdBy: req.user._id,
-            createdBy: "6924c610eaadce3699fc149f",
-            isActive: true
-        };
-
-        // پردازش ساعت کاری
-        if (req.body.officeHours) {
-            try {
-                templateData.officeHours = JSON.parse(req.body.officeHours);
-            } catch (error) {
-                templateData.officeHours = req.body.officeHours;
-            }
-        }
-
-        // پردازش خدمات
-        if (services) {
-            templateData.services = Array.isArray(services)
-                ? services
-                : services.split(',').map(s => s.trim());
-        }
-
-        // پردازش مدارک
-        if (certificates) {
-            try {
-                templateData.certificates = JSON.parse(certificates);
-            } catch (error) {
-                templateData.certificates = certificates;
-            }
-        }
-
-        // پردازش شبکه‌های اجتماعی
-        if (socialMedia) {
-            try {
-                templateData.socialMedia = JSON.parse(socialMedia);
-            } catch (error) {
-                templateData.socialMedia = socialMedia;
-            }
-        }
-
-        // پردازش استایل
-        if (templateStyle) {
-            try {
-                templateData.templateStyle = JSON.parse(templateStyle);
-            } catch (error) {
-                templateData.templateStyle = templateStyle;
-            }
-        }
-
-        // پردازش فایل‌های آپلود شده
-        if (req.files) {
-            if (req.files.logo) {
-                templateData.logo = `/uploads/templates/${req.files.logo[0].filename}`;
-            }
-            if (req.files.profileImage) {
-                templateData.profileImage = `/uploads/templates/${req.files.profileImage[0].filename}`;
-            }
-            if (req.files.backgroundImage) {
-                templateData.backgroundImage = `/uploads/templates/${req.files.backgroundImage[0].filename}`;
-            }
-        }
-
-        // ایجاد قالب
-        const template = await VisitTemplate.create(templateData);
-
-        // ایجاد QR Code
-        const qrData = JSON.stringify({
-            templateId: template._id,
-            doctorName: template.doctorName,
-            specialty: template.specialty,
-            url: `${req.protocol}://${req.get('host')}/visit-template/${template._id}`
+            price,
+            image: `uploads/templates/${req.file.filename}`,
+            colorPallete: colors || [],
+            user: req.userId || user
         });
-
-        const qrDir = 'uploads/qrcodes/templates';
-        await fs.mkdir(qrDir, { recursive: true });
-
-        const qrFilename = `template-${template._id}-${Date.now()}.png`;
-        const qrPath = path.join(qrDir, qrFilename);
-        const fullQrPath = path.join(process.cwd(), qrPath);
-
-        await QRCode.toFile(fullQrPath, qrData, {
-            color: {
-                dark: templateData.templateStyle?.primaryColor || '#1a56db',
-                light: '#ffffff'
-            },
-            width: 300,
-            margin: 1
-        });
-
-        template.qrCode = `/qrcodes/templates/${qrFilename}`;
-        await template.save();
 
         res.status(201).json({
             success: true,
-            message: 'قالب با موفقیت ایجاد شد',
-            data: formatTemplateResponse(template, req)
+            message: 'قالب جدید با موفقیت ایجاد شد',
+            data: template
         });
-
     } catch (error) {
-        console.error('خطا در ایجاد قالب:', error);
+        console.error(error);
 
-        // پاک‌سازی فایل‌های آپلود شده
-        if (req.files) {
-            for (const field in req.files) {
-                for (const file of req.files[field]) {
-                    await deleteOldFile(`/uploads/templates/${file.filename}`);
-                }
-            }
+        // حذف عکس آپلود شده در صورت خطا
+        if (req.file) {
+            await deleteOldImage(`uploads/templates/${req.file.filename}`);
         }
 
         if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(val => val.message);
             return res.status(400).json({
                 success: false,
-                message: 'خطا در اعتبارسنجی داده‌ها',
-                error: error.message
+                message: 'خطای اعتبارسنجی: ' + messages.join(', ')
             });
         }
 
         if (error.code === 11000) {
             return res.status(400).json({
                 success: false,
-                message: 'قالب با این عنوان از قبل وجود دارد'
+                message: 'قالبی با این عنوان از قبل وجود دارد'
             });
         }
 
         res.status(500).json({
             success: false,
-            message: 'خطا در ایجاد قالب',
-            error: error.message
+            message: 'خطای سرور در ایجاد قالب جدید'
         });
     }
 };
 
-// به‌روزرسانی قالب
-exports.updateTemplate = async (req, res) => {
+// @description =>> بروزرسانی قالب
+// @http verb =>> PUT
+// @access =>> خصوصی (ادمین)
+// @route =>> /api/visit-templates/:id/update
+exports.updateVisitTemplate = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { title, description, price, colorPallete } = req.body;
+        const templateId = req.params.id;
 
-        // اعتبارسنجی شناسه
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({
-                success: false,
-                message: 'شناسه قالب نامعتبر است'
-            });
-        }
+        // یافتن قالب
+        let template = await VisitTemplate.findById(templateId);
 
-        // پیدا کردن قالب
-        const template = await VisitTemplate.findById(id);
         if (!template) {
             return res.status(404).json({
                 success: false,
-                message: 'قالب یافت نشد'
+                message: 'قالب مورد نظر یافت نشد'
             });
         }
 
-        // آماده‌سازی داده‌های به‌روزرسانی
-        const updateData = {};
-        const allowedFields = [
-            'title', 'description', 'doctorName', 'specialty', 'degree',
-            'phoneNumbers', 'address', 'city', 'clinicName', 'officeHours',
-            'services', 'certificates', 'socialMedia', 'templateStyle',
-            'location', 'isActive', 'isPremium'
-        ];
+        // آماده‌سازی داده‌های بروزرسانی
+        let updateData = {};
+        if (title) updateData.title = title;
+        if (description) updateData.description = description;
+        if (price) updateData.price = price;
 
-        // اضافه کردن فیلدهای مجاز
-        allowedFields.forEach(field => {
-            if (req.body[field] !== undefined) {
-                updateData[field] = req.body[field];
-            }
-        });
-
-        // پردازش فایل‌های آپلود شده
-        if (req.files) {
-            const fileMappings = {
-                logo: 'logo',
-                profileImage: 'profileImage',
-                backgroundImage: 'backgroundImage'
-            };
-
-            Object.entries(fileMappings).forEach(([field, dbField]) => {
-                if (req.files[field] && req.files[field][0]) {
-                    // حذف فایل قدیمی
-                    if (template[dbField]) {
-                        deleteOldFile(template[dbField]);
-                    }
-                    // ذخیره فایل جدید
-                    updateData[dbField] = `/uploads/templates/${req.files[field][0].filename}`;
+        // پارس کردن رنگ‌ها اگر ارسال شده باشند
+        if (colorPallete) {
+            let colors = colorPallete;
+            if (typeof colorPallete === 'string') {
+                try {
+                    colors = JSON.parse(colorPallete);
+                } catch (e) {
+                    colors = colorPallete.split(',').map(color => color.trim());
                 }
-            });
-        }
-
-        // پردازش آرایه‌های رشته‌ای
-        ['phoneNumbers', 'services'].forEach(field => {
-            if (updateData[field] && typeof updateData[field] === 'string') {
-                updateData[field] = updateData[field]
-                    .split(',')
-                    .map(item => item.trim())
-                    .filter(item => item.length > 0);
             }
-        });
-
-        // پردازش فیلدهای JSON
-        ['officeHours', 'certificates', 'socialMedia', 'templateStyle', 'location']
-            .forEach(field => {
-                if (updateData[field] && typeof updateData[field] === 'string') {
-                    try {
-                        updateData[field] = JSON.parse(updateData[field]);
-                    } catch (error) {
-                        // حذف فیلد نامعتبر
-                        delete updateData[field];
-                    }
-                }
-            });
-
-        // اعتبارسنجی تخصص
-        if (updateData.specialty) {
-            const validSpecialties = [
-                'عمومی', 'داخلی', 'جراح', 'ارتوپد', 'قلب و عروق', 'گوارش',
-                'اعصاب و روان', 'پوست و مو', 'زنان و زایمان', 'اورولوژی',
-                'اطفال', 'چشم پزشکی', 'ENT', 'دندانپزشکی', 'سایر'
-            ];
-
-            if (!validSpecialties.includes(updateData.specialty)) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'تخصص نامعتبر است',
-                    validSpecialties
-                });
-            }
+            updateData.colorPallete = colors;
         }
 
-        // اعتبارسنجی مدرک
-        if (updateData.degree) {
-            const validDegrees = ['دکترای عمومی', 'متخصص', 'فوق تخصص', 'استاد دانشگاه', 'فلوشیپ'];
-
-            if (!validDegrees.includes(updateData.degree)) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'مدرک نامعتبر است',
-                    validDegrees
-                });
-            }
-        }
-
-        // بررسی وجود داده برای به‌روزرسانی
-        if (Object.keys(updateData).length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'هیچ داده‌ای برای به‌روزرسانی ارسال نشده است'
-            });
-        }
-
-        // به‌روزرسانی قالب
-        const updatedTemplate = await VisitTemplate.findByIdAndUpdate(
-            id,
+        // بروزرسانی قالب
+        template = await VisitTemplate.findByIdAndUpdate(
+            templateId,
             updateData,
             { new: true, runValidators: true }
         );
 
-        // آماده‌سازی پاسخ
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
-        const response = {
-            id: updatedTemplate._id,
-            title: updatedTemplate.title,
-            doctorName: updatedTemplate.doctorName,
-            specialty: updatedTemplate.specialty,
-            phoneNumbers: updatedTemplate.phoneNumbers,
-            address: updatedTemplate.address,
-            city: updatedTemplate.city,
-            isActive: updatedTemplate.isActive,
-            logo: updatedTemplate.logo ? `${baseUrl}${updatedTemplate.logo}` : null,
-            profileImage: updatedTemplate.profileImage ? `${baseUrl}${updatedTemplate.profileImage}` : null,
-            backgroundImage: updatedTemplate.backgroundImage ? `${baseUrl}${updatedTemplate.backgroundImage}` : null,
-            createdAt: updatedTemplate.createdAt,
-            updatedAt: updatedTemplate.updatedAt,
-            updatedFields: Object.keys(updateData)
-        };
-
         res.status(200).json({
             success: true,
-            message: 'قالب با موفقیت به‌روزرسانی شد',
-            data: response
+            message: 'قالب با موفقیت بروزرسانی شد',
+            data: template
         });
-
     } catch (error) {
-        // پاک‌سازی فایل‌های آپلود شده در صورت خطا
-        if (req.files) {
-            for (const field in req.files) {
-                for (const file of req.files[field]) {
-                    await deleteOldFile(`/uploads/templates/${file.filename}`);
-                }
-            }
-        }
+        console.error(error);
 
         if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(val => val.message);
             return res.status(400).json({
                 success: false,
-                message: 'خطا در اعتبارسنجی داده‌ها',
-                error: error.message
+                message: 'خطای اعتبارسنجی: ' + messages.join(', ')
             });
         }
 
         if (error.code === 11000) {
             return res.status(400).json({
                 success: false,
-                message: 'عنوان قالب تکراری است'
+                message: 'قالبی با این عنوان از قبل وجود دارد'
             });
         }
 
         res.status(500).json({
             success: false,
-            message: 'خطا در به‌روزرسانی قالب',
-            error: error.message
+            message: 'خطای سرور در بروزرسانی قالب'
         });
     }
 };
-// حذف قالب
-exports.deleteTemplate = async (req, res) => {
-    try {
-        const { id } = req.params;
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
+// @description =>> بروزرسانی عکس قالب (با مالتر)
+// @http verb =>> PUT
+// @access =>> خصوصی (ادمین)
+// @route =>> /api/visit-templates/:id/update-image
+exports.updateVisitTemplateImage = async (req, res) => {
+    try {
+        const templateId = req.params.id;
+
+        // بررسی آیا عکس جدید آپلود شده است
+        if (!req.file) {
             return res.status(400).json({
                 success: false,
-                message: 'شناسه قالب نامعتبر است'
+                message: 'لطفا یک تصویر جدید آپلود کنید'
             });
         }
 
-        const template = await VisitTemplate.findById(id);
+        // یافتن قالب
+        const template = await VisitTemplate.findById(templateId);
+
+        if (!template) {
+            // حذف عکس آپلود شده چون قالب وجود ندارد
+            await deleteOldImage(`uploads/templates/${req.file.filename}`);
+            return res.status(404).json({
+                success: false,
+                message: 'قالب مورد نظر یافت نشد'
+            });
+        }
+
+        // ذخیره مسیر عکس قدیمی برای حذف
+        const oldImagePath = template.image;
+
+        // بروزرسانی عکس قالب
+        template.image = `uploads/templates/${req.file.filename}`;
+        await template.save();
+
+        // حذف فایل عکس قدیمی
+        await deleteOldImage(oldImagePath);
+
+        res.status(200).json({
+            success: true,
+            message: 'عکس قالب با موفقیت بروزرسانی شد',
+            data: {
+                _id: template._id,
+                title: template.title,
+                image: template.image
+            }
+        });
+    } catch (error) {
+        console.error(error);
+
+        // حذف عکس آپلود شده در صورت خطا
+        if (req.file) {
+            await deleteOldImage(`uploads/templates/${req.file.filename}`);
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'خطای سرور در بروزرسانی عکس قالب'
+        });
+    }
+};
+
+// @description =>> بروزرسانی رنگ‌های قالب
+// @http verb =>> PUT
+// @access =>> خصوصی (ادمین)
+// @route =>> /api/visit-templates/:id/update-colors
+exports.updateVisitTemplateColors = async (req, res) => {
+    try {
+        const { colorPallete } = req.body;
+        const templateId = req.params.id;
+
+        if (!colorPallete) {
+            return res.status(400).json({
+                success: false,
+                message: 'لطفا پالت رنگ‌ها را ارسال کنید'
+            });
+        }
+
+        // پارس کردن رنگ‌ها
+        let colors;
+        if (typeof colorPallete === 'string') {
+            try {
+                colors = JSON.parse(colorPallete);
+            } catch (e) {
+                colors = colorPallete.split(',').map(color => color.trim());
+            }
+        } else {
+            colors = colorPallete;
+        }
+
+        // یافتن قالب
+        const template = await VisitTemplate.findById(templateId);
 
         if (!template) {
             return res.status(404).json({
                 success: false,
-                message: 'قالب یافت نشد'
+                message: 'قالب مورد نظر یافت نشد'
             });
         }
 
-        // بررسی آیا قالب در کارت‌ها استفاده شده است
-        if (template.usedInCards && template.usedInCards.length > 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'این قالب در کارت‌های ویزیت استفاده شده و قابل حذف نیست',
-                usedInCardsCount: template.usedInCards.length
-            });
-        }
-
-        // حذف فایل‌های مرتبط
-        const filesToDelete = [
-            template.logo,
-            template.profileImage,
-            template.backgroundImage,
-            template.qrCode
-        ].filter(file => file);
-
-        for (const file of filesToDelete) {
-            await deleteOldFile(file);
-        }
-
-        await VisitTemplate.findByIdAndDelete(id);
+        // بروزرسانی رنگ‌ها
+        template.colorPallete = colors;
+        await template.save();
 
         res.status(200).json({
             success: true,
-            message: 'قالب با موفقیت حذف شد',
+            message: 'رنگ‌های قالب با موفقیت بروزرسانی شد',
             data: {
-                id: template._id,
+                _id: template._id,
                 title: template.title,
-                doctorName: template.doctorName
+                colorPallete: template.colorPallete
             }
         });
-
     } catch (error) {
-        console.error('خطا در حذف قالب:', error);
-        res.status(500).json({
-            success: false,
-            message: 'خطا در حذف قالب',
-            error: error.message
-        });
-    }
-};
+        console.error(error);
 
-// دریافت قالب‌های یک کاربر خاص
-exports.getUserTemplates = async (req, res) => {
-    try {
-        const { userId } = req.params;
-
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(val => val.message);
             return res.status(400).json({
                 success: false,
-                message: 'شناسه کاربر نامعتبر است'
+                message: 'خطای اعتبارسنجی: ' + messages.join(', ')
             });
         }
 
-        const templates = await VisitTemplate.find({ createdBy: userId })
-            .populate('createdBy', 'name email')
-            .sort({ createdAt: -1 });
-
-        const templatesWithUrls = templates.map(template =>
-            formatTemplateResponse(template, req)
-        );
-
-        res.status(200).json({
-            success: true,
-            count: templates.length,
-            data: templatesWithUrls
-        });
-    } catch (error) {
-        console.error('خطا در دریافت قالب‌های کاربر:', error);
         res.status(500).json({
             success: false,
-            message: 'خطا در دریافت قالب‌های کاربر',
-            error: error.message
+            message: 'خطای سرور در بروزرسانی رنگ‌های قالب'
         });
     }
 };
 
-// جستجوی قالب‌ها
-exports.searchTemplates = async (req, res) => {
+// @description =>> حذف قالب
+// @http verb =>> DELETE
+// @access =>> خصوصی (ادمین)
+// @route =>> /api/visit-templates/:id
+exports.deleteVisitTemplate = async (req, res) => {
     try {
-        const { q, specialty, city } = req.query;
-
-        const query = {};
-
-        if (q) {
-            query.$text = { $search: q };
-        }
-
-        if (specialty) query.specialty = specialty;
-        if (city) query.city = city;
-        query.isActive = true;
-
-        const templates = await VisitTemplate.find(query)
-            .populate('createdBy', 'name email')
-            .limit(20)
-            .sort({ score: { $meta: "textScore" } });
-
-        const templatesWithUrls = templates.map(template =>
-            formatTemplateResponse(template, req)
-        );
-
-        res.status(200).json({
-            success: true,
-            count: templates.length,
-            data: templatesWithUrls
-        });
-    } catch (error) {
-        console.error('خطا در جستجوی قالب‌ها:', error);
-        res.status(500).json({
-            success: false,
-            message: 'خطا در جستجوی قالب‌ها',
-            error: error.message
-        });
-    }
-};
-
-// فعال/غیرفعال کردن قالب
-exports.toggleTemplateStatus = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { isActive } = req.body;
-
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({
-                success: false,
-                message: 'شناسه قالب نامعتبر است'
-            });
-        }
-
-        const template = await VisitTemplate.findByIdAndUpdate(
-            id,
-            { isActive },
-            { new: true }
-        );
+        const template = await VisitTemplate.findById(req.params.id);
 
         if (!template) {
             return res.status(404).json({
                 success: false,
-                message: 'قالب یافت نشد'
+                message: 'قالب مورد نظر یافت نشد'
             });
         }
 
+        // حذف فایل عکس مرتبط
+        await deleteOldImage(template.image);
+
+        // حذف قالب از دیتابیس
+        await Template.deleteOne({ _id: req.params.id });
+
         res.status(200).json({
             success: true,
-            message: `قالب ${isActive ? 'فعال' : 'غیرفعال'} شد`,
-            data: {
-                id: template._id,
-                title: template.title,
-                isActive: template.isActive
-            }
+            message: 'قالب با موفقیت حذف شد'
         });
-
     } catch (error) {
-        console.error('خطا در تغییر وضعیت قالب:', error);
+        console.error(error);
         res.status(500).json({
             success: false,
-            message: 'خطا در تغییر وضعیت قالب',
-            error: error.message
+            message: 'خطای سرور در حذف قالب'
         });
     }
 };

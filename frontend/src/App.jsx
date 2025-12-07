@@ -50,6 +50,8 @@ import ResumeBuilder from './pages/ResumeBuilder';
 
 
 import MenuPage from "./pages/MenuPage"
+import AddFoodToMenu from "./pages/AddFoodToMenu"
+
 
 // Constants
 const ROUTE_TYPES = {
@@ -70,6 +72,13 @@ const appRoutes = [
   {
     path: '/',
     component: Home,
+    type: ROUTE_TYPES.PUBLIC,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
+
+  {
+    path: '/add-food/:menuId',
+    component: AddFoodToMenu,
     type: ROUTE_TYPES.PUBLIC,
     layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
   },
@@ -252,6 +261,14 @@ const appRoutes = [
     type: ROUTE_TYPES.ADMIN,
     layout: LAYOUT_TYPES.ADMIN_LAYOUT
   },
+
+  {
+    path: '/visit-template-builder',
+    component: VisitCardBuilder,
+    type: ROUTE_TYPES.ADMIN,
+    layout: LAYOUT_TYPES.ADMIN_LAYOUT
+  },
+
 
   // Admin Routes
   {

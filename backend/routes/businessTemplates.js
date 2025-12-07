@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const businessTemplateController = require('../controllers/businessTemplateController');
+const businessTemplateController = require('../controllers/bussinessTemplates');
 
 // Public routes
 router.get('/', businessTemplateController.getBusinessTemplates);

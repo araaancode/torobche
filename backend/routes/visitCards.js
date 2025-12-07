@@ -1,15 +1,19 @@
-// routes/visitCardRoutes.js - فوق ساده
+// routes/menuRoutes.js
 const express = require('express');
 const router = express.Router();
-const visitCardCtlrs = require('../controllers/visitCards');
+const upload = require('../config/multerConfig');
+const visitCardsCtrls = require("../controllers/visitCards");
 
-router.get('/', visitCardCtlrs.getAllCards);
-router.get('/:id', visitCardCtlrs.getCard);
-router.post('/', visitCardCtlrs.createCardFromTemplate);
-router.put('/:id', visitCardCtlrs.updateCard);
-router.delete('/:id', visitCardCtlrs.deleteCard);
+router.get('/', visitCardsCtrls.getVisitCards);
+router.get('/:id', visitCardsCtrls.getVisitCard);
+router.post('/', upload.fields([
+    { name: 'icon', maxCount: 1 },
+    { name: 'coverImage', maxCount: 1 }
+]), visitCardsCtrls.createVisitCard);
 
-router.get('/template/:templateId', visitCardCtlrs.getCardsByTemplate);
-router.patch('/:id/toggle', visitCardCtlrs.toggleCardStatus);
+// router.put('/:id/update', visitCardsCtrls.updateMenu);
+// router.put('/:id/update-cover-image', upload.single('coverImage'), visitCardsCtrls.updateMenuCoverImage);
+// router.put('/:id/update-icon', upload.single('icon'), visitCardsCtrls.updateMenuIcon);
+// router.delete('/:id', visitCardsCtrls.deleteMenu);
 
 module.exports = router;

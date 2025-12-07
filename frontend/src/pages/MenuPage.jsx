@@ -1,112 +1,177 @@
-// MenuPage.jsx - Simplified version
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+// MenuPage.jsx
+import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
+import { QRCodeSVG } from 'qrcode.react'; // تغییر این خط
 import {
-    Container,
-    Grid,
-    Card,
-    CardContent,
-    Typography,
-    Box,
-    Chip,
-    Button,
-    Avatar,
-    Paper,
-    Divider,
-    IconButton,
-    Tabs,
-    Tab,
-    CircularProgress,
-    Alert,
-    Badge,
-    Tooltip,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Snackbar,
-    CardMedia,
-    Fab,
-    TextField,
-    InputAdornment
-} from '@mui/material';
-import {
-    ArrowBack,
-    Restaurant,
-    Share,
-    Print,
-    Download,
-    QrCode as QrCodeIcon,
-    Favorite,
-    FavoriteBorder,
-    ContentCopy,
-    Phone,
-    Email,
-    LocationOn,
-    Language,
-    Schedule,
-    Star,
-    LocalOffer,
-    Category,
-    Image,
-    Close,
-    Fullscreen,
-    Facebook,
-    Instagram,
-    Twitter,
-    LinkedIn,
-    WhatsApp
-} from '@mui/icons-material';
-import { QRCodeSVG } from 'qrcode.react';
+    PiForkKnife,
+    PiPlus,
+    PiArrowRight,
+    PiUserCircle,
+    PiArrowLeft,
+    PiBowlFoodLight,
+    PiCheckCircle,
+    PiSparkle,
+    PiHeart,
+    PiHeartFill,
+    PiMapPin,
+    PiPhone,
+    PiEnvelope,
+    PiCalendarCheck,
+    PiClock,
+    PiUsers,
+    PiInstagramLogo,
+    PiFacebookLogo,
+    PiWhatsappLogo,
+    PiQrCode,
+    PiTrendUp,
+    PiStar,
+    PiShoppingCart,
+    PiCamera,
+    PiUserBold,
+    PiDownload,
+    PiShare,
+    PiSealCheck,
+    PiFire,
+    PiCoffee,
+    PiIceCream,
+    PiPizza,
+    PiLeaf,
+    PiHamburger,
+    PiCurrencyDollar,
+    PiTrash,
+    PiPencil,
+    PiEye,
+    PiGlobe,
+    PiBuilding,
+    PiInfo,
+    PiWarningCircle,
+    PiSpinner
+} from 'react-icons/pi';
 
-function MenuPage() {
+// URL API
+const API_BASE_URL = 'http://localhost:5000';
+const API_URL = `${API_BASE_URL}/api`;
+
+// تنظیمات پیش‌فرض Axios
+axios.defaults.withCredentials = true;
+
+const MenuPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('menu');
     const [isFavorite, setIsFavorite] = useState(false);
     const [menuData, setMenuData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [qrDialogOpen, setQrDialogOpen] = useState(false);
+    const [error, setError] = useState(null);
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
-    const [printDialogOpen, setPrintDialogOpen] = useState(false);
-    const [copied, setCopied] = useState(false);
-    const [fullscreenImage, setFullscreenImage] = useState(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
-    // Mock menu data
-    const mockMenuData = {
-        id: id,
-        title: 'منوی رستوران ایرانی',
-        bussinessName: 'رستوران شاندیز',
-        description: 'منوی غذاهای ایرانی با کیفیت عالی و سرویس سریع. با بهترین مواد اولیه و طبخ سنتی.',
-        icon: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-        coverImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
-        qrcode: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.href)}`
+    // Fetch menu data from API
+    const fetchMenuData = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Fetch menu details
+            const menuResponse = await axios.get(`${API_URL}/menus/${id}`, {
+                withCredentials: true
+            });
+
+            if (menuResponse.data.success) {
+                const menu = menuResponse.data.data;
+
+                // Fetch foods for this menu
+                const foodsResponse = await axios.get(`${API_URL}/foods`, {
+                    withCredentials: true,
+                    params: { menuId: id }
+                });
+
+                // Organize foods by category
+                const foodsByCategory = {};
+                if (foodsResponse.data.success) {
+                    foodsResponse.data.data.forEach(food => {
+                        const category = food.category || 'سایر';
+                        if (!foodsByCategory[category]) {
+                            foodsByCategory[category] = [];
+                        }
+                        foodsByCategory[category].push(food);
+                    });
+                }
+
+                // Create category items
+                const categoryItems = Object.keys(foodsByCategory).map(category => ({
+                    name: category,
+                    icon: getCategoryIcon(category),
+                    items: foodsByCategory[category]
+                }));
+
+                setMenuData({
+                    ...menu,
+                    foods: foodsResponse.data.success ? foodsResponse.data.data : [],
+                    categoryItems
+                });
+
+                // Check if menu is favorite
+                const favorites = JSON.parse(localStorage.getItem('favoriteMenus') || '[]');
+                setIsFavorite(favorites.includes(menu._id));
+            } else {
+                throw new Error('منو پیدا نشد');
+            }
+        } catch (error) {
+            console.error('Error fetching menu:', error);
+            setError('خطا در دریافت اطلاعات منو');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Get icon for food category
+    const getCategoryIcon = (category) => {
+        switch (category) {
+            case 'پیش غذا':
+            case 'appetizer':
+                return <PiSparkle className="text-blue-500" />;
+            case 'غذای اصلی':
+            case 'main':
+                return <PiFire className="text-red-500" />;
+            case 'نوشیدنی':
+            case 'drink':
+                return <PiCoffee className="text-amber-500" />;
+            case 'دسر':
+            case 'dessert':
+                return <PiIceCream className="text-pink-500" />;
+            case 'سالاد':
+            case 'salad':
+                return <PiLeaf className="text-green-500" />;
+            case 'ساندویچ':
+            case 'sandwich':
+                return <PiHamburger className="text-orange-500" />;
+            default:
+                return <PiForkKnife className="text-purple-500" />;
+        }
     };
 
     useEffect(() => {
-        // Simulate API call
-        const timer = setTimeout(() => {
-            setMenuData(mockMenuData);
-
-            // Check if menu is in favorites
-            const favorites = JSON.parse(localStorage.getItem('favoriteMenus') || '[]');
-            setIsFavorite(favorites.includes(id));
-
-            setLoading(false);
-        }, 1000);
-
-        return () => clearTimeout(timer);
+        if (id) {
+            fetchMenuData();
+        }
     }, [id]);
+
+    const handleGoToProfile = () => {
+        navigate('/profile', { state: { tab: 'menus' } });
+    };
 
     const handleToggleFavorite = () => {
         const favorites = JSON.parse(localStorage.getItem('favoriteMenus') || '[]');
+        const menuId = menuData?._id;
 
         if (isFavorite) {
-            const newFavorites = favorites.filter(fav => fav !== id);
+            const newFavorites = favorites.filter(fav => fav !== menuId);
             localStorage.setItem('favoriteMenus', JSON.stringify(newFavorites));
         } else {
-            favorites.push(id);
+            favorites.push(menuId);
             localStorage.setItem('favoriteMenus', JSON.stringify(favorites));
         }
 
@@ -114,7 +179,7 @@ function MenuPage() {
     };
 
     const handleShare = async () => {
-        const shareUrl = window.location.href;
+        const shareUrl = `${window.location.origin}/menu/${id}`;
 
         if (navigator.share) {
             try {
@@ -133,16 +198,22 @@ function MenuPage() {
     };
 
     const handleCopyUrl = () => {
-        navigator.clipboard.writeText(window.location.href);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 3000);
-    };
+        const shareUrl = `${window.location.origin}/menu/${id}`;
+        navigator.clipboard.writeText(shareUrl);
 
-    const generateQRData = () => {
-        return window.location.href;
+        // Show success message
+        const shareBtn = document.querySelector('[data-share-btn]');
+        if (shareBtn) {
+            const originalText = shareBtn.textContent;
+            shareBtn.textContent = 'کپی شد!';
+            setTimeout(() => {
+                shareBtn.textContent = originalText;
+            }, 2000);
+        }
     };
 
     const handleDownloadQR = () => {
+        const shareUrl = `${window.location.origin}/menu/${id}`;
         const svg = document.getElementById('menu-qr-code');
         if (svg) {
             const svgData = new XMLSerializer().serializeToString(svg);
@@ -155,831 +226,663 @@ function MenuPage() {
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
 
-                const pngUrl = canvas.toDataURL("image/png");
-                const downloadLink = document.createElement("a");
-                downloadLink.href = pngUrl;
-                downloadLink.download = `menu-qr-${id}.png`;
-                document.body.appendChild(downloadLink);
+                const pngFile = canvas.toDataURL('image/png');
+                const downloadLink = document.createElement('a');
+                downloadLink.download = `menu-qr-${menuData?.title || 'menu'}.png`;
+                downloadLink.href = pngFile;
                 downloadLink.click();
-                document.body.removeChild(downloadLink);
             };
 
             img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
         }
     };
 
-    const handlePrint = () => {
-        setPrintDialogOpen(true);
+    const handleEditMenu = () => {
+        navigate(`/profile?tab=menus&edit=${id}`);
     };
 
-    // Mock food items
-    const foodCategories = [
-        {
-            id: 1,
-            name: 'پیش غذا',
-            items: [
-                { id: 1, name: 'ترشی کلم', description: 'ترشی مخصوص کلم با ادویه های خاص', price: '۲۵,۰۰۰', image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' },
-                { id: 2, name: 'سالاد فصل', description: 'سالاد تازه با سس مخصوص', price: '۳۰,۰۰۰', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' },
-            ]
-        },
-        {
-            id: 2,
-            name: 'غذای اصلی',
-            items: [
-                { id: 3, name: 'چلوکباب کوبیده', description: 'کباب کوبیده ممتاز با برنج ایرانی', price: '۱۵۰,۰۰۰', image: 'https://images.unsplash.com/photo-1585937421612-70ca003675ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' },
-                { id: 4, name: 'قرمه سبزی', description: 'خورشت قرمه سبزی با گوشت گوسفندی', price: '۱۳۰,۰۰۰', image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' },
-            ]
-        },
-        {
-            id: 3,
-            name: 'نوشیدنی',
-            items: [
-                { id: 5, name: 'دوغ محلی', description: 'دوغ گازدار با نعناع', price: '۱۵,۰۰۰', image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' },
-                { id: 6, name: 'آب معدنی', description: 'آب معدنی طبیعی', price: '۱۰,۰۰۰', image: 'https://images.unsplash.com/photo-1523362628745-0c100150b504?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' },
-            ]
+    const handleDeleteMenu = async () => {
+        if (!window.confirm('آیا از حذف این منو مطمئن هستید؟ تمام غذاهای این منو نیز حذف خواهند شد.')) {
+            return;
         }
-    ];
 
-    const galleryImages = [
-        'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-        'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-        'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-        'https://images.unsplash.com/photo-1578474846511-04ba529f0b88?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-        'https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-        'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-    ];
+        try {
+            setDeleting(true);
+            const response = await axios.delete(`${API_URL}/menus/${id}`, {
+                withCredentials: true
+            });
+
+            if (response.data.success) {
+                alert('منو با موفقیت حذف شد!');
+                navigate('/profile?tab=menus');
+            } else {
+                throw new Error('خطا در حذف منو');
+            }
+        } catch (error) {
+            console.error('Error deleting menu:', error);
+            alert('خطا در حذف منو');
+        } finally {
+            setDeleting(false);
+            setDeleteDialogOpen(false);
+        }
+    };
+
+    const handleAddFood = () => {
+        navigate(`/add-food/${id}`);
+    };
+
+    const renderNoMenu = () => (
+        <div className="min-h-screen relative overflow-hidden pt-20 pb-12 md:pt-28 md:pb-16 bg-gradient-to-br from-gray-50/95 via-blue-50/95 to-purple-50/95 dark:from-gray-900/95 dark:via-blue-900/20 dark:to-purple-900/20 backdrop-blur-sm">
+            <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+                <div className="absolute top-8 left-8 w-64 h-64 md:w-80 md:h-80 bg-blue-300 dark:bg-blue-600 rounded-full blur-3xl opacity-20" />
+                <div className="absolute bottom-8 right-8 w-64 h-64 md:w-80 md:h-80 bg-purple-300 dark:bg-purple-600 rounded-full blur-3xl opacity-20" />
+            </div>
+
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="pt-20 pb-8">
+                    <div className="max-w-4xl mx-auto">
+                        <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl border border-white/30 dark:border-gray-700 text-center">
+                            <div className="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-xl">
+                                <PiForkKnife className="text-white text-4xl md:text-5xl" />
+                            </div>
+
+                            <h1 className="text-2xl md:text-3xl font-black text-gray-800 dark:text-white mb-4">
+                                منو پیدا نشد!
+                            </h1>
+
+                            <p className="text-gray-600 dark:text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
+                                ممکن است این منو حذف شده باشد یا آدرس اشتباه باشد.
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                                <button
+                                    onClick={handleGoToProfile}
+                                    className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-lg"
+                                >
+                                    <PiUserCircle className="text-xl" />
+                                    <span>رفتن به پروفایل</span>
+                                </button>
+
+                                <Link
+                                    to="/profile?tab=menus"
+                                    className="w-full sm:w-auto bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-white px-8 py-4 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl border border-gray-200 dark:border-gray-700 flex items-center justify-center gap-3 text-lg"
+                                >
+                                    <PiPlus className="text-xl" />
+                                    <span>ایجاد منو جدید</span>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 
     if (loading) {
         return (
-            <Box
-                sx={{
-                    minHeight: '100vh',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                <Box textAlign="center">
-                    <CircularProgress size={60} sx={{ color: 'white', mb: 2 }} />
-                    <Typography variant="h6" sx={{ color: 'white' }}>
-                        در حال بارگذاری منو...
-                    </Typography>
-                </Box>
-            </Box>
+            <div className="min-h-screen relative overflow-hidden pt-20 pb-12 md:pt-28 md:pb-16 bg-gradient-to-br from-gray-50/95 via-blue-50/95 to-purple-50/95 dark:from-gray-900/95 dark:via-blue-900/20 dark:to-purple-900/20 backdrop-blur-sm">
+                <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+                    <div className="absolute top-8 left-8 w-64 h-64 md:w-80 md:h-80 bg-blue-300 dark:bg-blue-600 rounded-full blur-3xl opacity-20" />
+                    <div className="absolute bottom-8 right-8 w-64 h-64 md:w-80 md:h-80 bg-purple-300 dark:bg-purple-600 rounded-full blur-3xl opacity-20" />
+                </div>
+
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="pt-20 pb-8">
+                        <div className="max-w-6xl mx-auto">
+                            <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/30 dark:border-gray-700 flex items-center justify-center h-96">
+                                <div className="text-center">
+                                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                    <p className="text-gray-600 dark:text-gray-400">در حال بارگذاری منو...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         );
     }
 
-    return (
-        <Box
-            sx={{
-                minHeight: '100vh',
-                background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-                pb: 4,
-            }}
-        >
-            {/* Header Section */}
-            <Box
-                sx={{
-                    position: 'relative',
-                    height: 400,
-                    overflow: 'hidden',
-                    mb: 4,
-                }}
-            >
-                {menuData?.coverImage && (
-                    <motion.div
-                        initial={{ scale: 1.1 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.7 }}
-                    >
-                        <Box
-                            component="img"
-                            src={menuData.coverImage}
-                            alt="Cover"
-                            sx={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                filter: 'brightness(0.7)',
-                            }}
-                        />
-                    </motion.div>
-                )}
+    if (error || !menuData) {
+        return renderNoMenu();
+    }
 
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7))',
-                    }}
-                />
+    const tabs = [
+        { id: 'menu', name: 'منو غذاها', icon: <PiForkKnife className="text-lg" /> },
+        { id: 'info', name: 'اطلاعات کسب‌وکار', icon: <PiBuilding className="text-lg" /> },
+        { id: 'qr', name: 'QR کد منو', icon: <PiQrCode className="text-lg" /> }
+    ];
 
-                <motion.div
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                >
-                    <IconButton
-                        onClick={() => navigate(-1)}
-                        sx={{
-                            position: 'absolute',
-                            top: 20,
-                            right: 20,
-                            backgroundColor: 'rgba(255,255,255,0.2)',
-                            backdropFilter: 'blur(10px)',
-                            color: 'white',
-                            '&:hover': {
-                                backgroundColor: 'rgba(255,255,255,0.3)',
-                            },
-                        }}
-                    >
-                        <ArrowBack />
-                    </IconButton>
-                </motion.div>
+    const stats = [
+        { label: 'تعداد غذاها', value: menuData?.foods?.length || 0, icon: <PiForkKnife className="text-blue-500" /> },
+        { label: 'امتیاز', value: '۴.۵', icon: <PiStar className="text-yellow-500" /> },
+        { label: 'بازدید', value: '۲۵۴', icon: <PiTrendUp className="text-green-500" /> },
+        { label: 'اشتراک‌گذاری', value: '۴۷', icon: <PiShare className="text-purple-500" /> }
+    ];
 
-                <motion.div
-                    initial={{ x: 20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                >
-                    <IconButton
-                        onClick={handleToggleFavorite}
-                        sx={{
-                            position: 'absolute',
-                            top: 20,
-                            left: 20,
-                            backgroundColor: 'rgba(255,255,255,0.2)',
-                            backdropFilter: 'blur(10px)',
-                            color: isFavorite ? '#ff4081' : 'white',
-                            '&:hover': {
-                                backgroundColor: 'rgba(255,255,255,0.3)',
-                            },
-                        }}
-                    >
-                        {isFavorite ? <Favorite /> : <FavoriteBorder />}
-                    </IconButton>
-                </motion.div>
+    const renderMenuItems = () => (
+        <div className="space-y-8">
+            {menuData?.categoryItems?.length > 0 ? (
+                menuData.categoryItems.map((category, catIndex) => (
+                    <div key={catIndex} className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-white/30 dark:border-gray-700 shadow-lg">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl">
+                                {category.icon}
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-black text-gray-800 dark:text-white">{category.name}</h3>
+                                <p className="text-gray-600 dark:text-gray-400 text-sm">{category.items?.length || 0} آیتم</p>
+                            </div>
+                        </div>
 
-                <Container maxWidth="lg">
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            bottom: 40,
-                            left: 0,
-                            right: 0,
-                            color: 'white',
-                            textAlign: 'center',
-                        }}
-                    >
-                        <motion.div
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.4 }}
-                        >
-                            {menuData?.icon && (
-                                <Avatar
-                                    src={menuData.icon}
-                                    sx={{
-                                        width: 100,
-                                        height: 100,
-                                        mx: 'auto',
-                                        mb: 2,
-                                        border: '4px solid white',
-                                        boxShadow: 3,
-                                    }}
-                                />
-                            )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {category.items?.map((item, itemIndex) => (
+                                <div key={item._id || itemIndex} className="group relative bg-white dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-xl">
+                                    <div className="flex gap-4">
+                                        <div className="relative w-24 h-24 flex-shrink-0">
+                                            <img
+                                                src={item.images?.[0] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'}
+                                                alt={item.title}
+                                                className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
+                                                }}
+                                            />
+                                            {!item.inStock && (
+                                                <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                                                    <span className="text-white text-xs font-bold">ناموجود</span>
+                                                </div>
+                                            )}
+                                        </div>
 
-                            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                {menuData?.title}
-                            </Typography>
+                                        <div className="flex-1 text-right">
+                                            <div className="flex items-start justify-between mb-2">
+                                                <div className="flex items-center gap-1 text-amber-500">
+                                                    <PiStar className="fill-current" />
+                                                    <span className="font-bold text-sm">۴.۵</span>
+                                                </div>
+                                                <h4 className="font-black text-gray-800 dark:text-white text-lg">{item.title}</h4>
+                                            </div>
 
-                            <Typography variant="h6" sx={{ opacity: 0.9, mb: 2 }}>
-                                {menuData?.bussinessName}
-                            </Typography>
+                                            <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">{item.description}</p>
 
-                            {menuData?.description && (
-                                <Typography variant="body1" sx={{ maxWidth: 600, mx: 'auto', opacity: 0.8 }}>
-                                    {menuData.description}
-                                </Typography>
-                            )}
-                        </motion.div>
-                    </Box>
-                </Container>
-            </Box>
-
-            <Container maxWidth="lg">
-                <motion.div
-                    initial={{ y: 50, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                >
-                    {/* Action Buttons */}
-                    <Paper
-                        sx={{
-                            p: 3,
-                            mb: 4,
-                            borderRadius: 3,
-                            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                            background: 'rgba(255,255,255,0.9)',
-                            backdropFilter: 'blur(10px)',
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: 2,
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Tooltip title="اشتراک گذاری">
-                            <Button
-                                variant="contained"
-                                startIcon={<Share />}
-                                onClick={handleShare}
-                                sx={{
-                                    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-                                    borderRadius: 2,
-                                    px: 3,
-                                    py: 1,
-                                }}
-                            >
-                                اشتراک
-                            </Button>
-                        </Tooltip>
-
-                        <Tooltip title="چاپ منو">
-                            <Button
-                                variant="contained"
-                                startIcon={<Print />}
-                                onClick={handlePrint}
-                                sx={{
-                                    background: 'linear-gradient(45deg, #4CAF50 30%, #8BC34A 90%)',
-                                    borderRadius: 2,
-                                    px: 3,
-                                    py: 1,
-                                }}
-                            >
-                                چاپ
-                            </Button>
-                        </Tooltip>
-
-                        <Tooltip title="نمایش QR کد">
-                            <Button
-                                variant="contained"
-                                startIcon={<QrCodeIcon />}
-                                onClick={() => setQrDialogOpen(true)}
-                                sx={{
-                                    background: 'linear-gradient(45deg, #9C27B0 30%, #E91E63 90%)',
-                                    borderRadius: 2,
-                                    px: 3,
-                                    py: 1,
-                                }}
-                            >
-                                QR کد
-                            </Button>
-                        </Tooltip>
-
-                        <Tooltip title="دانلود PDF">
-                            <Button
-                                variant="contained"
-                                startIcon={<Download />}
-                                onClick={() => window.print()}
-                                sx={{
-                                    background: 'linear-gradient(45deg, #FF9800 30%, #FF5722 90%)',
-                                    borderRadius: 2,
-                                    px: 3,
-                                    py: 1,
-                                }}
-                            >
-                                دانلود
-                            </Button>
-                        </Tooltip>
-                    </Paper>
-
-                    {/* Tabs */}
-                    <Paper sx={{ mb: 4, borderRadius: 3, overflow: 'hidden', boxShadow: 3 }}>
-                        <Tabs
-                            value={activeTab}
-                            onChange={(e, newValue) => setActiveTab(newValue)}
-                            variant="fullWidth"
-                            sx={{
-                                background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
-                                '& .MuiTab-root': {
-                                    color: 'white',
-                                    fontSize: '1rem',
-                                    fontWeight: 'bold',
-                                },
-                                '& .Mui-selected': {
-                                    color: '#fff',
-                                },
-                            }}
-                        >
-                            <Tab label="منو غذاها" value="menu" icon={<Restaurant />} />
-                            <Tab label="اطلاعات رستوران" value="info" icon={<LocationOn />} />
-                            <Tab label="عکس‌ها" value="gallery" icon={<Image />} />
-                        </Tabs>
-
-                        <Box sx={{ p: 3 }}>
-                            <AnimatePresence mode="wait">
-                                {activeTab === 'menu' && (
-                                    <motion.div
-                                        key="menu"
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -20 }}
-                                        transition={{ duration: 0.3 }}
-                                    >
-                                        {foodCategories.map((category) => (
-                                            <Box key={category.id} sx={{ mb: 4 }}>
-                                                <Typography
-                                                    variant="h5"
-                                                    sx={{
-                                                        mb: 3,
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        color: 'primary.main',
-                                                        fontWeight: 'bold',
-                                                    }}
-                                                >
-                                                    <Category sx={{ ml: 1 }} />
-                                                    {category.name}
-                                                </Typography>
-
-                                                <Grid container spacing={3}>
-                                                    {category.items.map((item) => (
-                                                        <Grid item xs={12} md={6} key={item.id}>
-                                                            <Card
-                                                                sx={{
-                                                                    height: '100%',
-                                                                    borderRadius: 3,
-                                                                    overflow: 'hidden',
-                                                                    transition: 'transform 0.3s, box-shadow 0.3s',
-                                                                    '&:hover': {
-                                                                        transform: 'translateY(-5px)',
-                                                                        boxShadow: '0 12px 20px rgba(0,0,0,0.15)',
-                                                                    },
-                                                                }}
-                                                            >
-                                                                <Box sx={{ display: 'flex', height: 150 }}>
-                                                                    {item.image && (
-                                                                        <CardMedia
-                                                                            component="img"
-                                                                            sx={{
-                                                                                width: 150,
-                                                                                objectFit: 'cover',
-                                                                                cursor: 'pointer',
-                                                                            }}
-                                                                            image={item.image}
-                                                                            alt={item.name}
-                                                                            onClick={() => setFullscreenImage(item.image)}
-                                                                        />
-                                                                    )}
-                                                                    <CardContent sx={{ flex: 1 }}>
-                                                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 1 }}>
-                                                                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                                                                {item.name}
-                                                                            </Typography>
-                                                                            <Chip
-                                                                                label={item.price}
-                                                                                color="primary"
-                                                                                sx={{ fontWeight: 'bold', fontSize: '1rem' }}
-                                                                            />
-                                                                        </Box>
-                                                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                                                            {item.description}
-                                                                        </Typography>
-                                                                        <Box sx={{ display: 'flex', gap: 1 }}>
-                                                                            <Chip
-                                                                                icon={<Star sx={{ fontSize: 16 }} />}
-                                                                                label="۴.۵"
-                                                                                size="small"
-                                                                                variant="outlined"
-                                                                            />
-                                                                            <Chip
-                                                                                icon={<LocalOffer sx={{ fontSize: 16 }} />}
-                                                                                label="پرفروش"
-                                                                                size="small"
-                                                                                color="secondary"
-                                                                            />
-                                                                        </Box>
-                                                                    </CardContent>
-                                                                </Box>
-                                                            </Card>
-                                                        </Grid>
+                                            {item.ingredients && item.ingredients.length > 0 && (
+                                                <div className="flex gap-1 mb-3 flex-wrap">
+                                                    {item.ingredients.slice(0, 2).map((ingredient, idx) => (
+                                                        <span key={idx} className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs px-2 py-0.5 rounded-full">
+                                                            #{ingredient}
+                                                        </span>
                                                     ))}
-                                                </Grid>
-                                            </Box>
-                                        ))}
-                                    </motion.div>
-                                )}
+                                                    {item.ingredients.length > 2 && (
+                                                        <span className="text-gray-500 text-xs">+{item.ingredients.length - 2}</span>
+                                                    )}
+                                                </div>
+                                            )}
 
-                                {activeTab === 'info' && (
-                                    <motion.div
-                                        key="info"
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -20 }}
-                                        transition={{ duration: 0.3 }}
-                                    >
-                                        <Grid container spacing={4}>
-                                            <Grid item xs={12} md={6}>
-                                                <Card sx={{ p: 3, borderRadius: 3, height: '100%' }}>
-                                                    <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
-                                                        <LocationOn sx={{ ml: 1 }} />
-                                                        اطلاعات تماس
-                                                    </Typography>
-                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                            <Phone color="primary" />
-                                                            <Typography>۰۲۱-۱۲۳۴۵۶۷۸</Typography>
-                                                        </Box>
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                            <Email color="primary" />
-                                                            <Typography>info@restaurant.com</Typography>
-                                                        </Box>
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                            <LocationOn color="primary" />
-                                                            <Typography>تهران، خیابان ولیعصر، پلاک ۱۲۳</Typography>
-                                                        </Box>
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                            <Schedule color="primary" />
-                                                            <Typography>همه روزه از ۱۲ ظهر تا ۱۱ شب</Typography>
-                                                        </Box>
-                                                    </Box>
-                                                </Card>
-                                            </Grid>
-
-                                            <Grid item xs={12} md={6}>
-                                                <Card sx={{ p: 3, borderRadius: 3, height: '100%' }}>
-                                                    <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
-                                                        <Language sx={{ ml: 1 }} />
-                                                        شبکه‌های اجتماعی
-                                                    </Typography>
-                                                    <Grid container spacing={2}>
-                                                        {[
-                                                            { icon: <Instagram />, color: '#E4405F', label: 'اینستاگرام' },
-                                                            { icon: <Facebook />, color: '#1877F2', label: 'فیسبوک' },
-                                                            { icon: <Twitter />, color: '#1DA1F2', label: 'توییتر' },
-                                                            { icon: <LinkedIn />, color: '#0A66C2', label: 'لینکدین' },
-                                                            { icon: <WhatsApp />, color: '#25D366', label: 'واتساپ' },
-                                                        ].map((social, index) => (
-                                                            <Grid item xs={6} key={index}>
-                                                                <Button
-                                                                    fullWidth
-                                                                    startIcon={social.icon}
-                                                                    sx={{
-                                                                        justifyContent: 'flex-start',
-                                                                        color: social.color,
-                                                                        border: `1px solid ${social.color}`,
-                                                                        borderRadius: 2,
-                                                                        py: 1.5,
-                                                                    }}
-                                                                >
-                                                                    {social.label}
-                                                                </Button>
-                                                            </Grid>
-                                                        ))}
-                                                    </Grid>
-                                                </Card>
-                                            </Grid>
-                                        </Grid>
-                                    </motion.div>
-                                )}
-
-                                {activeTab === 'gallery' && (
-                                    <motion.div
-                                        key="gallery"
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -20 }}
-                                        transition={{ duration: 0.3 }}
-                                    >
-                                        <Grid container spacing={2}>
-                                            {galleryImages.map((img, index) => (
-                                                <Grid item xs={12} sm={6} md={4} key={index}>
-                                                    <Card
-                                                        sx={{
-                                                            borderRadius: 3,
-                                                            overflow: 'hidden',
-                                                            cursor: 'pointer',
-                                                            transition: 'transform 0.3s',
-                                                            '&:hover': {
-                                                                transform: 'scale(1.05)',
-                                                            },
-                                                        }}
-                                                        onClick={() => setFullscreenImage(img)}
-                                                    >
-                                                        <CardMedia
-                                                            component="img"
-                                                            height="200"
-                                                            image={img}
-                                                            alt={`Gallery ${index + 1}`}
-                                                        />
-                                                    </Card>
-                                                </Grid>
-                                            ))}
-                                        </Grid>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </Box>
-                    </Paper>
-
-                    {/* QR Code Section */}
-                    <Paper
-                        sx={{
-                            p: 4,
-                            borderRadius: 3,
-                            textAlign: 'center',
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            color: 'white',
-                            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-                        }}
+                                            <div className="flex items-center justify-between">
+                                                <div className="text-left">
+                                                    <div className="flex items-center gap-1">
+                                                        <PiCurrencyDollar className="text-gray-400" />
+                                                        <div className="text-lg font-black text-gray-800 dark:text-white">
+                                                            {item.price?.toLocaleString() || '۰'}
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-gray-500 dark:text-gray-400 text-xs">تومان</div>
+                                                </div>
+                                                <div className={`text-xs ${item.inStock ? 'text-green-500' : 'text-red-500'}`}>
+                                                    {item.inStock ? 'موجود' : 'ناموجود'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <div className="text-center py-12">
+                    <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <PiForkKnife className="text-gray-400 text-3xl" />
+                    </div>
+                    <h3 className="text-xl font-black text-gray-800 dark:text-white mb-2">هنوز غذایی اضافه نکرده‌اید!</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">اولین غذای خود را به این منو اضافه کنید.</p>
+                    <button
+                        onClick={handleAddFood}
+                        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto"
                     >
-                        <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>
-                            QR کد منو
-                        </Typography>
-                        <Typography variant="body1" sx={{ mb: 3, opacity: 0.9 }}>
-                            اسکن کنید تا به این منو دسترسی داشته باشید
-                        </Typography>
+                        <PiPlus />
+                        اضافه کردن غذا
+                    </button>
+                </div>
+            )}
+        </div>
+    );
 
-                        <Box
-                            sx={{
-                                display: 'inline-block',
-                                p: 3,
-                                backgroundColor: 'white',
-                                borderRadius: 3,
-                                mb: 3,
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-                            }}
+    const renderBusinessInfo = () => (
+        <div className="space-y-6">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-white/30 dark:border-gray-700 shadow-lg">
+                <h3 className="text-lg font-black text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                    <PiBuilding className="text-blue-500" />
+                    اطلاعات کسب‌وکار
+                </h3>
+
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3 p-3 bg-gray-50/80 dark:bg-gray-700/80 rounded-xl">
+                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                            <PiForkKnife className="text-blue-500 text-lg" />
+                        </div>
+                        <div className="flex-1 text-right">
+                            <div className="text-sm text-gray-600 dark:text-gray-400">نام منو</div>
+                            <div className="font-medium text-gray-800 dark:text-white">{menuData?.title}</div>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 p-3 bg-gray-50/80 dark:bg-gray-700/80 rounded-xl">
+                        <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+                            <PiBuilding className="text-green-500 text-lg" />
+                        </div>
+                        <div className="flex-1 text-right">
+                            <div className="text-sm text-gray-600 dark:text-gray-400">نام کسب‌وکار</div>
+                            <div className="font-medium text-gray-800 dark:text-white">{menuData?.bussinessName || '---'}</div>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 p-3 bg-gray-50/80 dark:bg-gray-700/80 rounded-xl">
+                        <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+                            <PiInfo className="text-purple-500 text-lg" />
+                        </div>
+                        <div className="flex-1 text-right">
+                            <div className="text-sm text-gray-600 dark:text-gray-400">توضیحات</div>
+                            <div className="font-medium text-gray-800 dark:text-white">{menuData?.description || '---'}</div>
+                        </div>
+                    </div>
+
+                    <div className="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-500/5 dark:to-purple-500/5 rounded-xl border border-blue-200/50 dark:border-blue-800/50">
+                        <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">آمار منو</div>
+                        <div className="grid grid-cols-2 gap-3">
+                            {stats.map((stat, index) => (
+                                <div key={index} className="bg-white/50 dark:bg-gray-700/50 rounded-lg p-3 text-center">
+                                    <div className="text-2xl font-black text-gray-800 dark:text-white">{stat.value}</div>
+                                    <div className="text-xs text-gray-600 dark:text-gray-400">{stat.label}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-white/30 dark:border-gray-700 shadow-lg">
+                    <h3 className="text-lg font-black text-gray-800 dark:text-white mb-4">مدیریت منو</h3>
+                    <div className="space-y-3">
+                        <button
+                            onClick={handleEditMenu}
+                            className="w-full flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-xl transition-all duration-200 group"
                         >
+                            <PiPencil className="text-blue-500 group-hover:scale-110 transition-transform" />
+                            <span className="font-medium text-gray-800 dark:text-white">ویرایش اطلاعات منو</span>
+                        </button>
+                        <button
+                            onClick={handleAddFood}
+                            className="w-full flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-xl transition-all duration-200 group"
+                        >
+                            <PiPlus className="text-green-500 group-hover:scale-110 transition-transform" />
+                            <span className="font-medium text-gray-800 dark:text-white">اضافه کردن غذا</span>
+                        </button>
+                        <button
+                            onClick={() => setDeleteDialogOpen(true)}
+                            className="w-full flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-all duration-200 group"
+                        >
+                            <PiTrash className="text-red-500 group-hover:scale-110 transition-transform" />
+                            <span className="font-medium text-gray-800 dark:text-white">حذف منو</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-white/30 dark:border-gray-700 shadow-lg">
+                    <h3 className="text-lg font-black text-gray-800 dark:text-white mb-4">اشتراک گذاری</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                        <button
+                            onClick={handleShare}
+                            data-share-btn
+                            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 rounded-lg font-bold transition-all duration-300 flex items-center justify-center gap-2"
+                        >
+                            <PiShare />
+                            اشتراک گذاری
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('qr')}
+                            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-3 rounded-lg font-bold transition-all duration-300 flex items-center justify-center gap-2"
+                        >
+                            <PiQrCode />
+                            QR کد
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderQRCode = () => {
+        const shareUrl = `${window.location.origin}/menu/${id}`;
+
+        return (
+            <div className="space-y-6">
+                <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 text-white shadow-xl">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-2">
+                            <PiQrCode className="text-2xl" />
+                            <h3 className="text-xl font-black">QR کد منو</h3>
+                        </div>
+                        <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold">
+                            فعال
+                        </span>
+                    </div>
+
+                    <div className="flex flex-col items-center justify-center p-6">
+                        <div className="bg-white p-6 rounded-2xl shadow-2xl mb-6">
                             <QRCodeSVG
                                 id="menu-qr-code"
-                                value={generateQRData()}
+                                value={shareUrl}
                                 size={200}
                                 level="H"
                                 includeMargin={true}
+                                fgColor="#000000"
+                                bgColor="#ffffff"
                             />
-                        </Box>
+                        </div>
 
-                        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-                            <Button
-                                variant="contained"
-                                startIcon={<Download />}
+                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6 w-full max-w-md">
+                            <div className="text-sm text-blue-100 mb-2">لینک منو:</div>
+                            <div className="text-white font-mono text-sm break-all">
+                                {shareUrl}
+                            </div>
+                        </div>
+
+                        <p className="text-blue-100 text-center mb-6">
+                            مشتریان می‌توانند این QR کد را اسکن کنند تا به این منو دسترسی داشته باشند
+                        </p>
+
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <button
                                 onClick={handleDownloadQR}
-                                sx={{
-                                    backgroundColor: 'white',
-                                    color: '#764ba2',
-                                    '&:hover': {
-                                        backgroundColor: '#f5f5f5',
-                                    },
-                                }}
+                                className="bg-white text-blue-600 hover:bg-blue-50 px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                             >
-                                دانلود QR
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                startIcon={<Share />}
+                                <PiDownload />
+                                دانلود QR کد
+                            </button>
+                            <button
                                 onClick={handleShare}
-                                sx={{
-                                    borderColor: 'white',
-                                    color: 'white',
-                                    '&:hover': {
-                                        borderColor: '#e0e0e0',
-                                        backgroundColor: 'rgba(255,255,255,0.1)',
-                                    },
-                                }}
+                                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                             >
-                                اشتراک گذاری
-                            </Button>
-                        </Box>
-                    </Paper>
-                </motion.div>
-            </Container>
+                                <PiShare />
+                                اشتراک گذاری لینک
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-            {/* QR Code Dialog */}
-            <Dialog
-                open={qrDialogOpen}
-                onClose={() => setQrDialogOpen(false)}
-                maxWidth="sm"
-                fullWidth
-            >
-                <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-                    QR کد منو
-                </DialogTitle>
-                <DialogContent sx={{ textAlign: 'center', py: 4 }}>
-                    <Box
-                        sx={{
-                            p: 3,
-                            backgroundColor: '#f5f5f5',
-                            borderRadius: 2,
-                            display: 'inline-block',
-                            mb: 3,
-                        }}
-                    >
-                        <QRCodeSVG
-                            value={generateQRData()}
-                            size={256}
-                            level="H"
-                            includeMargin={true}
-                        />
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">
-                        اسکن QR کد برای دسترسی سریع به منو
-                    </Typography>
-                </DialogContent>
-                <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
-                    <Button
-                        onClick={handleDownloadQR}
-                        variant="contained"
-                        startIcon={<Download />}
-                    >
-                        دانلود QR کد
-                    </Button>
-                    <Button
-                        onClick={() => setQrDialogOpen(false)}
-                        variant="outlined"
-                    >
-                        بستن
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-white/30 dark:border-gray-700 shadow-lg">
+                        <h3 className="text-lg font-black text-gray-800 dark:text-white mb-4">آمار منو</h3>
+                        <div className="space-y-4">
+                            {stats.map((stat, index) => (
+                                <div key={index} className="flex items-center justify-between p-3 bg-gray-50/80 dark:bg-gray-700/80 rounded-xl">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-white dark:bg-gray-600 rounded-lg flex items-center justify-center">
+                                            {stat.icon}
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="font-medium text-gray-800 dark:text-white">{stat.label}</div>
+                                            <div className="text-2xl font-black text-gray-800 dark:text-white">{stat.value}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-white/30 dark:border-gray-700 shadow-lg">
+                        <h3 className="text-lg font-black text-gray-800 dark:text-white mb-4">راهنمای استفاده</h3>
+                        <div className="space-y-3">
+                            <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <span className="text-blue-600 dark:text-blue-400 text-sm font-bold">۱</span>
+                                </div>
+                                <div className="text-right">
+                                    <div className="font-medium text-gray-800 dark:text-white">دانلود QR کد</div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">برای نمایش در رستوران</div>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <span className="text-green-600 dark:text-green-400 text-sm font-bold">۲</span>
+                                </div>
+                                <div className="text-right">
+                                    <div className="font-medium text-gray-800 dark:text-white">اشتراک گذاری</div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">در شبکه‌های اجتماعی</div>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <span className="text-purple-600 dark:text-purple-400 text-sm font-bold">۳</span>
+                                </div>
+                                <div className="text-right">
+                                    <div className="font-medium text-gray-800 dark:text-white">چاپ منو</div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">برای مشتریان حضوری</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <section
+            className="min-h-screen relative overflow-hidden pt-20 pb-12 md:pt-28 md:pb-16 bg-gradient-to-br from-gray-50/95 via-blue-50/95 to-purple-50/95 dark:from-gray-900/95 dark:via-blue-900/20 dark:to-purple-900/20 backdrop-blur-sm"
+            aria-label="منوی رستوران"
+        >
+            <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+                <div className="absolute top-8 left-8 w-64 h-64 md:w-80 md:h-80 bg-blue-300 dark:bg-blue-600 rounded-full blur-3xl opacity-20" />
+                <div className="absolute bottom-8 right-8 w-64 h-64 md:w-80 md:h-80 bg-purple-300 dark:bg-purple-600 rounded-full blur-3xl opacity-20" />
+            </div>
+
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="pt-20 pb-8">
+                    <div className="mb-8">
+                        <div className="flex items-center justify-between mb-4">
+                            <button
+                                onClick={() => navigate(-1)}
+                                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white font-bold transition-colors duration-200 group"
+                            >
+                                <PiArrowLeft className="group-hover:-translate-x-1 transition-transform duration-200" />
+                                بازگشت
+                            </button>
+
+                            <button
+                                onClick={handleToggleFavorite}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all duration-300 ${isFavorite
+                                    ? 'bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-lg'
+                                    : 'bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700'
+                                    }`}
+                            >
+                                {isFavorite ? <PiHeartFill className="text-lg" /> : <PiHeart className="text-lg" />}
+                                {isFavorite ? 'حذف از علاقه‌مندی' : 'افزودن به علاقه‌مندی'}
+                            </button>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                            <div className="relative">
+                                <div className="w-24 h-24 rounded-2xl overflow-hidden border-4 border-white dark:border-gray-800 shadow-xl">
+                                    <img
+                                        src={menuData?.icon || `${API_BASE_URL}/uploads/default/menu-icon.png`}
+                                        alt={menuData?.title}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = 'https://via.placeholder.com/100?text=Menu';
+                                        }}
+                                    />
+                                </div>
+                                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-2 border-white flex items-center justify-center shadow-lg">
+                                    <PiCheckCircle className="text-white text-xs" />
+                                </div>
+                            </div>
+
+                            <div className="flex-1 text-right">
+                                <h1 className="text-3xl font-black text-gray-800 dark:text-white mb-2">
+                                    {menuData?.title || 'منو'}
+                                </h1>
+                                <p className="text-gray-600 dark:text-gray-400 mb-3">
+                                    {menuData?.bussinessName || 'کسب‌وکار شما'}
+                                </p>
+                                <div className="flex items-center gap-3 flex-wrap">
+                                    <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+                                        <PiCheckCircle className="text-sm" />
+                                        {menuData?.status || 'فعال'}
+                                    </span>
+                                    <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+                                        <PiSparkle className="text-sm" />
+                                        {menuData?.foods?.length || 0} غذا
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={handleAddFood}
+                                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+                                >
+                                    <PiPlus />
+                                    اضافه کردن غذا
+                                </button>
+                                <button
+                                    onClick={() => navigate('/profile?tab=menus')}
+                                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+                                >
+                                    <PiUserCircle />
+                                    مدیریت منو
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-6xl mx-auto">
+                        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl p-2 shadow-xl border border-white/30 dark:border-gray-700 mb-6">
+                            <div className="flex flex-wrap gap-2">
+                                {tabs.map((tab) => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${activeTab === tab.id
+                                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-gray-700/50'
+                                            }`}
+                                    >
+                                        {tab.icon}
+                                        {tab.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-white/30 dark:border-gray-700">
+                            {activeTab === 'menu' && renderMenuItems()}
+                            {activeTab === 'info' && renderBusinessInfo()}
+                            {activeTab === 'qr' && renderQRCode()}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Share Dialog */}
-            <Dialog
-                open={shareDialogOpen}
-                onClose={() => setShareDialogOpen(false)}
-                maxWidth="xs"
-                fullWidth
-            >
-                <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-                    اشتراک گذاری منو
-                </DialogTitle>
-                <DialogContent sx={{ textAlign: 'center', py: 4 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
-                        {[
-                            { icon: <WhatsApp />, color: '#25D366' },
-                            { icon: <TelegramIcon />, color: '#0088cc' },
-                            { icon: <Instagram />, color: '#E4405F' },
-                            { icon: <Facebook />, color: '#1877F2' },
-                        ].map((social, index) => (
-                            <IconButton
-                                key={index}
-                                sx={{
-                                    backgroundColor: social.color,
-                                    color: 'white',
-                                    width: 56,
-                                    height: 56,
-                                    '&:hover': {
-                                        backgroundColor: social.color,
-                                        opacity: 0.9,
-                                    },
-                                }}
+            {shareDialogOpen && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full border border-white/30 dark:border-gray-700 shadow-2xl">
+                        <h3 className="text-xl font-black text-gray-800 dark:text-white mb-4">اشتراک گذاری منو</h3>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">لینک این منو را با دیگران به اشتراک بگذارید:</p>
+
+                        <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 mb-6">
+                            <div className="text-gray-800 dark:text-gray-300 break-all text-sm">
+                                {`${window.location.origin}/menu/${id}`}
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={handleCopyUrl}
+                                className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 rounded-xl font-bold transition-all duration-300"
                             >
-                                {social.icon}
-                            </IconButton>
-                        ))}
-                    </Box>
-                    <TextField
-                        fullWidth
-                        value={window.location.href}
-                        InputProps={{
-                            readOnly: true,
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <Tooltip title="کپی لینک">
-                                        <IconButton onClick={handleCopyUrl}>
-                                            <ContentCopy />
-                                        </IconButton>
-                                    </Tooltip>
-                                </InputAdornment>
-                            ),
-                        }}
-                        sx={{ mb: 2 }}
-                    />
-                    {copied && (
-                        <Alert severity="success" sx={{ mt: 2 }}>
-                            لینک کپی شد!
-                        </Alert>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setShareDialogOpen(false)}>بستن</Button>
-                </DialogActions>
-            </Dialog>
+                                کپی لینک
+                            </button>
+                            <button
+                                onClick={() => setShareDialogOpen(false)}
+                                className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-xl font-bold transition-all duration-300"
+                            >
+                                بستن
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
-            {/* Fullscreen Image Dialog */}
-            <Dialog
-                open={!!fullscreenImage}
-                onClose={() => setFullscreenImage(null)}
-                maxWidth="lg"
-                fullWidth
-                sx={{
-                    '& .MuiDialog-paper': {
-                        backgroundColor: 'rgba(0,0,0,0.9)',
-                    },
-                }}
-            >
-                <DialogActions>
-                    <IconButton
-                        onClick={() => setFullscreenImage(null)}
-                        sx={{ color: 'white', position: 'absolute', top: 8, left: 8 }}
-                    >
-                        <Close />
-                    </IconButton>
-                    <IconButton
-                        onClick={() => window.open(fullscreenImage, '_blank')}
-                        sx={{ color: 'white', position: 'absolute', top: 8, right: 8 }}
-                    >
-                        <Fullscreen />
-                    </IconButton>
-                </DialogActions>
-                <DialogContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Box
-                        component="img"
-                        src={fullscreenImage}
-                        alt="Fullscreen"
-                        sx={{
-                            maxWidth: '100%',
-                            maxHeight: '80vh',
-                            objectFit: 'contain',
-                        }}
-                    />
-                </DialogContent>
-            </Dialog>
+            {/* Delete Dialog */}
+            {deleteDialogOpen && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full border border-white/30 dark:border-gray-700 shadow-2xl">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                                <PiWarningCircle className="text-red-500 text-2xl" />
+                            </div>
+                            <div className="text-right">
+                                <h3 className="text-xl font-black text-gray-800 dark:text-white">حذف منو</h3>
+                                <p className="text-gray-600 dark:text-gray-400 text-sm">آیا از حذف این منو مطمئن هستید؟</p>
+                            </div>
+                        </div>
 
-            {/* Print Dialog */}
-            <Dialog
-                open={printDialogOpen}
-                onClose={() => setPrintDialogOpen(false)}
-                maxWidth="sm"
-                fullWidth
-            >
-                <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-                    چاپ منو
-                </DialogTitle>
-                <DialogContent sx={{ py: 4 }}>
-                    <Typography variant="body1" sx={{ mb: 3 }}>
-                        آیا مایل به چاپ منو هستید؟
-                    </Typography>
-                    <Alert severity="info" sx={{ mb: 3 }}>
-                        پیشنهاد می‌شود از حالت منظره (Landscape) برای چاپ استفاده کنید.
-                    </Alert>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        onClick={() => {
-                            window.print();
-                            setPrintDialogOpen(false);
-                        }}
-                        variant="contained"
-                        color="primary"
-                    >
-                        چاپ
-                    </Button>
-                    <Button
-                        onClick={() => setPrintDialogOpen(false)}
-                        variant="outlined"
-                    >
-                        انصراف
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                        <div className="bg-red-50 dark:bg-red-900/10 rounded-xl p-4 mb-6">
+                            <div className="flex items-start gap-2">
+                                <PiWarningCircle className="text-red-500 mt-0.5 flex-shrink-0" />
+                                <p className="text-red-600 dark:text-red-400 text-sm">
+                                    توجه: تمام غذاهای این منو نیز حذف خواهند شد و این عمل قابل بازگشت نیست!
+                                </p>
+                            </div>
+                        </div>
 
-            {/* Snackbar for copy notification */}
-            <Snackbar
-                open={copied}
-                autoHideDuration={3000}
-                onClose={() => setCopied(false)}
-                message="لینک در کلیپ‌بورد کپی شد"
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-            />
-
-            {/* Floating QR Button */}
-            <Fab
-                color="primary"
-                sx={{
-                    position: 'fixed',
-                    bottom: 24,
-                    left: 24,
-                    background: 'linear-gradient(45deg, #9C27B0 30%, #E91E63 90%)',
-                }}
-                onClick={() => setQrDialogOpen(true)}
-            >
-                <QrCodeIcon />
-            </Fab>
-        </Box>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={handleDeleteMenu}
+                                disabled={deleting}
+                                className="flex-1 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2"
+                            >
+                                {deleting ? (
+                                    <>
+                                        <PiSpinner className="animate-spin" />
+                                        در حال حذف...
+                                    </>
+                                ) : (
+                                    <>
+                                        <PiTrash />
+                                        حذف منو
+                                    </>
+                                )}
+                            </button>
+                            <button
+                                onClick={() => setDeleteDialogOpen(false)}
+                                disabled={deleting}
+                                className="px-6 py-3 bg-gray-500 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-all duration-300"
+                            >
+                                انصراف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </section>
     );
-}
-
-function TelegramIcon() {
-    return (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.869 4.326-2.96-.924c-.643-.204-.656-.643.136-.953l11.57-4.46c.538-.196 1.006.128.832.941z" />
-        </svg>
-    );
-}
+};
 
 export default MenuPage;
