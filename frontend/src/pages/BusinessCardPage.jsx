@@ -35,7 +35,7 @@ import {
 } from 'react-icons/pi';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const CardDetailPage = () => {
+const BusinessCardPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('preview');
@@ -989,4 +989,4 @@ const CardDetailPage = () => {
   );
 };
 
-export default CardDetailPage;
+export default BusinessCardPage;

@@ -125,9 +125,10 @@ exports.getMenu = async (req, res) => {
 };
 
 // Create new menu (Multer middleware should be in routes)
+// در controllers/menus.js - تابع createMenu
 exports.createMenu = async (req, res) => {
     try {
-        const { title, template, bussinessName } = req.body;
+        const { title, template, bussinessName, description } = req.body;
 
         // Validate required fields
         if (!title || !template || !bussinessName) {
@@ -137,27 +138,32 @@ exports.createMenu = async (req, res) => {
             });
         }
 
-        // Check if files were uploaded
-        if (!req.files || !req.files['icon'] || !req.files['coverImage']) {
-            return res.status(400).json({
-                success: false,
-                message: 'لطفا آیکون و تصویر کاور را آپلود کنید'
-            });
-        }
-
-        // Prepare menu data
+        // Prepare menu data (فایل‌ها اختیاری هستند)
         const menuData = {
             title,
             template: Array.isArray(template) ? template : [template],
             bussinessName,
-            icon: `/uploads/menus/${req.files['icon'][0].filename}`,
-            coverImage: `/uploads/menus/${req.files['coverImage'][0].filename}`
+            description: description || ''
         };
+
+        // Add icon if uploaded
+        if (req.files && req.files['icon']) {
+            menuData.icon = `/uploads/menus/${req.files['icon'][0].filename}`;
+        } else {
+            menuData.icon = '/uploads/default/menu-icon.png'; // مسیر پیش‌فرض
+        }
+
+        // Add cover image if uploaded
+        if (req.files && req.files['coverImage']) {
+            menuData.coverImage = `/uploads/menus/${req.files['coverImage'][0].filename}`;
+        } else {
+            menuData.coverImage = '/uploads/default/menu-cover.jpg'; // مسیر پیش‌فرض
+        }
 
         // Create menu
         const menu = await Menu.create(menuData);
 
-        // Generate QR code for this menu
+        // Generate QR code (اختیاری)
         const qrData = JSON.stringify({
             menuId: menu._id,
             title: menu.title,
@@ -202,6 +208,7 @@ exports.createMenu = async (req, res) => {
             });
         }
 
+        console.error('خطا در ایجاد منو:', error);
         res.status(500).json({
             success: false,
             message: 'خطا در ایجاد منو',

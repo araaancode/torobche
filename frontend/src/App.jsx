@@ -48,6 +48,9 @@ import VisitCardBuilder from './pages/VisitCardBuilder';
 import BusinessCardBuilder from './pages/BusinessCardBuilder';
 import ResumeBuilder from './pages/ResumeBuilder';
 
+
+import MenuPage from "./pages/MenuPage"
+
 // Constants
 const ROUTE_TYPES = {
   PUBLIC: 'public',
@@ -205,6 +208,12 @@ const appRoutes = [
   {
     path: '/business-cards/editor',
     component: BusinessCardEditor,
+    type: ROUTE_TYPES.PROTECTED,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
+  {
+    path: '/menu/:id/foods',
+    component: MenuPage,
     type: ROUTE_TYPES.PROTECTED,
     layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
   },
