@@ -53,6 +53,7 @@ import MenuPage from "./pages/MenuPage"
 import AddFoodToMenu from "./pages/AddFoodToMenu"
 import VisitCardDetail from './pages/VisitCardDetail';
 
+import BusinessCardDetailePage from "./pages/BusinessCardDetailPage"
 
 // Constants
 const ROUTE_TYPES = {
@@ -209,12 +210,12 @@ const appRoutes = [
     type: ROUTE_TYPES.PROTECTED,
     layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
   },
-  {
-    path: '/business-cards/:id',
-    component: BusinessCardPage,
-    type: ROUTE_TYPES.PROTECTED,
-    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
-  },
+  // {
+  //   path: '/business-cards/:id',
+  //   component: BusinessCardPage,
+  //   type: ROUTE_TYPES.PROTECTED,
+  //   layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  // },
   {
     path: '/business-cards/editor',
     component: BusinessCardEditor,
@@ -258,6 +259,13 @@ const appRoutes = [
   {
     path: '/business-card-builder',
     component: BusinessCardBuilder,
+    type: ROUTE_TYPES.ADMIN,
+    layout: LAYOUT_TYPES.ADMIN_LAYOUT
+  },
+
+  {
+    path: '/business-cards/:id',
+    component: BusinessCardDetailePage,
     type: ROUTE_TYPES.ADMIN,
     layout: LAYOUT_TYPES.ADMIN_LAYOUT
   },
