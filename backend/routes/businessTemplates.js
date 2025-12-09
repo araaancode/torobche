@@ -1,21 +1,15 @@
+// routes/templates.js
 const express = require('express');
 const router = express.Router();
-const businessTemplateController = require('../controllers/bussinessTemplates');
+const upload = require('../config/multerConfig');
+const businessTemplatesCtrls = require("../controllers/bussinessTemplates");
 
-// Public routes
-router.get('/', businessTemplateController.getBusinessTemplates);
-router.get('/type/:businessType', businessTemplateController.getTemplatesByBusinessType);
-router.get('/popular', businessTemplateController.getPopularTemplates);
-router.get('/:id', businessTemplateController.getBusinessTemplate);
-router.get('/:id/preview', businessTemplateController.previewTemplate);
-
-router.post('/:id/rate', businessTemplateController.rateTemplate);
-router.get('/:id/stats', businessTemplateController.getTemplateStats);
-
-// Admin and template designer routes
-router.post('/', protect, businessTemplateController.createBusinessTemplate);
-router.put('/:id', protect, businessTemplateController.updateBusinessTemplate);
-router.delete('/:id', protect, businessTemplateController.deleteBusinessTemplate);
-router.post('/:id/duplicate', protect, businessTemplateController.duplicateTemplate);
+router.get('/', businessTemplatesCtrls.getBusinessTemplates);
+router.get('/:id', businessTemplatesCtrls.getBusinessTemplate);
+router.post('/', upload.single('image'), businessTemplatesCtrls.createBusinessTemplate);
+// router.put('/:id/update', businessTemplatesCtrls.updateVisitTemplate);
+// router.put('/:id/update-image', upload.single('image'), businessTemplatesCtrls.updateVisitTemplateImage);
+// router.put('/:id/update-colors', businessTemplatesCtrls.updateVisitTemplateColors);
+// router.delete('/:id', businessTemplatesCtrls.deleteVisitTemplate);
 
 module.exports = router;

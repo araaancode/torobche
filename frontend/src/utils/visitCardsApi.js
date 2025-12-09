@@ -1,293 +1,527 @@
 import axios from 'axios';
 
-// Set base URL for API requests
-// Use environment variable or default to localhost
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// URL پایه API - در صورت نیاز می‌توانید از .env استفاده کنید
+const API_BASE_URL = 'http://localhost:5000/api';
 
-// Or if using Create React App:
-// const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
-// Create axios instance with default config
-const api = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    timeout: 10000, // 10 second timeout
-    withCredentials: false // Set to true if using cookies/sessions
-});
-
-// Request interceptor for adding auth token
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
-
-// Response interceptor for handling errors
-api.interceptors.response.use(
-    (response) => {
-        // You can modify response data here if needed
-        return response;
-    },
-    (error) => {
-        if (error.response) {
-            // Server responded with error status
-            switch (error.response.status) {
-                case 401:
-                    // Unauthorized - redirect to login
-                    localStorage.removeItem('token');
-                    sessionStorage.removeItem('token');
-                    window.location.href = '/login';
-                    break;
-                case 403:
-                    // Forbidden
-                    console.error('دسترسی غیرمجاز');
-                    break;
-                case 404:
-                    // Not found
-                    console.error('منبع مورد نظر یافت نشد');
-                    break;
-                case 500:
-                    // Server error
-                    console.error('خطای سرور');
-                    break;
-                default:
-                    console.error('خطای ناشناخته');
-            }
-        } else if (error.request) {
-            // Request was made but no response received
-            console.error('ارتباط با سرور برقرار نشد');
-        } else {
-            // Something else happened
-            console.error('خطای ناشناخته در درخواست');
-        }
-
-        return Promise.reject(error);
-    }
-);
-
-// ==================== MENU API ====================
-export const menuApi = {
-    getAll: () => api.get('/menus'),
-    getById: (id) => api.get(`/menus/${id}`),
-    create: (data) => api.post('/menus', data),
-    update: (id, data) => api.put(`/menus/${id}`, data),
-    delete: (id) => api.delete(`/menus/${id}`),
-    getFoods: (menuId) => api.get(`/menus/${menuId}/foods`),
-    addFood: (menuId, foodData) => api.post(`/menus/${menuId}/foods`, foodData),
-    updateFood: (menuId, foodId, foodData) => api.put(`/menus/${menuId}/foods/${foodId}`, foodData),
-    deleteFood: (menuId, foodId) => api.delete(`/menus/${menuId}/foods/${foodId}`),
-    toggleStatus: (id, status) => api.patch(`/menus/${id}/status`, { status }),
-    getByBusiness: (businessId) => api.get(`/menus/business/${businessId}`),
-    generateQR: (menuId) => api.get(`/menus/${menuId}/qr`),
-    uploadImage: (menuId, formData) => {
-        const config = {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        };
-        return api.post(`/menus/${menuId}/image`, formData, config);
-    }
+// ایجاد نمونه axios پایه
+const createApi = (baseURL) => {
+    return axios.create({
+        baseURL,
+        withCredentials: true, // فعال کردن ارسال کوکی
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        timeout: 30000 // 30 ثانیه تایم‌اوت
+    });
 };
 
-// ==================== VISIT CARD API ====================
+// API کارت ویزیت
+const visitCardsApi = createApi(`${API_BASE_URL}/visit-cards`);
+
 export const visitCardApi = {
-    getAll: () => api.get('/visit-cards'),
-    getById: (id) => api.get(`/visit-cards/${id}`),
-    create: (data) => api.post('/visit-cards', data),
-    createFromTemplate: (templateId, data) => api.post(`/visit-cards/template/${templateId}`, data),
-    update: (id, data) => api.put(`/visit-cards/${id}`, data),
-    delete: (id) => api.delete(`/visit-cards/${id}`),
-    getByTemplate: (templateId) => api.get(`/visit-cards/template/${templateId}`),
-    getByUser: (userId) => api.get(`/visit-cards/user/${userId}`),
-    toggleStatus: (id, isActive) => api.patch(`/visit-cards/${id}/toggle`, { isActive }),
-    incrementView: (id) => api.patch(`/visit-cards/${id}/view`),
-    uploadImage: (id, formData) => {
-        const config = {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        };
-        return api.post(`/visit-cards/${id}/image`, formData, config);
-    },
-    generateQR: (id) => api.get(`/visit-cards/${id}/qr`),
-    downloadPDF: (id) => api.get(`/visit-cards/${id}/pdf`, {
-        responseType: 'blob'
-    }),
-    share: (id, data) => api.post(`/visit-cards/${id}/share`, data)
-};
+    // ================ توابع اصلی CRUD ================
 
-// ==================== VISIT TEMPLATE API ====================
-export const templateApi = {
-    getAll: () => api.get('/templates'),
-    getById: (id) => api.get(`/templates/${id}`),
-    create: (data) => api.post('/templates', data),
-    update: (id, data) => api.put(`/templates/${id}`, data),
-    delete: (id) => api.delete(`/templates/${id}`),
-    getByCategory: (category) => api.get(`/templates/category/${category}`),
-
-    // Visit template specific endpoints
-    getAllVisitTemplates: () => api.get('/visit-templates'),
-    getVisitTemplateById: (id) => api.get(`/visit-templates/${id}`),
-    createVisitTemplate: (data) => api.post('/visit-templates', data),
-    updateVisitTemplate: (id, data) => api.put(`/visit-templates/${id}`, data),
-    deleteVisitTemplate: (id) => api.delete(`/visit-templates/${id}`),
-    getVisitTemplatesBySpecialty: (specialty) => api.get(`/visit-templates/specialty/${specialty}`)
-};
-
-// ==================== FOOD API ====================
-export const foodApi = {
-    getAll: () => api.get('/foods'),
-    getById: (id) => api.get(`/foods/${id}`),
-    create: (data) => api.post('/foods', data),
-    update: (id, data) => api.put(`/foods/${id}`, data),
-    delete: (id) => api.delete(`/foods/${id}`),
-    getByCategory: (category) => api.get(`/foods/category/${category}`),
-    uploadImage: (id, formData) => {
-        const config = {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        };
-        return api.post(`/foods/${id}/image`, formData, config);
-    },
-    toggleAvailability: (id, isAvailable) => api.patch(`/foods/${id}/availability`, { isAvailable })
-};
-
-// ==================== AUTH API ====================
-export const authApi = {
-    login: (credentials) => api.post('/auth/login', credentials),
-    register: (userData) => api.post('/auth/register', userData),
-    logout: () => api.post('/auth/logout'),
-    refreshToken: () => api.post('/auth/refresh'),
-    forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
-    resetPassword: (token, password) => api.post('/auth/reset-password', { token, password }),
-    verifyEmail: (token) => api.post('/auth/verify-email', { token })
-};
-
-// ==================== USER API ====================
-export const userApi = {
-    getCurrent: () => api.get('/users/me'),
-    getById: (id) => api.get(`/users/${id}`),
-    getAll: () => api.get('/users'),
-    update: (id, data) => api.put(`/users/${id}`, data),
-    delete: (id) => api.delete(`/users/${id}`),
-    getUserMenus: (userId) => api.get(`/users/${userId}/menus`),
-    getUserVisitCards: (userId) => api.get(`/users/${userId}/visit-cards`),
-    uploadAvatar: (id, formData) => {
-        const config = {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        };
-        return api.post(`/users/${id}/avatar`, formData, config);
-    }
-};
-
-// ==================== CATEGORY API ====================
-export const categoryApi = {
-    getAll: () => api.get('/categories'),
-    getById: (id) => api.get(`/categories/${id}`),
-    create: (data) => api.post('/categories', data),
-    update: (id, data) => api.put(`/categories/${id}`, data),
-    delete: (id) => api.delete(`/categories/${id}`),
-    getByMenu: (menuId) => api.get(`/categories/menu/${menuId}`)
-};
-
-// ==================== UPLOAD API ====================
-export const uploadApi = {
-    uploadFile: (formData) => {
-        const config = {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        };
-        return api.post('/upload', formData, config);
-    },
-    uploadFiles: (formData) => {
-        const config = {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        };
-        return api.post('/upload/multiple', formData, config);
-    },
-    deleteFile: (filename) => api.delete(`/upload/${filename}`)
-};
-
-// ==================== STATISTICS API ====================
-export const statsApi = {
-    getDashboardStats: () => api.get('/stats/dashboard'),
-    getMenuStats: (menuId) => api.get(`/stats/menu/${menuId}`),
-    getVisitCardStats: (cardId) => api.get(`/stats/visit-card/${cardId}`),
-    getUserStats: (userId) => api.get(`/stats/user/${userId}`),
-    getMonthlyStats: (year, month) => api.get(`/stats/monthly/${year}/${month}`)
-};
-
-// ==================== HELPER FUNCTIONS ====================
-export const apiHelpers = {
-    handleResponse: async (apiCall, successMessage, errorMessage) => {
+    // دریافت همه کارت ویزیت‌ها
+    getAll: async (params = {}) => {
         try {
-            const response = await apiCall();
-            return { success: true, data: response.data };
+            const response = await visitCardsApi.get('/', { params });
+            return response.data;
         } catch (error) {
-            const errorMsg = error.response?.data?.message || errorMessage || 'خطا در ارتباط با سرور';
-            console.error(errorMsg, error);
+            console.error('خطا در دریافت کارت ویزیت‌ها:', error);
             return {
                 success: false,
-                error: errorMsg,
-                status: error.response?.status
+                data: [],
+                message: 'خطا در دریافت لیست کارت ویزیت‌ها',
+                error: error.message
             };
         }
     },
 
-    uploadWithProgress: (url, formData, onProgress) => {
-        return axios.post(`${API_BASE_URL}${url}`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${localStorage.getItem('token') || sessionStorage.getItem('token') || ''}`
-            },
-            onUploadProgress: (progressEvent) => {
-                if (progressEvent.total) {
-                    const percentCompleted = Math.round(
-                        (progressEvent.loaded * 100) / progressEvent.total
-                    );
-                    if (onProgress) onProgress(percentCompleted);
-                }
+    // دریافت یک کارت ویزیت
+    getById: async (id) => {
+        try {
+            const response = await visitCardsApi.get(`/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('خطا در دریافت کارت ویزیت:', error);
+
+            // بازگرداندن خطای مناسب
+            if (error.response) {
+                return error.response.data;
             }
-        });
+
+            return {
+                success: false,
+                message: 'خطا در دریافت کارت ویزیت'
+            };
+        }
     },
 
-    downloadFile: async (url, filename) => {
+    // ایجاد کارت ویزیت جدید
+    create: async (data) => {
         try {
-            const response = await api.get(url, {
-                responseType: 'blob'
+            const formData = new FormData();
+
+            // لیست فیلدهای متنی
+            const textFields = [
+                'title', 'bussinessName', 'description', 'doctorName',
+                'medicalDegree', 'specialty', 'subSpecialty', 'medicalCouncilNumber',
+                'phone', 'email', 'website', 'address', 'clinicName', 'clinicPhone',
+                'status'
+            ];
+
+            // اضافه کردن فیلدهای متنی
+            textFields.forEach(field => {
+                if (data[field] !== undefined && data[field] !== null) {
+                    formData.append(field, data[field].toString());
+                }
             });
 
-            const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.setAttribute('download', filename);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(downloadUrl);
+            // اضافه کردن آرایه تخصص‌ها
+            if (data.specialities && Array.isArray(data.specialities)) {
+                formData.append('specialities', JSON.stringify(data.specialities));
+            } else if (data.specialities) {
+                formData.append('specialities', data.specialities);
+            }
 
-            return { success: true };
+            // اضافه کردن تمپلیت
+            if (data.template && Array.isArray(data.template)) {
+                formData.append('template', JSON.stringify(data.template));
+            } else if (data.template) {
+                formData.append('template', data.template);
+            }
+
+            // اضافه کردن فایل‌ها
+            if (data.icon && data.icon instanceof File) {
+                formData.append('icon', data.icon);
+            } else if (data.iconFile && data.iconFile instanceof File) {
+                formData.append('icon', data.iconFile);
+            }
+
+            if (data.coverImage && data.coverImage instanceof File) {
+                formData.append('coverImage', data.coverImage);
+            } else if (data.coverImageFile && data.coverImageFile instanceof File) {
+                formData.append('coverImage', data.coverImageFile);
+            }
+
+            console.log('در حال ارسال درخواست ایجاد کارت ویزیت...');
+
+            const response = await visitCardsApi.post('/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                onUploadProgress: (progressEvent) => {
+                    if (progressEvent.total) {
+                        const percentCompleted = Math.round(
+                            (progressEvent.loaded * 100) / progressEvent.total
+                        );
+                        console.log(`پیشرفت آپلود: ${percentCompleted}%`);
+                    }
+                }
+            });
+
+            console.log('پاسخ از سرور:', response.data);
+            return response.data;
         } catch (error) {
-            console.error('خطا در دانلود فایل', error);
-            return { success: false, error: 'خطا در دانلود فایل' };
+            console.error('خطا در ایجاد کارت ویزیت:', error);
+
+            // بازگرداندن پیام خطا از سرور
+            if (error.response) {
+                console.error('پاسخ خطا از سرور:', error.response.data);
+                return error.response.data;
+            }
+
+            return {
+                success: false,
+                message: 'خطا در ارتباط با سرور'
+            };
+        }
+    },
+
+    // به‌روزرسانی کارت ویزیت
+    update: async (id, data) => {
+        try {
+            const formData = new FormData();
+
+            // لیست فیلدهای اصلی
+            const textFields = [
+                'title', 'bussinessName', 'description', 'doctorName',
+                'medicalDegree', 'specialty', 'subSpecialty', 'medicalCouncilNumber',
+                'phone', 'email', 'website', 'address', 'clinicName', 'clinicPhone',
+                'status'
+            ];
+
+            // اضافه کردن فیلدهای متنی
+            textFields.forEach(field => {
+                if (data[field] !== undefined && data[field] !== null) {
+                    formData.append(field, data[field].toString());
+                }
+            });
+
+            // اضافه کردن آرایه تخصص‌ها
+            if (data.specialities && Array.isArray(data.specialities)) {
+                formData.append('specialities', JSON.stringify(data.specialities));
+            } else if (data.specialities) {
+                formData.append('specialities', data.specialities);
+            }
+
+            // اضافه کردن تمپلیت
+            if (data.template && Array.isArray(data.template)) {
+                formData.append('template', JSON.stringify(data.template));
+            } else if (data.template) {
+                formData.append('template', data.template);
+            }
+
+            // اضافه کردن فایل‌ها
+            if (data.icon && data.icon instanceof File) {
+                formData.append('icon', data.icon);
+            } else if (data.iconFile && data.iconFile instanceof File) {
+                formData.append('icon', data.iconFile);
+            }
+
+            if (data.coverImage && data.coverImage instanceof File) {
+                formData.append('coverImage', data.coverImage);
+            } else if (data.coverImageFile && data.coverImageFile instanceof File) {
+                formData.append('coverImage', data.coverImageFile);
+            }
+
+            console.log(`در حال به‌روزرسانی کارت ویزیت ${id}...`);
+
+            const response = await visitCardsApi.put(`/${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            console.log('پاسخ به‌روزرسانی:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('خطا در به‌روزرسانی کارت ویزیت:', error);
+
+            if (error.response) {
+                return error.response.data;
+            }
+
+            return {
+                success: false,
+                message: 'خطا در به‌روزرسانی کارت ویزیت'
+            };
+        }
+    },
+
+    // حذف کارت ویزیت
+    delete: async (id) => {
+        try {
+            const response = await visitCardsApi.delete(`/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('خطا در حذف کارت ویزیت:', error);
+            return {
+                success: false,
+                message: 'خطا در حذف کارت ویزیت'
+            };
+        }
+    },
+
+    // ================ توابع خاص ================
+
+    // انتشار کارت ویزیت
+    publish: async (id) => {
+        try {
+            const response = await visitCardsApi.post(`/${id}/publish`);
+            return response.data;
+        } catch (error) {
+            console.error('خطا در انتشار کارت ویزیت:', error);
+            return {
+                success: false,
+                message: 'خطا در انتشار کارت ویزیت'
+            };
+        }
+    },
+
+    // دریافت QR Code
+    getQRCode: async (id) => {
+        try {
+            const response = await visitCardsApi.get(`/${id}/qrcode`);
+            return response.data;
+        } catch (error) {
+            console.error('خطا در دریافت QR Code:', error);
+            return {
+                success: false,
+                message: 'خطا در دریافت QR Code'
+            };
+        }
+    },
+
+    // دریافت آمار کاربر
+    getStats: async () => {
+        try {
+            const response = await visitCardsApi.get('/user/stats');
+            return response.data;
+        } catch (error) {
+            console.error('خطا در دریافت آمار:', error);
+            return {
+                success: false,
+                message: 'خطا در دریافت آمار'
+            };
+        }
+    },
+
+    // جستجوی پزشکان
+    searchDoctors: async (queryParams = {}) => {
+        try {
+            const response = await visitCardsApi.get('/search', {
+                params: queryParams
+            });
+            return response.data;
+        } catch (error) {
+            console.error('خطا در جستجوی پزشکان:', error);
+            return {
+                success: false,
+                data: [],
+                message: 'خطا در جستجوی پزشکان'
+            };
+        }
+    },
+
+    // دریافت کارت ویزیت‌های منتشر شده
+    getPublished: async (params = {}) => {
+        try {
+            const response = await visitCardsApi.get('/published', { params });
+            return response.data;
+        } catch (error) {
+            console.error('خطا در دریافت کارت ویزیت‌های منتشر شده:', error);
+            return {
+                success: false,
+                data: [],
+                message: 'خطا در دریافت کارت ویزیت‌های منتشر شده'
+            };
+        }
+    },
+
+    // دریافت کارت ویزیت‌های کاربر
+    getUserVisitCards: async () => {
+        try {
+            const response = await visitCardsApi.get('/user/cards');
+            return response.data;
+        } catch (error) {
+            console.error('خطا در دریافت کارت ویزیت‌های کاربر:', error);
+            return {
+                success: false,
+                data: [],
+                message: 'خطا در دریافت کارت ویزیت‌های کاربر'
+            };
+        }
+    },
+
+    // افزایش تعداد بازدید
+    incrementView: async (id) => {
+        try {
+            const response = await visitCardsApi.post(`/${id}/view`);
+            return response.data;
+        } catch (error) {
+            console.error('خطا در افزایش بازدید:', error);
+            return {
+                success: false,
+                message: 'خطا در افزایش بازدید'
+            };
         }
     }
 };
 
-// Export default api instance for custom requests
-export default api;
+// API تمپلیت‌ها
+const templatesApi = createApi(`${API_BASE_URL}/templates`);
+
+export const templateApi = {
+    // دریافت همه تمپلیت‌ها
+    getAll: async () => {
+        try {
+            const response = await templatesApi.get('/');
+            return response.data;
+        } catch (error) {
+            console.error('خطا در دریافت تمپلیت‌ها:', error);
+            return {
+                success: false,
+                data: [],
+                message: 'خطا در دریافت تمپلیت‌ها'
+            };
+        }
+    },
+
+    // دریافت یک تمپلیت
+    getById: async (id) => {
+        try {
+            const response = await templatesApi.get(`/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('خطا در دریافت تمپلیت:', error);
+            return {
+                success: false,
+                message: 'تمپلیت یافت نشد'
+            };
+        }
+    },
+
+    // دریافت تمپلیت‌های پزشکی
+    getMedicalTemplates: async () => {
+        try {
+            const response = await templatesApi.get('/category/medical');
+            return response.data;
+        } catch (error) {
+            console.error('خطا در دریافت تمپلیت‌های پزشکی:', error);
+            return {
+                success: false,
+                data: [],
+                message: 'خطا در دریافت تمپلیت‌های پزشکی'
+            };
+        }
+    },
+
+    // دریافت تمپلیت‌های بر اساس دسته‌بندی
+    getByCategory: async (category) => {
+        try {
+            const response = await templatesApi.get(`/category/${category}`);
+            return response.data;
+        } catch (error) {
+            console.error(`خطا در دریافت تمپلیت‌های دسته ${category}:`, error);
+            return {
+                success: false,
+                data: [],
+                message: `خطا در دریافت تمپلیت‌های دسته ${category}`
+            };
+        }
+    },
+
+    // جستجوی تمپلیت‌ها
+    search: async (query) => {
+        try {
+            const response = await templatesApi.get('/search', { params: { query } });
+            return response.data;
+        } catch (error) {
+            console.error('خطا در جستجوی تمپلیت‌ها:', error);
+            return {
+                success: false,
+                data: [],
+                message: 'خطا در جستجوی تمپلیت‌ها'
+            };
+        }
+    }
+};
+
+// ================ توابع کمکی ================
+
+// تابع برای چک کردن وضعیت سرور
+export const checkServerHealth = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/health`, {
+            withCredentials: true,
+            timeout: 5000
+        });
+        return response.data;
+    } catch (error) {
+        console.error('سرور در دسترس نیست:', error);
+        return {
+            success: false,
+            message: 'سرور در دسترس نیست',
+            details: error.message
+        };
+    }
+};
+
+// تابع برای تست اتصال به API کارت ویزیت
+export const testVisitCardsApi = async () => {
+    try {
+        const response = await visitCardsApi.get('/');
+        return {
+            success: true,
+            message: 'API کارت ویزیت در دسترس است',
+            data: response.data
+        };
+    } catch (error) {
+        console.error('API کارت ویزیت در دسترس نیست:', error);
+        return {
+            success: false,
+            message: 'API کارت ویزیت در دسترس نیست',
+            error: error.message
+        };
+    }
+};
+
+// تابع برای تست اتصال به API تمپلیت‌ها
+export const testTemplatesApi = async () => {
+    try {
+        const response = await templatesApi.get('/');
+        return {
+            success: true,
+            message: 'API تمپلیت‌ها در دسترس است',
+            data: response.data
+        };
+    } catch (error) {
+        console.error('API تمپلیت‌ها در دسترس نیست:', error);
+        return {
+            success: false,
+            message: 'API تمپلیت‌ها در دسترس نیست',
+            error: error.message
+        };
+    }
+};
+
+// تابع برای گرفتن URL کامل تصاویر
+export const getFullImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+
+    // اگر آدرس کامل است
+    if (imagePath.startsWith('http')) return imagePath;
+
+    // اگر آدرس نسبی است (با اسلش شروع شود)
+    if (imagePath.startsWith('/')) {
+        return `${API_BASE_URL.replace('/api', '')}${imagePath}`;
+    }
+
+    // برای آدرس‌های بدون اسلش
+    return `${API_BASE_URL.replace('/api', '')}/${imagePath}`;
+};
+
+// تابع برای تولید QR Code آنلاین (fallback)
+export const generateQRCodeUrl = (data) => {
+    if (!data) return null;
+
+    const qrData = typeof data === 'string' ? data : JSON.stringify(data);
+    const encodedData = encodeURIComponent(qrData);
+
+    return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodedData}`;
+};
+
+// تابع برای ارسال آمار بازدید (client-side)
+export const trackView = async (visitCardId) => {
+    try {
+        // ذخیره در localStorage برای جلوگیری از شمارش تکراری
+        const viewedCards = JSON.parse(localStorage.getItem('viewedVisitCards') || '[]');
+
+        if (!viewedCards.includes(visitCardId)) {
+            viewedCards.push(visitCardId);
+            localStorage.setItem('viewedVisitCards', JSON.stringify(viewedCards));
+
+            // ارسال به سرور
+            await visitCardApi.incrementView(visitCardId);
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error('خطا در ردیابی بازدید:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+// اکسپورت پیش‌فرض
+export default {
+    visitCardApi,
+    templateApi,
+    checkServerHealth,
+    testVisitCardsApi,
+    testTemplatesApi,
+    getFullImageUrl,
+    generateQRCodeUrl,
+    trackView
+};

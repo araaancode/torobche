@@ -51,6 +51,7 @@ import ResumeBuilder from './pages/ResumeBuilder';
 
 import MenuPage from "./pages/MenuPage"
 import AddFoodToMenu from "./pages/AddFoodToMenu"
+import VisitCardDetail from './pages/VisitCardDetail';
 
 
 // Constants
@@ -244,6 +245,12 @@ const appRoutes = [
   {
     path: '/visit-card-builder',
     component: VisitCardBuilder,
+    type: ROUTE_TYPES.ADMIN,
+    layout: LAYOUT_TYPES.ADMIN_LAYOUT
+  },
+  {
+    path: '/visit-cards/:id/view',
+    component: VisitCardDetail,
     type: ROUTE_TYPES.ADMIN,
     layout: LAYOUT_TYPES.ADMIN_LAYOUT
   },

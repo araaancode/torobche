@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { visitCardApi, templateApi } from '../utils/visitCardsApi'; // You'll need to create these API functions
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     ArrowLeft,
@@ -9,7 +8,10 @@ import {
     Palette,
     Eye,
     User,
-    FileText,
+    Mail,
+    Phone,
+    MapPin,
+    Stethoscope,
     Camera,
     Upload,
     ChevronRight,
@@ -20,47 +22,64 @@ import {
     Filter,
     Grid,
     List,
-    Phone,
-    MapPin,
-    Building,
-    BriefcaseMedical,
     QrCode,
-    Download
+    Building,
+    Award,
+    DollarSign,
+    Star,
+    Image as ImageIcon
 } from 'lucide-react';
 
-const VisitCardsBuilder = () => {
+// ایمپورت API
+import { visitCardApi, templateApi } from '../utils/visitCardsApi';
+
+const VisitCardBuilder = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const isEditing = !!id;
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [step, setStep] = useState(1); // 1: اطلاعات پایه، 2: انتخاب قالب، 3: اطلاعات دکتر، 4: پیش‌نمایش
+    const [step, setStep] = useState(1);
 
     const [templates, setTemplates] = useState([]);
     const [filteredTemplates, setFilteredTemplates] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('all');
     const [viewMode, setViewMode] = useState('grid');
 
     const [visitCard, setVisitCard] = useState({
         title: '',
-        template: '',
-        user: '',
-        doctorInfo: {
-            name: '',
-            specialty: '',
-            phoneNumbers: [''],
-            address: '',
-            city: ''
-        },
-        image: '',
-        isActive: true
+        bussinessName: '',
+        description: '',
+        icon: null,
+        coverImage: null,
+        qrcode: '',
+        template: [],
+        specialities: [],
+        doctorName: '',
+        medicalDegree: '',
+        specialty: '',
+        subSpecialty: '',
+        medicalCouncilNumber: '',
+        phone: '',
+        email: '',
+        website: '',
+        address: '',
+        clinicName: '',
+        clinicPhone: '',
+        status: 'draft'
     });
 
     const [selectedTemplateId, setSelectedTemplateId] = useState(null);
-    const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [errors, setErrors] = useState({});
-    const [phoneNumbers, setPhoneNumbers] = useState(['']);
+    const [newSpeciality, setNewSpeciality] = useState('');
+    const [iconFile, setIconFile] = useState(null);
+    const [coverImageFile, setCoverImageFile] = useState(null);
+    const [imagePreviews, setImagePreviews] = useState({
+        icon: null,
+        coverImage: null
+    });
 
     // بارگذاری داده‌ها
     useEffect(() => {
@@ -68,44 +87,65 @@ const VisitCardsBuilder = () => {
             try {
                 setLoading(true);
 
-                // بارگذاری قالب‌های ویزیت
-                const templatesRes = await templateApi.getAllVisitTemplates();
+                // بارگذاری تمپلیت‌ها
+                const templatesRes = await templateApi.getAll();
+                console.log('تمپلیت‌های دریافت شده:', templatesRes);
+
                 if (templatesRes && templatesRes.success) {
                     const templatesData = templatesRes.data || [];
                     setTemplates(templatesData);
                     setFilteredTemplates(templatesData);
                 }
 
-                // بارگذاری کارت در حالت ویرایش
+                // بارگذاری کارت ویزیت در حالت ویرایش
                 if (isEditing && id) {
-                    const cardRes = await visitCardApi.getById(id);
-                    if (cardRes && cardRes.success) {
-                        const cardData = cardRes.data;
-                        const doctorInfo = cardData.doctorInfo || {};
+                    console.log('در حال بارگذاری کارت ویزیت برای ویرایش:', id);
+                    const visitCardRes = await visitCardApi.getById(id);
+                    console.log('کارت ویزیت دریافت شده:', visitCardRes);
 
+                    if (visitCardRes && visitCardRes.success) {
+                        const data = visitCardRes.data;
                         setVisitCard({
-                            title: cardData.title || '',
-                            template: cardData.template?._id || '',
-                            user: cardData.user || '',
-                            doctorInfo: {
-                                name: doctorInfo.name || '',
-                                specialty: doctorInfo.specialty || '',
-                                phoneNumbers: doctorInfo.phoneNumbers || [''],
-                                address: doctorInfo.address || '',
-                                city: doctorInfo.city || ''
-                            },
-                            image: cardData.image ? `http://localhost:5000${cardData.image}` : '',
-                            isActive: cardData.isActive !== undefined ? cardData.isActive : true
+                            title: data.title || '',
+                            bussinessName: data.bussinessName || '',
+                            description: data.description || '',
+                            icon: data.icon || null,
+                            coverImage: data.coverImage || null,
+                            qrcode: data.qrcode || '',
+                            template: data.template || [],
+                            specialities: data.specialities || [],
+                            doctorName: data.doctorName || '',
+                            medicalDegree: data.medicalDegree || '',
+                            specialty: data.specialty || '',
+                            subSpecialty: data.subSpecialty || '',
+                            medicalCouncilNumber: data.medicalCouncilNumber || '',
+                            phone: data.phone || '',
+                            email: data.email || '',
+                            website: data.website || '',
+                            address: data.address || '',
+                            clinicName: data.clinicName || '',
+                            clinicPhone: data.clinicPhone || '',
+                            status: data.status || 'draft'
                         });
 
-                        if (cardData.template) {
-                            setSelectedTemplateId(cardData.template._id || cardData.template);
-                            setSelectedTemplate(cardData.template);
+                        // تنظیم پیش‌نمایش تصاویر
+                        if (data.icon) {
+                            setImagePreviews(prev => ({ ...prev, icon: data.icon }));
+                        }
+                        if (data.coverImage) {
+                            setImagePreviews(prev => ({ ...prev, coverImage: data.coverImage }));
                         }
 
-                        if (doctorInfo.phoneNumbers) {
-                            setPhoneNumbers(doctorInfo.phoneNumbers);
+                        // تنظیم تمپلیت انتخاب شده
+                        if (data.template && data.template.length > 0) {
+                            const firstTemplate = data.template[0];
+                            const templateId = firstTemplate._id || firstTemplate;
+                            console.log('تمپلیت انتخاب شده:', templateId);
+                            setSelectedTemplateId(templateId);
                         }
+                    } else {
+                        alert(visitCardRes?.message || 'کارت ویزیت یافت نشد');
+                        navigate('/visit-cards');
                     }
                 }
             } catch (error) {
@@ -117,42 +157,41 @@ const VisitCardsBuilder = () => {
         };
 
         loadData();
-    }, [id, isEditing]);
+    }, [id, isEditing, navigate]);
 
-    // فیلتر کردن قالب‌ها
+    // فیلتر تمپلیت‌ها
     useEffect(() => {
         let result = templates;
 
         if (searchTerm) {
             result = result.filter(template =>
                 template?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                template?.doctorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                template?.specialty?.toLowerCase().includes(searchTerm.toLowerCase())
+                template?.description?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        if (selectedCategory !== 'all') {
+            result = result.filter(template =>
+                template.category === selectedCategory
             );
         }
 
         setFilteredTemplates(result);
-    }, [searchTerm, templates]);
+    }, [searchTerm, selectedCategory, templates]);
 
     // اعتبارسنجی فرم
     const validateStep = (stepNumber) => {
         const newErrors = {};
 
         if (stepNumber === 1) {
-            if (!visitCard.title.trim()) newErrors.title = 'عنوان کارت ویزیت الزامی است';
-            if (!visitCard.user) newErrors.user = 'انتخاب کاربر الزامی است';
+            if (!visitCard.doctorName.trim()) newErrors.doctorName = 'نام پزشک الزامی است';
+            if (!visitCard.medicalDegree.trim()) newErrors.medicalDegree = 'مدرک پزشکی الزامی است';
+            if (!visitCard.specialty.trim()) newErrors.specialty = 'تخصص الزامی است';
+            if (!visitCard.phone.trim()) newErrors.phone = 'تلفن تماس الزامی است';
         }
 
         if (stepNumber === 2 && !selectedTemplateId) {
-            newErrors.template = 'لطفا یک قالب انتخاب کنید';
-        }
-
-        if (stepNumber === 3) {
-            if (!visitCard.doctorInfo.name.trim()) newErrors.doctorName = 'نام دکتر الزامی است';
-            if (!visitCard.doctorInfo.specialty.trim()) newErrors.specialty = 'تخصص دکتر الزامی است';
-            if (!visitCard.doctorInfo.address.trim()) newErrors.address = 'آدرس الزامی است';
-            if (!visitCard.doctorInfo.city.trim()) newErrors.city = 'شهر الزامی است';
-            if (phoneNumbers.some(num => !num.trim())) newErrors.phoneNumbers = 'شماره تلفن‌ها الزامی هستند';
+            newErrors.template = 'لطفا یک تمپلیت انتخاب کنید';
         }
 
         setErrors(newErrors);
@@ -162,131 +201,171 @@ const VisitCardsBuilder = () => {
     // رفتن به مرحله بعدی
     const handleNextStep = () => {
         if (!validateStep(step)) return;
-        if (step < 4) setStep(step + 1);
+        if (step < 3) setStep(step + 1);
+    };
+
+    // آپلود فایل
+    const handleFileUpload = async (e, field) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // بررسی حجم فایل (حداکثر 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('حجم فایل نباید بیشتر از 5 مگابایت باشد');
+            return;
+        }
+
+        // بررسی نوع فایل
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('فقط فایل‌های تصویر (JPEG, JPG, PNG, WebP) مجاز هستند');
+            return;
+        }
+
+        const mockUrl = URL.createObjectURL(file);
+
+        if (field === 'icon') {
+            setVisitCard(prev => ({ ...prev, icon: mockUrl }));
+            setImagePreviews(prev => ({ ...prev, icon: mockUrl }));
+            setIconFile(file);
+        } else if (field === 'coverImage') {
+            setVisitCard(prev => ({ ...prev, coverImage: mockUrl }));
+            setImagePreviews(prev => ({ ...prev, coverImage: mockUrl }));
+            setCoverImageFile(file);
+        }
+    };
+
+    // اضافه کردن تخصص
+    const addSpeciality = () => {
+        if (newSpeciality.trim()) {
+            setVisitCard(prev => ({
+                ...prev,
+                specialities: [...prev.specialities, newSpeciality.trim()]
+            }));
+            setNewSpeciality('');
+        }
+    };
+
+    // حذف تخصص
+    const removeSpeciality = (index) => {
+        setVisitCard(prev => ({
+            ...prev,
+            specialities: prev.specialities.filter((_, i) => i !== index)
+        }));
     };
 
     // ذخیره کارت ویزیت
-    const handleSaveCard = async (status = 'draft') => {
+    const handleSaveVisitCard = async (status = 'draft') => {
         if (!validateStep(step)) return;
 
         setSaving(true);
         try {
-            const cardData = {
-                title: visitCard.title,
-                template: selectedTemplateId,
-                user: visitCard.user,
-                doctorInfo: {
-                    name: visitCard.doctorInfo.name,
-                    specialty: visitCard.doctorInfo.specialty,
-                    phoneNumbers: phoneNumbers.filter(num => num.trim()),
-                    address: visitCard.doctorInfo.address,
-                    city: visitCard.doctorInfo.city
-                },
-                image: visitCard.image.replace('http://localhost:5000', ''),
-                isActive: visitCard.isActive,
+            // آماده کردن داده‌ها
+            const visitCardData = {
+                title: visitCard.title || `${visitCard.doctorName} - ${visitCard.specialty}`,
+                bussinessName: visitCard.bussinessName || visitCard.clinicName || visitCard.doctorName,
+                description: visitCard.description || '',
+                specialities: visitCard.specialities,
+                template: selectedTemplateId ? [selectedTemplateId] : [],
+                doctorName: visitCard.doctorName,
+                medicalDegree: visitCard.medicalDegree,
+                specialty: visitCard.specialty,
+                subSpecialty: visitCard.subSpecialty || '',
+                medicalCouncilNumber: visitCard.medicalCouncilNumber || '',
+                phone: visitCard.phone,
+                email: visitCard.email || '',
+                website: visitCard.website || '',
+                address: visitCard.address || '',
+                clinicName: visitCard.clinicName || '',
+                clinicPhone: visitCard.clinicPhone || '',
                 status: status
             };
 
-            let response;
-            if (isEditing) {
-                response = await visitCardApi.update(id, cardData);
-            } else {
-                response = await visitCardApi.create(cardData);
+            console.log('داده‌های ارسالی:', visitCardData);
+
+            // اضافه کردن فایل‌ها
+            if (iconFile) {
+                visitCardData.icon = iconFile;
             }
 
+            if (coverImageFile) {
+                visitCardData.coverImage = coverImageFile;
+            }
+
+            let response;
+            if (isEditing) {
+                console.log('در حال به‌روزرسانی کارت ویزیت:', id);
+                response = await visitCardApi.update(id, visitCardData);
+            } else {
+                console.log('در حال ایجاد کارت ویزیت جدید');
+                response = await visitCardApi.create(visitCardData);
+            }
+
+            console.log('پاسخ از سرور:', response);
+
             if (response && response.success) {
+                const message = status === 'published'
+                    ? '🎉 کارت ویزیت با موفقیت ایجاد و منتشر شد!'
+                    : '✅ کارت ویزیت با موفقیت ذخیره شد';
+
+                alert(message);
+
+                // اگر منتشر شده، به صفحه نمایش هدایت شود
                 if (status === 'published') {
-                    alert('🎉 کارت ویزیت با موفقیت ایجاد شد!');
-                    navigate('/visit-cards');
+                    navigate(`/visit-cards/${response.data._id}/view`);
                 } else {
-                    alert('✅ تغییرات ذخیره شد');
+                    // اگر در حالت ویرایش بودیم، در همان صفحه بمانیم
                     if (!isEditing) {
-                        navigate('/visit-cards');
+                        navigate(`/visit-cards/${response.data._id}/edit`);
+                    } else {
+                        // رفرش صفحه
+                        window.location.reload();
                     }
                 }
             } else {
-                alert('❌ خطا در ذخیره کارت ویزیت');
+                alert(response?.message || '❌ خطا در ذخیره کارت ویزیت');
             }
         } catch (error) {
             console.error('خطا در ذخیره کارت ویزیت:', error);
-            alert('❌ خطا در ذخیره کارت ویزیت');
+            alert('❌ خطا در ارتباط با سرور');
         } finally {
             setSaving(false);
         }
     };
 
-    // آپلود تصویر
-    const handleImageUpload = async (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        // شبیه‌سازی آپلود
-        const mockUrl = URL.createObjectURL(file);
-        setVisitCard(prev => ({ ...prev, image: mockUrl }));
+    // گرفتن دسته‌بندی‌های منحصربه‌فرد
+    const getUniqueCategories = () => {
+        const categories = ['all', ...new Set(templates.map(t => t.category).filter(Boolean))];
+        return categories;
     };
 
-    // اضافه کردن شماره تلفن
-    const addPhoneNumber = () => {
-        setPhoneNumbers([...phoneNumbers, '']);
+    // تمپلیت انتخاب شده
+    const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
+
+    // تابع برای فرمت کردن قیمت
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('fa-IR').format(price) + ' تومان';
     };
 
-    // حذف شماره تلفن
-    const removePhoneNumber = (index) => {
-        const newPhoneNumbers = phoneNumbers.filter((_, i) => i !== index);
-        setPhoneNumbers(newPhoneNumbers);
-    };
-
-    // تغییر شماره تلفن
-    const handlePhoneNumberChange = (index, value) => {
-        const newPhoneNumbers = [...phoneNumbers];
-        newPhoneNumbers[index] = value;
-        setPhoneNumbers(newPhoneNumbers);
-        setVisitCard(prev => ({
-            ...prev,
-            doctorInfo: {
-                ...prev.doctorInfo,
-                phoneNumbers: newPhoneNumbers
-            }
-        }));
-    };
-
-    // هنگام انتخاب قالب
-    const handleTemplateSelect = (templateId) => {
-        setSelectedTemplateId(templateId);
-        const template = templates.find(t => t._id === templateId);
-        setSelectedTemplate(template);
-
-        // پر کردن خودکار اطلاعات دکتر از قالب
-        if (template && step === 2) {
-            setVisitCard(prev => ({
-                ...prev,
-                doctorInfo: {
-                    name: template.doctorName || prev.doctorInfo.name,
-                    specialty: template.specialty || prev.doctorInfo.specialty,
-                    phoneNumbers: template.phoneNumbers || prev.doctorInfo.phoneNumbers,
-                    address: template.address || prev.doctorInfo.address,
-                    city: template.city || prev.doctorInfo.city
-                }
-            }));
-
-            if (template.phoneNumbers) {
-                setPhoneNumbers(template.phoneNumbers);
-            }
-        }
+    // تابع برای دریافت URL کامل تصویر
+    const getImageUrl = (imagePath) => {
+        if (!imagePath) return null;
+        if (imagePath.startsWith('http')) return imagePath;
+        return `http://localhost:5000/${imagePath}`;
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-50 flex items-center justify-center">
                 <div className="text-center">
                     <div className="relative">
-                        <div className="w-24 h-24 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                        <div className="w-24 h-24 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin"></div>
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <Sparkles className="w-12 h-12 text-blue-600 animate-pulse" />
+                            <Stethoscope className="w-12 h-12 text-teal-600 animate-pulse" />
                         </div>
                     </div>
                     <p className="mt-6 text-gray-600 text-lg font-medium">
-                        در حال آماده‌سازی...
+                        در حال آماده‌سازی کارت ویزیت پزشکی...
                     </p>
                 </div>
             </div>
@@ -294,7 +373,7 @@ const VisitCardsBuilder = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50">
             {/* Header */}
             <motion.header
                 initial={{ y: -20, opacity: 0 }}
@@ -312,18 +391,19 @@ const VisitCardsBuilder = () => {
                         </button>
 
                         <div className="text-center">
-                            <h1 className="text-2xl font-bold text-gray-900">
-                                {isEditing ? '✏️ ویرایش کارت ویزیت' : '✨ ساخت کارت ویزیت جدید'}
+                            <h1 className="text-2xl font-bold text-gray-900 flex items-center justify-center">
+                                <Stethoscope className="w-6 h-6 ml-2 text-teal-600" />
+                                {isEditing ? '✏️ ویرایش کارت ویزیت پزشکی' : '✨ ساخت کارت ویزیت پزشکی'}
                             </h1>
                             <p className="text-gray-600 text-sm mt-1">
-                                مرحله {step} از ۴ • {step === 1 ? 'اطلاعات پایه' : step === 2 ? 'انتخاب قالب' : step === 3 ? 'اطلاعات دکتر' : 'پیش‌نمایش'}
+                                مرحله {step} از ۳ • {step === 1 ? 'اطلاعات پزشک' : step === 2 ? 'انتخاب تمپلیت' : 'پیش‌نمایش'}
                             </p>
                         </div>
 
                         <button
-                            onClick={() => handleSaveCard('draft')}
+                            onClick={() => handleSaveVisitCard('draft')}
                             disabled={saving}
-                            className="px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 disabled:opacity-50 transition-all duration-300 flex items-center"
+                            className="px-4 py-2 bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-lg hover:from-teal-700 hover:to-teal-800 disabled:opacity-50 transition-all duration-300 flex items-center"
                         >
                             {saving ? (
                                 <Loader2 className="w-4 h-4 ml-2 animate-spin" />
@@ -338,15 +418,14 @@ const VisitCardsBuilder = () => {
                     <div className="mt-6">
                         <div className="flex justify-between mb-2">
                             {[
-                                { number: 1, label: 'اطلاعات پایه', icon: FileText },
-                                { number: 2, label: 'انتخاب قالب', icon: Palette },
-                                { number: 3, label: 'اطلاعات دکتر', icon: User },
-                                { number: 4, label: 'پیش‌نمایش', icon: Eye }
+                                { number: 1, label: 'اطلاعات پزشک', icon: User },
+                                { number: 2, label: 'انتخاب تمپلیت', icon: Palette },
+                                { number: 3, label: 'پیش‌نمایش', icon: Eye }
                             ].map((stepItem) => (
                                 <div key={stepItem.number} className="flex flex-col items-center">
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-3 transition-all duration-300
                     ${step > stepItem.number ? 'bg-green-500 text-white shadow-md' :
-                                            step === stepItem.number ? 'bg-blue-600 text-white shadow-lg scale-110' :
+                                            step === stepItem.number ? 'bg-teal-600 text-white shadow-lg scale-110' :
                                                 'bg-gray-100 text-gray-400'}
                   `}>
                                         {step > stepItem.number ? (
@@ -365,9 +444,9 @@ const VisitCardsBuilder = () => {
                         </div>
                         <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                             <motion.div
-                                className="h-full bg-gradient-to-r from-blue-600 to-blue-700 rounded-full"
+                                className="h-full bg-gradient-to-r from-teal-600 to-teal-700 rounded-full"
                                 initial={{ width: '0%' }}
-                                animate={{ width: `${(step / 4) * 100}%` }}
+                                animate={{ width: `${(step / 3) * 100}%` }}
                                 transition={{ duration: 0.5 }}
                             />
                         </div>
@@ -378,7 +457,7 @@ const VisitCardsBuilder = () => {
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <AnimatePresence mode="wait">
-                    {/* Step 1: Basic Information */}
+                    {/* Step 1: Doctor Information */}
                     {step === 1 && (
                         <motion.div
                             key="step1"
@@ -389,108 +468,311 @@ const VisitCardsBuilder = () => {
                         >
                             <div className="mb-8">
                                 <h2 className="text-3xl font-bold text-gray-900 mb-3 flex items-center">
-                                    <FileText className="w-8 h-8 ml-3 text-blue-600" />
-                                    اطلاعات اولیه کارت ویزیت
+                                    <User className="w-8 h-8 ml-3 text-teal-600" />
+                                    اطلاعات پزشک
                                 </h2>
                                 <p className="text-gray-600">
-                                    ابتدا اطلاعات اصلی کارت ویزیت را وارد کنید
+                                    اطلاعات هویتی و تخصصی خود را وارد کنید
                                 </p>
                             </div>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                {/* ستون اول */}
                                 <div className="space-y-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-3 text-right">
-                                            عنوان کارت ویزیت *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={visitCard.title}
-                                            onChange={(e) => setVisitCard(prev => ({ ...prev, title: e.target.value }))}
-                                            className={`w-full px-5 py-4 border-2 rounded-xl focus:ring-2 transition-all duration-300 text-right text-lg placeholder-gray-400
-                        ${errors.title ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200'}
-                      `}
-                                            placeholder="مثال: کارت ویزیت دکتر احمدی"
-                                            dir="rtl"
-                                        />
-                                        {errors.title && (
-                                            <p className="mt-2 text-sm text-red-600">{errors.title}</p>
-                                        )}
-                                    </div>
+                                    {/* اطلاعات شخصی */}
+                                    <div className="bg-blue-50 rounded-2xl p-6">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                            <User className="w-5 h-5 ml-2" />
+                                            اطلاعات هویتی
+                                        </h3>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-3 text-right">
-                                            انتخاب کاربر (مالک) *
-                                        </label>
-                                        <select
-                                            value={visitCard.user}
-                                            onChange={(e) => setVisitCard(prev => ({ ...prev, user: e.target.value }))}
-                                            className={`w-full px-5 py-4 border-2 rounded-xl focus:ring-2 transition-all duration-300 text-right text-lg
-                        ${errors.user ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200'}
-                      `}
-                                            dir="rtl"
-                                        >
-                                            <option value="">انتخاب کاربر...</option>
-                                            {/* Users will be loaded from API */}
-                                            <option value="user1">کاربر ۱</option>
-                                            <option value="user2">کاربر ۲</option>
-                                        </select>
-                                        {errors.user && (
-                                            <p className="mt-2 text-sm text-red-600">{errors.user}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-3 text-right">
-                                            آپلود تصویر دکتر (اختیاری)
-                                        </label>
-                                        <div className="relative border-3 border-dashed border-gray-200 rounded-2xl p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-300 cursor-pointer">
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={handleImageUpload}
-                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                            />
-                                            <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden">
-                                                {visitCard.image ? (
-                                                    <img src={visitCard.image} alt="تصویر دکتر" className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <Camera className="w-12 h-12 text-gray-400" />
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    نام و نام خانوادگی پزشک *
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={visitCard.doctorName}
+                                                    onChange={(e) => setVisitCard(prev => ({ ...prev, doctorName: e.target.value }))}
+                                                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 transition-all duration-300 text-right
+                                                        ${errors.doctorName ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-teal-500 focus:ring-teal-200'}
+                                                    `}
+                                                    placeholder="دکتر ..."
+                                                    dir="rtl"
+                                                />
+                                                {errors.doctorName && (
+                                                    <p className="mt-1 text-sm text-red-600">{errors.doctorName}</p>
                                                 )}
                                             </div>
-                                            <p className="text-gray-600 mb-2">
-                                                {visitCard.image ? 'تغییر تصویر' : 'آپلود تصویر دکتر'}
-                                            </p>
-                                            <p className="text-sm text-gray-500">PNG, JPG • حداکثر ۲ مگابایت</p>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    مدرک پزشکی *
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={visitCard.medicalDegree}
+                                                    onChange={(e) => setVisitCard(prev => ({ ...prev, medicalDegree: e.target.value }))}
+                                                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 transition-all duration-300 text-right
+                                                        ${errors.medicalDegree ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-teal-500 focus:ring-teal-200'}
+                                                    `}
+                                                    placeholder="مثال: متخصص قلب و عروق"
+                                                    dir="rtl"
+                                                />
+                                                {errors.medicalDegree && (
+                                                    <p className="mt-1 text-sm text-red-600">{errors.medicalDegree}</p>
+                                                )}
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                        تخصص اصلی *
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={visitCard.specialty}
+                                                        onChange={(e) => setVisitCard(prev => ({ ...prev, specialty: e.target.value }))}
+                                                        className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 transition-all duration-300 text-right
+                                                            ${errors.specialty ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-teal-500 focus:ring-teal-200'}
+                                                        `}
+                                                        placeholder="تخصص"
+                                                        dir="rtl"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                        فوق تخصص
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={visitCard.subSpecialty}
+                                                        onChange={(e) => setVisitCard(prev => ({ ...prev, subSpecialty: e.target.value }))}
+                                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 text-right"
+                                                        placeholder="فوق تخصص"
+                                                        dir="rtl"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    شماره نظام پزشکی
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={visitCard.medicalCouncilNumber}
+                                                    onChange={(e) => setVisitCard(prev => ({ ...prev, medicalCouncilNumber: e.target.value }))}
+                                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 text-right"
+                                                    placeholder="مثال: ۱۲۳۴۵۶"
+                                                    dir="rtl"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* اطلاعات تماس */}
+                                    <div className="bg-green-50 rounded-2xl p-6">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                            <Phone className="w-5 h-5 ml-2" />
+                                            اطلاعات تماس
+                                        </h3>
+
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    تلفن همراه *
+                                                </label>
+                                                <input
+                                                    type="tel"
+                                                    value={visitCard.phone}
+                                                    onChange={(e) => setVisitCard(prev => ({ ...prev, phone: e.target.value }))}
+                                                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 transition-all duration-300 text-right
+                                                        ${errors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-teal-500 focus:ring-teal-200'}
+                                                    `}
+                                                    placeholder="۰۹۱۲۳۴۵۶۷۸۹"
+                                                    dir="rtl"
+                                                />
+                                                {errors.phone && (
+                                                    <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    ایمیل
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    value={visitCard.email}
+                                                    onChange={(e) => setVisitCard(prev => ({ ...prev, email: e.target.value }))}
+                                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 text-right"
+                                                    placeholder="example@domain.com"
+                                                    dir="rtl"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    وبسایت
+                                                </label>
+                                                <input
+                                                    type="url"
+                                                    value={visitCard.website}
+                                                    onChange={(e) => setVisitCard(prev => ({ ...prev, website: e.target.value }))}
+                                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 text-right"
+                                                    placeholder="https://example.com"
+                                                    dir="rtl"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                                        <Sparkles className="w-6 h-6 ml-2 text-blue-600" />
-                                        نکات مهم
-                                    </h3>
-                                    <ul className="space-y-4">
-                                        <li className="flex items-start">
-                                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center ml-3 flex-shrink-0">
-                                                <span className="text-blue-600">1</span>
+                                {/* ستون دوم */}
+                                <div className="space-y-6">
+                                    {/* اطلاعات مطب/کلینیک */}
+                                    <div className="bg-purple-50 rounded-2xl p-6">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                            <MapPin className="w-5 h-5 ml-2" />
+                                            اطلاعات مطب/کلینیک
+                                        </h3>
+
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    نام مرکز درمانی
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={visitCard.clinicName}
+                                                    onChange={(e) => setVisitCard(prev => ({ ...prev, clinicName: e.target.value }))}
+                                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 text-right"
+                                                    placeholder="مثال: کلینیک تخصصی قلب"
+                                                    dir="rtl"
+                                                />
                                             </div>
-                                            <p className="text-gray-700">عنوان کارت باید واضح و مرتبط با دکتر باشد</p>
-                                        </li>
-                                        <li className="flex items-start">
-                                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center ml-3 flex-shrink-0">
-                                                <span className="text-blue-600">2</span>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    آدرس
+                                                </label>
+                                                <textarea
+                                                    value={visitCard.address}
+                                                    onChange={(e) => setVisitCard(prev => ({ ...prev, address: e.target.value }))}
+                                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 text-right resize-none"
+                                                    placeholder="آدرس کامل مطب"
+                                                    rows={3}
+                                                    dir="rtl"
+                                                />
                                             </div>
-                                            <p className="text-gray-700">کاربر انتخاب شده مالک این کارت ویزیت خواهد بود</p>
-                                        </li>
-                                        <li className="flex items-start">
-                                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center ml-3 flex-shrink-0">
-                                                <span className="text-blue-600">3</span>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    تلفن مطب
+                                                </label>
+                                                <input
+                                                    type="tel"
+                                                    value={visitCard.clinicPhone}
+                                                    onChange={(e) => setVisitCard(prev => ({ ...prev, clinicPhone: e.target.value }))}
+                                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 text-right"
+                                                    placeholder="۰۲۱۱۲۳۴۵۶۷۸"
+                                                    dir="rtl"
+                                                />
                                             </div>
-                                            <p className="text-gray-700">تصویر دکتر در کارت ویزیت نمایش داده می‌شود</p>
-                                        </li>
-                                    </ul>
+                                        </div>
+                                    </div>
+
+                                    {/* تخصص‌ها */}
+                                    <div className="bg-yellow-50 rounded-2xl p-6">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                            <Award className="w-5 h-5 ml-2" />
+                                            تخصص‌ها
+                                        </h3>
+
+                                        <div className="space-y-4">
+                                            <div>
+                                                <div className="flex gap-2 mb-3">
+                                                    <input
+                                                        type="text"
+                                                        value={newSpeciality}
+                                                        onChange={(e) => setNewSpeciality(e.target.value)}
+                                                        onKeyPress={(e) => e.key === 'Enter' && addSpeciality()}
+                                                        className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 text-right"
+                                                        placeholder="اضافه کردن تخصص جدید"
+                                                        dir="rtl"
+                                                    />
+                                                    <button
+                                                        onClick={addSpeciality}
+                                                        className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+
+                                                <div className="flex flex-wrap gap-2">
+                                                    {visitCard.specialities.map((speciality, index) => (
+                                                        <div
+                                                            key={index}
+                                                            className="bg-white border border-teal-200 text-teal-700 px-3 py-1 rounded-lg flex items-center"
+                                                        >
+                                                            <span>{speciality}</span>
+                                                            <button
+                                                                onClick={() => removeSpeciality(index)}
+                                                                className="mr-2 text-red-500 hover:text-red-700"
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* آپلود تصاویر */}
+                                    <div className="bg-gray-50 rounded-2xl p-6">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                            <Camera className="w-5 h-5 ml-2" />
+                                            تصاویر
+                                        </h3>
+
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    عکس پروفایل
+                                                </label>
+                                                <div className="relative border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-teal-400 hover:bg-teal-50 transition-all duration-300 cursor-pointer">
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) => handleFileUpload(e, 'icon')}
+                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                    />
+                                                    <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden">
+                                                        {imagePreviews.icon ? (
+                                                            <img
+                                                                src={getImageUrl(imagePreviews.icon)}
+                                                                alt="پروفایل"
+                                                                className="w-full h-full object-cover"
+                                                                onError={(e) => {
+                                                                    e.target.src = 'https://via.placeholder.com/150?text=تصویر+موجود+نیست';
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            <Camera className="w-12 h-12 text-gray-400" />
+                                                        )}
+                                                    </div>
+                                                    <p className="text-gray-600">
+                                                        {imagePreviews.icon ? 'تغییر عکس پروفایل' : 'آپلود عکس پروفایل'}
+                                                    </p>
+                                                    <p className="text-sm text-gray-500 mt-2">JPEG, PNG, WebP • حداکثر 5MB</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -498,9 +780,9 @@ const VisitCardsBuilder = () => {
                             <div className="mt-10 pt-8 border-t border-gray-100 flex justify-end">
                                 <button
                                     onClick={handleNextStep}
-                                    className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center group"
+                                    className="px-8 py-4 bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-xl hover:from-teal-700 hover:to-teal-800 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center group"
                                 >
-                                    ادامه به انتخاب قالب
+                                    ادامه به انتخاب تمپلیت
                                     <ChevronRight className="w-5 h-5 mr-3 group-hover:translate-x-1 transition-transform" />
                                 </button>
                             </div>
@@ -529,11 +811,12 @@ const VisitCardsBuilder = () => {
                             {/* فیلتر و جستجو */}
                             <div className="mb-8 bg-gray-50 rounded-2xl p-6">
                                 <div className="flex flex-col md:flex-row md:items-center gap-4">
+                                    {/* جستجو */}
                                     <div className="flex-1">
                                         <div className="relative">
                                             <input
                                                 type="text"
-                                                placeholder="جستجو در قالب‌ها (عنوان، نام دکتر، تخصص)..."
+                                                placeholder="جستجو در تمپلیت‌ها..."
                                                 value={searchTerm}
                                                 onChange={(e) => setSearchTerm(e.target.value)}
                                                 className="w-full px-5 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-300 text-right"
@@ -543,6 +826,26 @@ const VisitCardsBuilder = () => {
                                         </div>
                                     </div>
 
+                                    {/* دسته‌بندی‌ها */}
+                                    <div className="flex items-center gap-2">
+                                        <Filter className="w-5 h-5 text-gray-400" />
+                                        <div className="flex flex-wrap gap-2">
+                                            {getUniqueCategories().map(category => (
+                                                <button
+                                                    key={category}
+                                                    onClick={() => setSelectedCategory(category)}
+                                                    className={`px-4 py-2 rounded-lg transition-all duration-300 ${selectedCategory === category
+                                                        ? 'bg-purple-600 text-white shadow-md'
+                                                        : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                                                        }`}
+                                                >
+                                                    {category === 'all' ? 'همه' : category}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* حالت نمایش */}
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={() => setViewMode('grid')}
@@ -571,31 +874,39 @@ const VisitCardsBuilder = () => {
                                 </div>
                             )}
 
-                            {/* قالب انتخاب شده */}
+                            {/* تمپلیت انتخاب شده */}
                             {selectedTemplate && (
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="mb-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border-2 border-purple-200"
+                                    className="mb-8 p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl border-2 border-purple-200"
                                 >
                                     <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                                ✅ قالب انتخاب شده
-                                            </h3>
-                                            <p className="text-gray-600">{selectedTemplate.title}</p>
-                                            {selectedTemplate.doctorName && (
-                                                <p className="text-gray-500 mt-1">
-                                                    <User className="w-4 h-4 inline ml-1" />
-                                                    {selectedTemplate.doctorName} - {selectedTemplate.specialty}
-                                                </p>
+                                        <div className="flex items-center">
+                                            {selectedTemplate.image && (
+                                                <div className="w-16 h-16 rounded-xl overflow-hidden ml-4">
+                                                    <img
+                                                        src={getImageUrl(selectedTemplate.image)}
+                                                        alt={selectedTemplate.title}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </div>
                                             )}
+                                            <div>
+                                                <h3 className="text-xl font-bold text-gray-900 mb-1">
+                                                    ✅ قالب انتخاب شده
+                                                </h3>
+                                                <p className="text-gray-600">{selectedTemplate.title}</p>
+                                                <div className="flex items-center mt-2">
+                                                    <DollarSign className="w-4 h-4 ml-1 text-green-600" />
+                                                    <span className="text-green-700 font-bold">
+                                                        {formatPrice(selectedTemplate.price)}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                         <button
-                                            onClick={() => {
-                                                setSelectedTemplateId(null);
-                                                setSelectedTemplate(null);
-                                            }}
+                                            onClick={() => setSelectedTemplateId(null)}
                                             className="px-4 py-2 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
                                         >
                                             تغییر انتخاب
@@ -604,34 +915,39 @@ const VisitCardsBuilder = () => {
                                 </motion.div>
                             )}
 
-                            {/* لیست قالب‌ها */}
+                            {/* لیست تمپلیت‌ها */}
                             {viewMode === 'grid' ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {filteredTemplates.map(template => {
                                         const isSelected = selectedTemplateId === template._id;
+                                        const imageUrl = getImageUrl(template.image);
+
                                         return (
                                             <motion.div
                                                 key={template._id}
                                                 whileHover={{ y: -5 }}
                                                 whileTap={{ scale: 0.98 }}
-                                                onClick={() => handleTemplateSelect(template._id)}
+                                                onClick={() => setSelectedTemplateId(template._id)}
                                                 className={`relative rounded-2xl overflow-hidden border-2 cursor-pointer transition-all duration-300 group
                           ${isSelected
                                                         ? 'border-purple-500 ring-2 ring-purple-200 shadow-xl'
                                                         : 'border-gray-200 hover:border-gray-300 shadow-lg hover:shadow-xl'
                                                     }`}
                                             >
-                                                {/* تصویر قالب */}
+                                                {/* تصویر تمپلیت */}
                                                 <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
-                                                    {template.image ? (
+                                                    {imageUrl ? (
                                                         <img
-                                                            src={template.image}
+                                                            src={imageUrl}
                                                             alt={template.title}
                                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                            onError={(e) => {
+                                                                e.target.src = 'https://via.placeholder.com/400x250?text=تصویر+قالب';
+                                                            }}
                                                         />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center">
-                                                            <Palette className="w-16 h-16 text-gray-400" />
+                                                            <ImageIcon className="w-12 h-12 text-gray-400" />
                                                         </div>
                                                     )}
 
@@ -642,58 +958,41 @@ const VisitCardsBuilder = () => {
                                                         </div>
                                                     )}
 
-                                                    {/* اطلاعات سریع */}
-                                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                                                        <h4 className="text-white font-bold text-lg">{template.title}</h4>
-                                                        {template.doctorName && (
-                                                            <p className="text-white/90 text-sm">
-                                                                {template.doctorName} • {template.specialty}
-                                                            </p>
-                                                        )}
+                                                    {/* قیمت */}
+                                                    <div className="absolute bottom-4 right-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full shadow-lg">
+                                                        <span className="font-bold">{formatPrice(template.price)}</span>
                                                     </div>
                                                 </div>
 
-                                                {/* اطلاعات قالب */}
+                                                {/* اطلاعات تمپلیت */}
                                                 <div className="p-6">
-                                                    <h3 className="font-bold text-gray-900 text-xl mb-3">{template.title}</h3>
+                                                    <div className="flex justify-between items-start mb-3">
+                                                        <h3 className="font-bold text-gray-900 text-xl">{template.title}</h3>
+                                                        {template.category && (
+                                                            <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                                                {template.category}
+                                                            </span>
+                                                        )}
+                                                    </div>
 
-                                                    {template.doctorName && (
-                                                        <div className="mb-3">
-                                                            <div className="flex items-center text-gray-600 mb-1">
-                                                                <User className="w-4 h-4 ml-2" />
-                                                                <span className="font-medium">دکتر:</span>
-                                                                <span className="mr-2">{template.doctorName}</span>
+                                                    <p className="text-gray-600 mb-4 line-clamp-2">{template.description}</p>
+
+                                                    {/* رنگ‌ها */}
+                                                    {template.colorPallete && template.colorPallete.length > 0 && (
+                                                        <div className="mb-4">
+                                                            <div className="flex items-center mb-2">
+                                                                <span className="text-sm text-gray-500 ml-3">پالت رنگ:</span>
                                                             </div>
-                                                            <div className="flex items-center text-gray-600">
-                                                                <BriefcaseMedical className="w-4 h-4 ml-2" />
-                                                                <span className="font-medium">تخصص:</span>
-                                                                <span className="mr-2">{template.specialty}</span>
+                                                            <div className="flex space-x-2">
+                                                                {template.colorPallete.slice(0, 6).map((color, idx) => (
+                                                                    <div
+                                                                        key={idx}
+                                                                        className="w-8 h-8 rounded-lg border border-gray-200 shadow-sm"
+                                                                        style={{ backgroundColor: color }}
+                                                                        title={color}
+                                                                    />
+                                                                ))}
                                                             </div>
-                                                        </div>
-                                                    )}
-
-                                                    {template.description && (
-                                                        <p className="text-gray-600 mb-4 text-sm">{template.description}</p>
-                                                    )}
-
-                                                    {/* اطلاعات تماس */}
-                                                    {(template.phoneNumbers?.length > 0 || template.address) && (
-                                                        <div className="mb-4 space-y-2">
-                                                            {template.phoneNumbers?.length > 0 && (
-                                                                <div className="flex items-center text-gray-500 text-sm">
-                                                                    <Phone className="w-3 h-3 ml-2" />
-                                                                    <span>{template.phoneNumbers[0]}</span>
-                                                                    {template.phoneNumbers.length > 1 && (
-                                                                        <span className="mr-2">+{template.phoneNumbers.length - 1}</span>
-                                                                    )}
-                                                                </div>
-                                                            )}
-                                                            {template.address && (
-                                                                <div className="flex items-center text-gray-500 text-sm">
-                                                                    <MapPin className="w-3 h-3 ml-2" />
-                                                                    <span>{template.address}</span>
-                                                                </div>
-                                                            )}
                                                         </div>
                                                     )}
 
@@ -716,27 +1015,29 @@ const VisitCardsBuilder = () => {
                                 <div className="space-y-4">
                                     {filteredTemplates.map(template => {
                                         const isSelected = selectedTemplateId === template._id;
+                                        const imageUrl = getImageUrl(template.image);
+
                                         return (
                                             <motion.div
                                                 key={template._id}
                                                 whileHover={{ x: 5 }}
-                                                onClick={() => handleTemplateSelect(template._id)}
+                                                onClick={() => setSelectedTemplateId(template._id)}
                                                 className={`flex items-center p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300
                           ${isSelected
                                                         ? 'border-purple-500 bg-purple-50 shadow-md'
                                                         : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                                                     }`}
                                             >
-                                                <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 ml-6 bg-gray-100">
-                                                    {template.image ? (
+                                                <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 ml-6">
+                                                    {imageUrl ? (
                                                         <img
-                                                            src={template.image}
+                                                            src={imageUrl}
                                                             alt={template.title}
                                                             className="w-full h-full object-cover"
                                                         />
                                                     ) : (
-                                                        <div className="w-full h-full flex items-center justify-center">
-                                                            <Palette className="w-10 h-10 text-gray-400" />
+                                                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                                                            <ImageIcon className="w-8 h-8 text-gray-400" />
                                                         </div>
                                                     )}
                                                 </div>
@@ -744,44 +1045,36 @@ const VisitCardsBuilder = () => {
                                                 <div className="flex-1">
                                                     <div className="flex justify-between items-start mb-2">
                                                         <h3 className="font-bold text-gray-900 text-xl">{template.title}</h3>
-                                                        <div className={`px-3 py-1 rounded-full text-sm ${isSelected ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-600'}`}>
-                                                            {isSelected ? 'انتخاب شده' : 'آماده انتخاب'}
+                                                        <div className="text-lg font-bold text-purple-600">
+                                                            {formatPrice(template.price)}
                                                         </div>
                                                     </div>
+                                                    <p className="text-gray-600 mb-3">{template.description}</p>
 
-                                                    {template.doctorName && (
-                                                        <div className="mb-3">
-                                                            <div className="flex items-center">
-                                                                <div className="flex items-center text-gray-700 ml-6">
-                                                                    <User className="w-4 h-4 ml-1" />
-                                                                    <span>{template.doctorName}</span>
-                                                                </div>
-                                                                <div className="flex items-center text-gray-700">
-                                                                    <BriefcaseMedical className="w-4 h-4 ml-1" />
-                                                                    <span>{template.specialty}</span>
-                                                                </div>
+                                                    {/* رنگ‌ها */}
+                                                    {template.colorPallete && template.colorPallete.length > 0 && (
+                                                        <div className="flex items-center space-x-2">
+                                                            <span className="text-sm text-gray-500">رنگ‌ها:</span>
+                                                            <div className="flex space-x-1">
+                                                                {template.colorPallete.slice(0, 4).map((color, idx) => (
+                                                                    <div
+                                                                        key={idx}
+                                                                        className="w-6 h-6 rounded border border-gray-200"
+                                                                        style={{ backgroundColor: color }}
+                                                                    />
+                                                                ))}
                                                             </div>
                                                         </div>
                                                     )}
+                                                </div>
 
-                                                    {template.description && (
-                                                        <p className="text-gray-600 mb-3 text-sm">{template.description}</p>
+                                                {/* نشانگر انتخاب */}
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ml-6
+                          ${isSelected ? 'bg-purple-500' : 'border-2 border-gray-300'}
+                        `}>
+                                                    {isSelected && (
+                                                        <CheckCircle className="w-5 h-5 text-white" />
                                                     )}
-
-                                                    <div className="flex items-center space-x-4">
-                                                        {template.phoneNumbers?.[0] && (
-                                                            <div className="flex items-center text-gray-500 text-sm">
-                                                                <Phone className="w-3 h-3 ml-1" />
-                                                                <span>{template.phoneNumbers[0]}</span>
-                                                            </div>
-                                                        )}
-                                                        {template.address && (
-                                                            <div className="flex items-center text-gray-500 text-sm">
-                                                                <MapPin className="w-3 h-3 ml-1" />
-                                                                <span>{template.city} - {template.address}</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
                                                 </div>
                                             </motion.div>
                                         );
@@ -796,19 +1089,19 @@ const VisitCardsBuilder = () => {
                                         <Palette className="w-16 h-16 text-gray-400" />
                                     </div>
                                     <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                                        قالبی یافت نشد
+                                        تمپلیتی یافت نشد
                                     </h3>
                                     <p className="text-gray-600 max-w-md mx-auto mb-8">
                                         {searchTerm
-                                            ? 'هیچ قالبی با این مشخصات پیدا نشد. لطفا جستجوی دیگری امتحان کنید.'
-                                            : 'هنوز قالبی وجود ندارد. لطفا ابتدا قالب‌ها را ایجاد کنید.'}
+                                            ? 'هیچ تمپلیتی با این مشخصات پیدا نشد. لطفا جستجوی دیگری امتحان کنید.'
+                                            : 'هنوز تمپلیتی وجود ندارد. لطفا بعداً مراجعه کنید.'}
                                     </p>
                                     {searchTerm && (
                                         <button
                                             onClick={() => setSearchTerm('')}
                                             className="px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors"
                                         >
-                                            حذف جستجو
+                                            حذف فیلتر
                                         </button>
                                     )}
                                 </div>
@@ -825,7 +1118,7 @@ const VisitCardsBuilder = () => {
                                 </button>
                                 <div className="flex space-x-4">
                                     <button
-                                        onClick={() => handleSaveCard('draft')}
+                                        onClick={() => handleSaveVisitCard('draft')}
                                         disabled={saving}
                                         className="px-6 py-3.5 border-2 border-gray-200 rounded-xl text-gray-700 hover:border-gray-300 hover:bg-gray-50 disabled:opacity-50 transition-all duration-300 font-medium"
                                     >
@@ -834,9 +1127,9 @@ const VisitCardsBuilder = () => {
                                     <button
                                         onClick={handleNextStep}
                                         disabled={!selectedTemplateId}
-                                        className="px-8 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center group"
+                                        className="px-8 py-3.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center group"
                                     >
-                                        ادامه به اطلاعات دکتر
+                                        مشاهده پیش‌نمایش
                                         <ChevronRight className="w-5 h-5 mr-3 group-hover:translate-x-1 transition-transform" />
                                     </button>
                                 </div>
@@ -844,7 +1137,7 @@ const VisitCardsBuilder = () => {
                         </motion.div>
                     )}
 
-                    {/* Step 3: Doctor Information */}
+                    {/* Step 3: Preview */}
                     {step === 3 && (
                         <motion.div
                             key="step3"
@@ -855,178 +1148,249 @@ const VisitCardsBuilder = () => {
                         >
                             <div className="mb-8">
                                 <h2 className="text-3xl font-bold text-gray-900 mb-3 flex items-center">
-                                    <User className="w-8 h-8 ml-3 text-green-600" />
-                                    اطلاعات دکتر
+                                    <Eye className="w-8 h-8 ml-3 text-green-600" />
+                                    پیش‌نمایش نهایی
                                 </h2>
                                 <p className="text-gray-600">
-                                    اطلاعات دکتر را تکمیل کنید. این اطلاعات روی کارت ویزیت نمایش داده می‌شوند.
+                                    کارت ویزیت خود را بررسی و در صورت تایید منتشر کنید
                                 </p>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                {/* فرم اطلاعات دکتر */}
-                                <div className="space-y-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-3 text-right">
-                                            نام و نام خانوادگی دکتر *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={visitCard.doctorInfo.name}
-                                            onChange={(e) => setVisitCard(prev => ({
-                                                ...prev,
-                                                doctorInfo: { ...prev.doctorInfo, name: e.target.value }
-                                            }))}
-                                            className={`w-full px-5 py-4 border-2 rounded-xl focus:ring-2 transition-all duration-300 text-right text-lg placeholder-gray-400
-                        ${errors.doctorName ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-green-500 focus:ring-green-200'}
-                      `}
-                                            placeholder="مثال: دکتر علی احمدی"
-                                            dir="rtl"
-                                        />
-                                        {errors.doctorName && (
-                                            <p className="mt-2 text-sm text-red-600">{errors.doctorName}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-3 text-right">
-                                            تخصص دکتر *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={visitCard.doctorInfo.specialty}
-                                            onChange={(e) => setVisitCard(prev => ({
-                                                ...prev,
-                                                doctorInfo: { ...prev.doctorInfo, specialty: e.target.value }
-                                            }))}
-                                            className={`w-full px-5 py-4 border-2 rounded-xl focus:ring-2 transition-all duration-300 text-right text-lg placeholder-gray-400
-                        ${errors.specialty ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-green-500 focus:ring-green-200'}
-                      `}
-                                            placeholder="مثال: متخصص قلب و عروق"
-                                            dir="rtl"
-                                        />
-                                        {errors.specialty && (
-                                            <p className="mt-2 text-sm text-red-600">{errors.specialty}</p>
-                                        )}
-                                    </div>
-
-                                    {/* شماره تلفن‌ها */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-3 text-right">
-                                            شماره تلفن‌ها *
-                                        </label>
-                                        {phoneNumbers.map((phone, index) => (
-                                            <div key={index} className="flex items-center mb-3">
-                                                <input
-                                                    type="text"
-                                                    value={phone}
-                                                    onChange={(e) => handlePhoneNumberChange(index, e.target.value)}
-                                                    className={`flex-1 px-5 py-3 border-2 rounded-xl focus:ring-2 transition-all duration-300 text-left placeholder-gray-400
-                            ${errors.phoneNumbers ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-green-500 focus:ring-green-200'}
-                          `}
-                                                    placeholder="مثال: ۰۹۱۲۱۲۳۴۵۶۷"
-                                                    dir="ltr"
-                                                />
-                                                {phoneNumbers.length > 1 && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removePhoneNumber(index)}
-                                                        className="mr-3 p-3 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                                                    >
-                                                        حذف
-                                                    </button>
-                                                )}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                {/* پیش‌نمایش کارت ویزیت */}
+                                <div className="lg:col-span-2">
+                                    <div className="bg-gradient-to-br from-blue-50 to-teal-50 rounded-2xl p-8 border border-blue-100 shadow-lg">
+                                        {/* هدر */}
+                                        <div className="flex items-center mb-8">
+                                            {imagePreviews.icon && (
+                                                <div className="w-24 h-24 rounded-full bg-white p-2 shadow-xl ml-6">
+                                                    <img
+                                                        src={getImageUrl(imagePreviews.icon)}
+                                                        alt="پزشک"
+                                                        className="w-full h-full rounded-full object-cover border-4 border-white"
+                                                        onError={(e) => {
+                                                            e.target.src = 'https://via.placeholder.com/150?text=تصویر+پزشک';
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                            <div>
+                                                <h3 className="text-3xl font-bold text-gray-900">{visitCard.doctorName}</h3>
+                                                <div className="flex items-center mt-2">
+                                                    <Stethoscope className="w-5 h-5 ml-2 text-teal-600" />
+                                                    <p className="text-xl text-teal-700">{visitCard.medicalDegree}</p>
+                                                </div>
+                                                <p className="text-gray-600 text-lg mt-2">
+                                                    تخصص: <span className="font-bold">{visitCard.specialty}</span>
+                                                    {visitCard.subSpecialty && (
+                                                        <span className="mr-3"> - {visitCard.subSpecialty}</span>
+                                                    )}
+                                                </p>
                                             </div>
-                                        ))}
-                                        {errors.phoneNumbers && (
-                                            <p className="mt-2 text-sm text-red-600">{errors.phoneNumbers}</p>
+                                        </div>
+
+                                        {/* اطلاعات تماس */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                            {visitCard.phone && (
+                                                <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                                                    <div className="flex items-center mb-2">
+                                                        <Phone className="w-5 h-5 ml-2 text-blue-600" />
+                                                        <span className="text-gray-500">تلفن:</span>
+                                                    </div>
+                                                    <p className="text-lg font-medium text-gray-900">{visitCard.phone}</p>
+                                                </div>
+                                            )}
+
+                                            {visitCard.email && (
+                                                <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                                                    <div className="flex items-center mb-2">
+                                                        <Mail className="w-5 h-5 ml-2 text-blue-600" />
+                                                        <span className="text-gray-500">ایمیل:</span>
+                                                    </div>
+                                                    <p className="text-lg font-medium text-gray-900">{visitCard.email}</p>
+                                                </div>
+                                            )}
+
+                                            {visitCard.clinicName && (
+                                                <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                                                    <div className="flex items-center mb-2">
+                                                        <Building className="w-5 h-5 ml-2 text-blue-600" />
+                                                        <span className="text-gray-500">مرکز درمانی:</span>
+                                                    </div>
+                                                    <p className="text-lg font-medium text-gray-900">{visitCard.clinicName}</p>
+                                                </div>
+                                            )}
+
+                                            {visitCard.address && (
+                                                <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                                                    <div className="flex items-center mb-2">
+                                                        <MapPin className="w-5 h-5 ml-2 text-blue-600" />
+                                                        <span className="text-gray-500">آدرس:</span>
+                                                    </div>
+                                                    <p className="text-lg font-medium text-gray-900">{visitCard.address}</p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* تخصص‌ها */}
+                                        {visitCard.specialities.length > 0 && (
+                                            <div className="mb-8">
+                                                <h4 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                                    <Award className="w-6 h-6 ml-2 text-teal-600" />
+                                                    تخصص‌ها
+                                                </h4>
+                                                <div className="flex flex-wrap gap-3">
+                                                    {visitCard.specialities.map((speciality, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className="bg-gradient-to-r from-teal-500 to-teal-600 text-white px-4 py-2 rounded-full shadow-sm"
+                                                        >
+                                                            {speciality}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
                                         )}
-                                        <button
-                                            type="button"
-                                            onClick={addPhoneNumber}
-                                            className="mt-2 px-4 py-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors flex items-center"
-                                        >
-                                            <Phone className="w-4 h-4 ml-2" />
-                                            افزودن شماره تلفن دیگر
-                                        </button>
+
+                                        {/* تمپلیت انتخاب شده */}
+                                        {selectedTemplate && (
+                                            <div className="mb-8">
+                                                <h4 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                                    <Palette className="w-6 h-6 ml-2 text-purple-600" />
+                                                    قالب طراحی انتخاب شده
+                                                </h4>
+                                                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                                                    <div className="flex items-start">
+                                                        {selectedTemplate.image && (
+                                                            <div className="w-32 h-32 rounded-xl overflow-hidden ml-6 flex-shrink-0">
+                                                                <img
+                                                                    src={getImageUrl(selectedTemplate.image)}
+                                                                    alt={selectedTemplate.title}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        <div className="flex-1">
+                                                            <h5 className="text-2xl font-bold text-gray-900 mb-3">{selectedTemplate.title}</h5>
+                                                            <p className="text-gray-600 mb-4">{selectedTemplate.description}</p>
+
+                                                            <div className="flex justify-between items-center">
+                                                                <div>
+                                                                    <span className="text-sm text-gray-500">قیمت:</span>
+                                                                    <div className="text-2xl font-bold text-purple-600">
+                                                                        {formatPrice(selectedTemplate.price)}
+                                                                    </div>
+                                                                </div>
+
+                                                                {selectedTemplate.colorPallete && selectedTemplate.colorPallete.length > 0 && (
+                                                                    <div>
+                                                                        <span className="text-sm text-gray-500 block mb-2">رنگ‌بندی:</span>
+                                                                        <div className="flex space-x-2">
+                                                                            {selectedTemplate.colorPallete.map((color, idx) => (
+                                                                                <div
+                                                                                    key={idx}
+                                                                                    className="w-8 h-8 rounded border border-gray-200"
+                                                                                    style={{ backgroundColor: color }}
+                                                                                />
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* QR Code Preview */}
+                                        <div className="bg-gradient-to-r from-teal-500 to-blue-500 rounded-2xl p-6 text-white">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <h4 className="text-2xl font-bold mb-2">QR Code کارت ویزیت</h4>
+                                                    <p className="opacity-90">
+                                                        با اسکن این کد، اطلاعات پزشک قابل مشاهده است
+                                                    </p>
+                                                </div>
+                                                <div className="w-32 h-32 bg-white rounded-xl p-3 flex items-center justify-center">
+                                                    <QrCode className="w-20 h-20 text-gray-800" />
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-3 text-right">
-                                            آدرس مطب *
-                                        </label>
-                                        <textarea
-                                            value={visitCard.doctorInfo.address}
-                                            onChange={(e) => setVisitCard(prev => ({
-                                                ...prev,
-                                                doctorInfo: { ...prev.doctorInfo, address: e.target.value }
-                                            }))}
-                                            className={`w-full px-5 py-4 border-2 rounded-xl focus:ring-2 transition-all duration-300 text-right placeholder-gray-400 resize-none
-                        ${errors.address ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-green-500 focus:ring-green-200'}
-                      `}
-                                            placeholder="آدرس کامل مطب"
-                                            rows={3}
-                                            dir="rtl"
-                                        />
-                                        {errors.address && (
-                                            <p className="mt-2 text-sm text-red-600">{errors.address}</p>
-                                        )}
-                                    </div>
+                                {/* خلاصه و دکمه‌ها */}
+                                <div>
+                                    <div className="sticky top-8">
+                                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border border-gray-200 shadow-lg">
+                                            <h4 className="text-2xl font-bold text-gray-900 mb-6">خلاصه سفارش</h4>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-3 text-right">
-                                            شهر *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={visitCard.doctorInfo.city}
-                                            onChange={(e) => setVisitCard(prev => ({
-                                                ...prev,
-                                                doctorInfo: { ...prev.doctorInfo, city: e.target.value }
-                                            }))}
-                                            className={`w-full px-5 py-4 border-2 rounded-xl focus:ring-2 transition-all duration-300 text-right text-lg placeholder-gray-400
-                        ${errors.city ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-green-500 focus:ring-green-200'}
-                      `}
-                                            placeholder="مثال: تهران"
-                                            dir="rtl"
-                                        />
-                                        {errors.city && (
-                                            <p className="mt-2 text-sm text-red-600">{errors.city}</p>
-                                        )}
-                                    </div>
-
-                                    {/* وضعیت فعال/غیرفعال */}
-                                    <div className="mt-8 p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <h4 className="font-bold text-gray-900 mb-1">وضعیت کارت ویزیت</h4>
-                                                <p className="text-gray-600 text-sm">
-                                                    {visitCard.isActive ? 'کارت فعال و قابل نمایش است' : 'کارت غیرفعال و مخفی است'}
-                                                </p>
-                                            </div>
-                                            <div className="flex items-center">
-                                                <span className={`mr-3 font-medium ${visitCard.isActive ? 'text-green-600' : 'text-gray-500'}`}>
-                                                    {visitCard.isActive ? 'فعال' : 'غیرفعال'}
-                                                </span>
-                                                <div className="relative">
-                                                    <input
-                                                        type="checkbox"
-                                                        id="isActive"
-                                                        checked={visitCard.isActive}
-                                                        onChange={(e) => setVisitCard(prev => ({ ...prev, isActive: e.target.checked }))}
-                                                        className="sr-only"
-                                                    />
-                                                    <label
-                                                        htmlFor="isActive"
-                                                        className={`block w-14 h-8 rounded-full cursor-pointer transition-colors duration-300 ${visitCard.isActive ? 'bg-green-500' : 'bg-gray-300'
-                                                            }`}
-                                                    >
-                                                        <div className={`absolute top-1 w-6 h-6 rounded-full bg-white transition-transform duration-300 ${visitCard.isActive ? 'left-7' : 'left-1'
-                                                            }`}></div>
-                                                    </label>
+                                            <div className="space-y-6">
+                                                <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                                                    <span className="text-gray-600">قالب طراحی:</span>
+                                                    <span className="font-bold text-gray-900">
+                                                        {selectedTemplate ? selectedTemplate.title : 'انتخاب نشده'}
+                                                    </span>
                                                 </div>
+
+                                                <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                                                    <span className="text-gray-600">قیمت قالب:</span>
+                                                    <span className="text-2xl font-bold text-purple-600">
+                                                        {selectedTemplate ? formatPrice(selectedTemplate.price) : '۰ تومان'}
+                                                    </span>
+                                                </div>
+
+                                                <div className="pt-6">
+                                                    <div className="flex items-center mb-4">
+                                                        <div className={`w-4 h-4 rounded-full ml-3 ${visitCard.status === 'published' ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+                                                        <span className="font-medium text-gray-900">
+                                                            وضعیت: {visitCard.status === 'published' ? 'منتشر شده' : 'پیش‌نویس'}
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 mb-6">
+                                                        <p className="text-sm text-teal-800">
+                                                            ⓘ بعد از انتشار، QR Code فعال می‌شود
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* دکمه‌های عملی */}
+                                            <div className="mt-8 space-y-4">
+                                                <button
+                                                    onClick={() => handleSaveVisitCard('draft')}
+                                                    disabled={saving}
+                                                    className="w-full py-4 bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-xl hover:from-teal-700 hover:to-teal-800 disabled:opacity-50 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none flex items-center justify-center"
+                                                >
+                                                    {saving ? (
+                                                        <>
+                                                            <Loader2 className="w-5 h-5 ml-3 animate-spin" />
+                                                            در حال ذخیره...
+                                                        </>
+                                                    ) : (
+                                                        '💾 ذخیره پیش‌نویس'
+                                                    )}
+                                                </button>
+
+                                                <button
+                                                    onClick={() => handleSaveVisitCard('published')}
+                                                    disabled={saving}
+                                                    className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none flex items-center justify-center group"
+                                                >
+                                                    {saving ? (
+                                                        <>
+                                                            <Loader2 className="w-5 h-5 ml-3 animate-spin" />
+                                                            در حال انتشار...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            🚀 انتشار کارت ویزیت
+                                                            <ChevronRight className="w-5 h-5 mr-3 group-hover:translate-x-1 transition-transform" />
+                                                        </>
+                                                    )}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -1044,259 +1408,26 @@ const VisitCardsBuilder = () => {
                                 </button>
                                 <div className="flex space-x-4">
                                     <button
-                                        onClick={() => handleSaveCard('draft')}
+                                        onClick={() => handleSaveVisitCard('draft')}
                                         disabled={saving}
                                         className="px-6 py-3.5 border-2 border-gray-200 rounded-xl text-gray-700 hover:border-gray-300 hover:bg-gray-50 disabled:opacity-50 transition-all duration-300 font-medium"
                                     >
                                         {saving ? 'در حال ذخیره...' : 'ذخیره پیش‌نویس'}
                                     </button>
                                     <button
-                                        onClick={handleNextStep}
-                                        className="px-8 py-3.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center group"
+                                        onClick={() => handleSaveVisitCard('published')}
+                                        disabled={saving}
+                                        className="px-8 py-3.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center group"
                                     >
-                                        مشاهده پیش‌نمایش
-                                        <ChevronRight className="w-5 h-5 mr-3 group-hover:translate-x-1 transition-transform" />
+                                        {saving ? (
+                                            <>
+                                                <Loader2 className="w-5 h-5 ml-3 animate-spin" />
+                                                در حال انتشار...
+                                            </>
+                                        ) : (
+                                            '🚀 انتشار کارت ویزیت'
+                                        )}
                                     </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* Step 4: Preview */}
-                    {step === 4 && (
-                        <motion.div
-                            key="step4"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100"
-                        >
-                            <div className="mb-8">
-                                <h2 className="text-3xl font-bold text-gray-900 mb-3 flex items-center">
-                                    <Eye className="w-8 h-8 ml-3 text-indigo-600" />
-                                    پیش‌نمایش نهایی
-                                </h2>
-                                <p className="text-gray-600">
-                                    قبل از انتشار، کارت ویزیت خود را بررسی کنید.
-                                </p>
-                            </div>
-
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                {/* پیش‌نمایش کارت ویزیت */}
-                                <div className="lg:col-span-2">
-                                    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 border border-indigo-100 shadow-lg">
-                                        <div className="flex flex-col lg:flex-row gap-8">
-                                            {/* تصویر دکتر */}
-                                            <div className="lg:w-1/3">
-                                                <div className="bg-white rounded-2xl p-6 shadow-lg">
-                                                    <div className="aspect-square rounded-xl overflow-hidden mb-6 bg-gradient-to-br from-gray-100 to-gray-200">
-                                                        {visitCard.image ? (
-                                                            <img
-                                                                src={visitCard.image}
-                                                                alt="تصویر دکتر"
-                                                                className="w-full h-full object-cover"
-                                                            />
-                                                        ) : (
-                                                            <div className="w-full h-full flex items-center justify-center">
-                                                                <User className="w-24 h-24 text-gray-400" />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div className="text-center">
-                                                        <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                                                            {visitCard.doctorInfo.name || 'نام دکتر'}
-                                                        </h3>
-                                                        <p className="text-lg text-gray-600 mb-4">
-                                                            {visitCard.doctorInfo.specialty || 'تخصص دکتر'}
-                                                        </p>
-                                                        <div className="flex justify-center">
-                                                            <div className={`px-4 py-2 rounded-full ${visitCard.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                                                                {visitCard.isActive ? '✅ فعال' : '⏸️ غیرفعال'}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* اطلاعات تماس */}
-                                            <div className="lg:w-2/3">
-                                                <div className="mb-6">
-                                                    <h4 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                                                        <Building className="w-6 h-6 ml-2 text-indigo-600" />
-                                                        اطلاعات تماس
-                                                    </h4>
-
-                                                    <div className="space-y-4">
-                                                        {/* شماره تلفن‌ها */}
-                                                        <div>
-                                                            <div className="flex items-center text-gray-700 mb-3">
-                                                                <Phone className="w-5 h-5 ml-2 text-indigo-500" />
-                                                                <span className="font-bold">شماره تماس:</span>
-                                                            </div>
-                                                            <div className="space-y-2 mr-7">
-                                                                {phoneNumbers.filter(num => num.trim()).map((phone, index) => (
-                                                                    <div key={index} className="text-lg text-gray-800">
-                                                                        📞 {phone}
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* آدرس */}
-                                                        <div>
-                                                            <div className="flex items-center text-gray-700 mb-3">
-                                                                <MapPin className="w-5 h-5 ml-2 text-indigo-500" />
-                                                                <span className="font-bold">آدرس مطب:</span>
-                                                            </div>
-                                                            <div className="text-lg text-gray-800 mr-7">
-                                                                🏥 {visitCard.doctorInfo.address}
-                                                                <br />
-                                                                🌆 {visitCard.doctorInfo.city}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* اطلاعات قالب */}
-                                                {selectedTemplate && (
-                                                    <div className="bg-white/80 rounded-2xl p-6 border border-indigo-200">
-                                                        <h5 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                                                            <Palette className="w-5 h-5 ml-2 text-purple-600" />
-                                                            قالب استفاده شده
-                                                        </h5>
-                                                        <div className="flex items-center">
-                                                            <div className="w-16 h-16 rounded-xl overflow-hidden ml-4 bg-gray-100">
-                                                                {selectedTemplate.image ? (
-                                                                    <img
-                                                                        src={selectedTemplate.image}
-                                                                        alt={selectedTemplate.title}
-                                                                        className="w-full h-full object-cover"
-                                                                    />
-                                                                ) : (
-                                                                    <Palette className="w-8 h-8 m-4 text-gray-400" />
-                                                                )}
-                                                            </div>
-                                                            <div>
-                                                                <h6 className="font-bold text-gray-900">{selectedTemplate.title}</h6>
-                                                                <p className="text-gray-600 text-sm mt-1">
-                                                                    طراحی حرفه‌ای کارت ویزیت
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )}
-
-                                                {/* QR Code */}
-                                                <div className="mt-6">
-                                                    <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl p-6 text-white">
-                                                        <div className="flex items-center justify-between">
-                                                            <div>
-                                                                <h5 className="text-lg font-bold mb-2">QR Code کارت ویزیت</h5>
-                                                                <p className="text-white/90 text-sm">
-                                                                    با اسکن این کد، اطلاعات دکتر مستقیماً ذخیره می‌شود
-                                                                </p>
-                                                            </div>
-                                                            <div className="w-20 h-20 bg-white rounded-xl p-2">
-                                                                {/* QR Code placeholder */}
-                                                                <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center">
-                                                                    <QrCode className="w-10 h-10 text-gray-600" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* خلاصه و دکمه‌ها */}
-                                <div>
-                                    <div className="sticky top-8">
-                                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border border-gray-200 shadow-lg">
-                                            <h4 className="text-2xl font-bold text-gray-900 mb-6">خلاصه کارت ویزیت</h4>
-
-                                            <div className="space-y-6">
-                                                <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                                                    <span className="text-gray-600">عنوان:</span>
-                                                    <span className="font-bold text-gray-900">{visitCard.title}</span>
-                                                </div>
-
-                                                <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                                                    <span className="text-gray-600">قالب طراحی:</span>
-                                                    <span className="font-bold text-gray-900">
-                                                        {selectedTemplate ? selectedTemplate.title : 'انتخاب نشده'}
-                                                    </span>
-                                                </div>
-
-                                                <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                                                    <span className="text-gray-600">وضعیت:</span>
-                                                    <span className={`font-bold ${visitCard.isActive ? 'text-green-600' : 'text-gray-600'}`}>
-                                                        {visitCard.isActive ? 'فعال' : 'غیرفعال'}
-                                                    </span>
-                                                </div>
-
-                                                <div className="pt-6">
-                                                    <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4 mb-6 border border-indigo-100">
-                                                        <p className="text-sm text-indigo-800">
-                                                            ⓘ این کارت ویزیت به صورت آنلاین قابل اشتراک‌گذاری است.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* دکمه‌های عملی */}
-                                            <div className="mt-8 space-y-4">
-                                                <button
-                                                    onClick={() => handleSaveCard('draft')}
-                                                    disabled={saving}
-                                                    className="w-full py-4 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:from-gray-700 hover:to-gray-800 disabled:opacity-50 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none flex items-center justify-center"
-                                                >
-                                                    {saving ? (
-                                                        <>
-                                                            <Loader2 className="w-5 h-5 ml-3 animate-spin" />
-                                                            در حال ذخیره...
-                                                        </>
-                                                    ) : (
-                                                        '💾 ذخیره پیش‌نویس'
-                                                    )}
-                                                </button>
-
-                                                <button
-                                                    onClick={() => handleSaveCard('published')}
-                                                    disabled={saving}
-                                                    className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none flex items-center justify-center group"
-                                                >
-                                                    {saving ? (
-                                                        <>
-                                                            <Loader2 className="w-5 h-5 ml-3 animate-spin" />
-                                                            در حال انتشار...
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            🚀 ایجاد کارت ویزیت
-                                                            <ChevronRight className="w-5 h-5 mr-3 group-hover:translate-x-1 transition-transform" />
-                                                        </>
-                                                    )}
-                                                </button>
-
-                                                <button
-                                                    onClick={() => {
-                                                        // شبیه‌سازی دانلود
-                                                        alert('📄 در حال آماده‌سازی برای چاپ...');
-                                                    }}
-                                                    className="w-full py-3.5 border-2 border-gray-300 rounded-xl text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 font-medium flex items-center justify-center"
-                                                >
-                                                    <Download className="w-5 h-5 ml-3" />
-                                                    دانلود برای چاپ
-                                                </button>
-                                            </div>
-
-                                            <p className="text-center text-sm text-gray-500 mt-6">
-                                                بعد از انتشار، کارت ویزیت در پنل شما قابل مدیریت است.
-                                            </p>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </motion.div>
@@ -1307,4 +1438,4 @@ const VisitCardsBuilder = () => {
     );
 };
 
-export default VisitCardsBuilder;
+export default VisitCardBuilder;
