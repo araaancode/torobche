@@ -46,7 +46,6 @@ import './App.css';
 import RestaurantMenuBuilder from './pages/RestaurantMenuBuilder';
 import VisitCardBuilder from './pages/VisitCardBuilder';
 import BusinessCardBuilder from './pages/BusinessCardBuilder';
-import ResumeBuilder from './pages/ResumeBuilder';
 
 
 import MenuPage from "./pages/MenuPage"
@@ -54,6 +53,10 @@ import AddFoodToMenu from "./pages/AddFoodToMenu"
 import VisitCardDetail from './pages/VisitCardDetail';
 
 import BusinessCardDetailePage from "./pages/BusinessCardDetailPage"
+
+
+// resume pages
+import ResumeTemplateSelector from './pages/ResumeTemplateSelector';
 
 // Constants
 const ROUTE_TYPES = {
@@ -70,6 +73,16 @@ const LAYOUT_TYPES = {
 
 // Route Configuration
 const appRoutes = [
+
+  // resume pages
+  {
+    path: '/resume-templates',
+    component: ResumeTemplateSelector,
+    type: ROUTE_TYPES.PUBLIC,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
+
+
   // Public Routes with Header & Footer
   {
     path: '/',
@@ -270,12 +283,12 @@ const appRoutes = [
     layout: LAYOUT_TYPES.ADMIN_LAYOUT
   },
 
-  {
-    path: '/resume-builder',
-    component: ResumeBuilder,
-    type: ROUTE_TYPES.ADMIN,
-    layout: LAYOUT_TYPES.ADMIN_LAYOUT
-  },
+  // {
+  //   path: '/resume-builder',
+  //   component: ResumeBuilder,
+  //   type: ROUTE_TYPES.ADMIN,
+  //   layout: LAYOUT_TYPES.ADMIN_LAYOUT
+  // },
 
   {
     path: '/visit-template-builder',
