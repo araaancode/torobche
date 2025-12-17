@@ -56,11 +56,6 @@ import BusinessCardDetailePage from "./pages/BusinessCardDetailPage"
 
 
 // resume pages
-import ResumeBuilderPage from './pages/resume/ResumeBuilderPage';
-// import ResumeTemplatesPage from './pages/TemplatesPage';
-// import ResumePublicSummaryPage from './pages/PublicSummaryPage';
-// import ResumePublicFullPage from './pages/PublicFullPage';
-
 
 
 // Constants
@@ -80,16 +75,8 @@ const LAYOUT_TYPES = {
 const appRoutes = [
 
   // resume pages
-  //   <Route path="/builder" element={<BuilderPage />} />
-  // <Route path="/templates" element={<TemplatesPage />} />
-  // <Route path="/r/:publicId" element={<PublicSummaryPage />} />
-  // <Route path="/r/:publicId/full" element={<PublicFullPage />} />
-  {
-    path: '/resumes/builder',
-    component: ResumeBuilderPage,
-    type: ROUTE_TYPES.PUBLIC,
-    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
-  },
+
+
 
   // Public Routes with Header & Footer
   {
@@ -291,12 +278,7 @@ const appRoutes = [
     layout: LAYOUT_TYPES.ADMIN_LAYOUT
   },
 
-  // {
-  //   path: '/resume-builder',
-  //   component: ResumeBuilder,
-  //   type: ROUTE_TYPES.ADMIN,
-  //   layout: LAYOUT_TYPES.ADMIN_LAYOUT
-  // },
+
 
   {
     path: '/visit-template-builder',

@@ -55,11 +55,6 @@ app.use('/api/business-templates', require("./routes/businessTemplates"))
 app.use('/api/auth', require("./routes/auth"))
 
 
-app.use('/api/resume-templates', require("./routes/resumeTemplates"));
-app.use('/api/resumes', require("./routes/resumes"));
-app.use('/api/r', require("./routes/resumes"));
-
-
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
