@@ -20,6 +20,10 @@ import Pricing from './pages/Pricing';
 import Checkout from './pages/Checkout';
 import Blog from './pages/Blog';
 import Help from './pages/Help';
+import NotFound from './pages/NotFound';
+
+
+// 
 import Templates from './pages/Templates';
 import QRCodeManager from './pages/QRCodeManager';
 import BusinessCards from './pages/BusinessCards';
@@ -28,7 +32,6 @@ import RestaurantMenuPage from './pages/RestaurantMenuPage';
 import DoctorCardPage from './pages/DoctorCardPage';
 import DigitalResumePage from './pages/DigitalResumePage';
 import BusinessCardPage from './pages/BusinessCardPage';
-// import BusinessCardsApiPage from "./pages/BusinessCardsApiPage"
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -56,6 +59,15 @@ import BusinessCardDetailePage from "./pages/BusinessCardDetailPage"
 
 
 // resume pages
+// import ResumeHomePage from './pages/HomePage';
+import ResumeTemplateSelection from './pages/resume/TemplateSelection';
+import ResumeBuilder from './pages/resume/ResumeBuilder';
+import ResumePreview from './pages/resume/ResumePreview';
+import ResumeView from './pages/resume/ResumeView';
+import EditResume from './pages/resume/EditResume';
+import ResumeTemplatesGallery from './pages/resume/TemplatesGallery';
+import MyResumes from './pages/resume/MyResumes';
+import { ResumeProvider } from './contexts/ResumeContext';
 
 
 // Constants
@@ -74,9 +86,62 @@ const LAYOUT_TYPES = {
 // Route Configuration
 const appRoutes = [
 
+  {
+    path: '*',
+    component: NotFound,
+    type: ROUTE_TYPES.PUBLIC,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
+
   // resume pages
+  {
+    path: '/resume-templates',
+    component: ResumeTemplateSelection,
+    type: ROUTE_TYPES.PUBLIC,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
 
+  {
+    path: '/resume-templates/:category',
+    component: ResumeTemplatesGallery,
+    type: ROUTE_TYPES.PUBLIC,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
 
+  {
+    path: '/build-resume/:templateId',
+    component: ResumeBuilder,
+    type: ROUTE_TYPES.PUBLIC,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
+
+  {
+    path: '/resume/:resumeId',
+    component: ResumeView,
+    type: ROUTE_TYPES.PUBLIC,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
+
+  {
+    path: '/resume-preview',
+    component: ResumePreview,
+    type: ROUTE_TYPES.PUBLIC,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
+
+  {
+    path: '/edit/:resumeId',
+    component: EditResume,
+    type: ROUTE_TYPES.PUBLIC,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
+
+  {
+    path: '/my-resumes',
+    component: MyResumes,
+    type: ROUTE_TYPES.PUBLIC,
+    layout: LAYOUT_TYPES.WITH_HEADER_FOOTER
+  },
 
   // Public Routes with Header & Footer
   {
@@ -389,15 +454,18 @@ const App = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
         <div className="fixed inset-0 bg-gradient-to-br from-blue-600/5 via-purple-600/5 to-cyan-600/5 pointer-events-none" />
 
-        <Routes>
-          {appRoutes.map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={<AppRoute route={route} />}
-            />
-          ))}
-        </Routes>
+        <ResumeProvider>
+          <Routes>
+            {appRoutes.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={<AppRoute route={route} />}
+              />
+            ))}
+          </Routes>
+        </ResumeProvider>
+
       </div>
     </Router>
   );

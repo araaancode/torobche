@@ -1,0 +1,42 @@
+/* client/src/templates/TemplateStyles.css */
+/* استایل‌های مشترک */
+.resume-template {
+    font-family: 'Vazirmatn', sans-serif;
+    page-break-inside: avoid;
+}
+
+/* استایل قالب مدرن */
+.modern-template {
+    --primary-color: #2563eb;
+    --secondary-color: #1d4ed8;
+    --accent-color: #3b82f6;
+}
+
+/* استایل قالب کلاسیک */
+.classic-template {
+    --primary-color: #92400e;
+    --secondary-color: #78350f;
+    --accent-color: #b45309;
+}
+
+/* استایل قالب فنی */
+.technical-template {
+    font-family: 'Vazirmatn', monospace;
+    --primary-color: #059669;
+    --secondary-color: #047857;
+    --accent-color: #10b981;
+}
+
+/* چاپ */
+@media print {
+    .resume-template {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        margin: 0 !important;
+        padding: 20px !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
